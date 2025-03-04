@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public", "auth"]
+}
+
+model master_provinsi {
+  id            Int    @id @default(autoincrement())
+  id_provinsi   Int
+  nama_provinsi String
+
+  @@schema("public") // Tambahkan schema
+}
+
+model beritas {
+  id            Int    @id @default(autoincrement())
+  likes         Int?    @default(0) // Tambahkan default value
+  title         String
+  date          DateTime
+  image_url     String
+  deskripsi     String
+
+  @@schema("public") // Tambahkan schema
+}
+
+model dokumens {
+  id            Int    @id @default(autoincrement())
+  nama         String    
+  link         String
+  jenis_dokumen          DateTime
+  
+  @@schema("public") // Tambahkan schema
+}
+
