@@ -79,3 +79,15 @@ model inolands {
 
   @@schema("public")
 }
+
+model provinsis {
+  id           Int    @id @default(autoincrement())
+  id_provinsi  Int    @unique  // Relasi dengan master_provinsi
+  nama         String
+  svg_path     String
+
+  // Relasi ke master_provinsi berdasarkan id_provinsi
+  master_provinsi master_provinsi @relation(fields: [id_provinsi], references: [id_provinsi])
+
+  @@schema("public")
+}
