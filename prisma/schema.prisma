@@ -1,45 +1,81 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
   previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
-  schemas  = ["public", "auth"]
+  url = env("DATABASE_URL")
+  schemas = ["public", "auth"]
 }
 
 model master_provinsi {
-  id            Int    @id @default(autoincrement())
-  id_provinsi   Int
-  nama_provinsi String
+    id             Int     @id @default(autoincrement())
+    id_provinsi   Int     @unique // Buat agar bisa direferensikan
+    nama_provinsi String
+    inolands      inolands[]
 
-  @@schema("public") // Tambahkan schema
+    @@schema("public")
+}
+
+model master_kabupaten {
+    id          Int     @id @default(autoincrement())
+    id_kabkot   Int     @unique // Buat agar bisa direferensikan
+    nama_kabkot String
+    inolands    inolands[]
+
+    @@schema("public")
+}
+
+model sdgs {
+  id     Int    @id @default(autoincrement())
+  sdgs   String
+  image  String
+  inolands inolands[]
+
+  @@schema("public")
 }
 
 model beritas {
-  id            Int    @id @default(autoincrement())
-  likes         Int?    @default(0) // Tambahkan default value
-  title         String
-  date          DateTime
-  image_url     String
-  deskripsi     String
+  id          Int     @id @default(autoincrement())
+  likes       Int?    @default(0)
+  title       String
+  date        DateTime
+  image_url   String
+  deskripsi   String
 
-  @@schema("public") // Tambahkan schema
+  @@schema("public")
 }
 
 model dokumens {
-  id            Int    @id @default(autoincrement())
-  nama         String    
-  link         String
-  jenis_dokumen          DateTime
-  
-  @@schema("public") // Tambahkan schema
+  id            Int     @id @default(autoincrement())
+  nama          String
+  link          String
+  jenis_dokumen String
+
+  @@schema("public")
 }
 
+model inolands {
+  id              Int     @id @default(autoincrement())
+  id_provinsi     Int?    // Jadikan nullable
+  id_kabkot       Int?
+  sdgs            Int?
+  deskripsi       String?
+  tahun           String?
+  inovator        String?
+  judul_inovasi   String?
+  kld             String?
+  urusan          String?
+
+  // Relasi ke master_provinsi berdasarkan id_provinsi
+    master_provinsi   master_provinsi?   @relation(fields: [id_provinsi], references: [id_provinsi])
+
+    // Relasi ke master_kabupaten berdasarkan id_kabkot
+    master_kabupaten  master_kabupaten?  @relation(fields: [id_kabkot], references: [id_kabkot])
+
+  // Relasi ke sdgs
+  sdgs_relasi       sdgs?              @relation(fields: [sdgs], references: [id])
+
+  @@schema("public")
+}
