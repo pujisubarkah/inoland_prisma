@@ -1,30 +1,35 @@
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
-  schemas = ["public", "auth"]
+  url      = env("DATABASE_URL")
 }
 
+// Models in the public schema
 model master_provinsi {
-    id             Int     @id @default(autoincrement())
-    id_provinsi   Int     @unique // Buat agar bisa direferensikan
-    nama_provinsi String
-    inolands      inolands[]
-
-    @@schema("public")
+  id_provinsi   Int     @id @default(autoincrement())
+  nama_provinsi String
+  inolands      inolands[]
+  provinsis     provinsis[]
+  master_kabupaten master_kabupaten[]
+  inovasis inovasis[]
+  kabupatens kabupatens[]
+  indeks_inovasi indeks_inovasi[]
 }
 
 model master_kabupaten {
-    id          Int     @id @default(autoincrement())
-    id_kabkot   Int     @unique // Buat agar bisa direferensikan
-    nama_kabkot String
-    inolands    inolands[]
+  id            Int     @id @default(autoincrement())
+  id_kabkot     Int     @unique
+  id_provinsi   Int?    
+  nama_kabkot   String
 
-    @@schema("public")
+  master_provinsi master_provinsi? @relation(fields: [id_provinsi], references: [id_provinsi])
+  inolands inolands[]
+  inovasis inovasis[]
+  kabupatens kabupatens[]
+  
 }
 
 model sdgs {
@@ -32,8 +37,6 @@ model sdgs {
   sdgs   String
   image  String
   inolands inolands[]
-
-  @@schema("public")
 }
 
 model beritas {
@@ -43,8 +46,6 @@ model beritas {
   date        DateTime
   image_url   String
   deskripsi   String
-
-  @@schema("public")
 }
 
 model dokumens {
@@ -52,15 +53,13 @@ model dokumens {
   nama          String
   link          String
   jenis_dokumen String
-
-  @@schema("public")
 }
 
 model inolands {
   id              Int     @id @default(autoincrement())
-  id_provinsi     Int?    // Jadikan nullable
+  id_provinsi     Int?    
   id_kabkot       Int?
-  sdgs            Int?
+  sdgs        Int?
   deskripsi       String?
   tahun           String?
   inovator        String?
@@ -68,26 +67,110 @@ model inolands {
   kld             String?
   urusan          String?
 
-  // Relasi ke master_provinsi berdasarkan id_provinsi
-    master_provinsi   master_provinsi?   @relation(fields: [id_provinsi], references: [id_provinsi])
-
-    // Relasi ke master_kabupaten berdasarkan id_kabkot
-    master_kabupaten  master_kabupaten?  @relation(fields: [id_kabkot], references: [id_kabkot])
-
-  // Relasi ke sdgs
-  sdgs_relasi       sdgs?              @relation(fields: [sdgs], references: [id])
-
-  @@schema("public")
+  master_provinsi   master_provinsi? @relation(fields: [id_provinsi], references: [id_provinsi])
+  master_kabupaten  master_kabupaten? @relation(fields: [id_kabkot], references: [id_kabkot])
+  sdgs_relasi       sdgs? @relation(fields: [sdgs], references: [id])
 }
 
 model provinsis {
   id           Int    @id @default(autoincrement())
-  id_provinsi  Int    @unique  // Relasi dengan master_provinsi
+  id_provinsi  Int    @unique
   nama         String
   svg_path     String
-
-  // Relasi ke master_provinsi berdasarkan id_provinsi
+  Tahun_2019  String
+  Tahun_2020  String
+  Tahun_2021  String
+  Tahun_2022  String
+  Tahun_2023  String
+  
   master_provinsi master_provinsi @relation(fields: [id_provinsi], references: [id_provinsi])
+}
 
-  @@schema("public")
+model pdflist {
+  id            Int    @id @default(autoincrement())
+  pdf_url       String
+  pdf_judul     String
+  pdf_kategori  String
+  pdf_cover     String
+  pdf_publisher String
+}
+
+model inovasis {
+  id                 Int  @id @default(autoincrement())
+  id_provinsi        Int?
+  id_kabkot          Int?
+  nama_inovasi       String
+  penggagas          String
+  deskripsi          String
+  nama_instansi      String
+  unit_instansi      String
+  tahun_inisiasi     String
+  tahun_implementasi String
+  faktor_pendorong   String
+  faktor_penghambat  String
+  tahapan_proses     String
+  output             String
+  outcome            String
+  manfaat            String
+  prasyarat_replikasi String
+  kontak             String
+  sumber             String
+  published_at       String
+  updated_at         String
+  created_by_id      String
+  updated_by_id      String
+  locale             String
+  created_at         String
+  document_id        String
+
+  master_provinsi   master_provinsi? @relation(fields: [id_provinsi], references: [id_provinsi])
+  master_kabupaten  master_kabupaten? @relation(fields: [id_kabkot], references: [id_kabkot])
+}
+
+model kabupatens {
+  id         Int  @id @default(autoincrement())
+  nama       String
+  svg_path   String
+  id_provinsi        Int?
+  id_kabkot          Int?
+
+  master_provinsi   master_provinsi? @relation(fields: [id_provinsi], references: [id_provinsi])
+  master_kabupaten  master_kabupaten? @relation(fields: [id_kabkot], references: [id_kabkot])
+}
+
+model users {
+  id              String @id @default(uuid())
+  nama_lengkap    String
+  email           String @unique
+  password        String
+  instansi        String?
+  role_id         Int?
+  is_verified     Boolean @default(false)  // Column for email verification
+  verification_token String? // Token for email verification
+  created_at      DateTime @default(now())
+}
+
+model inovasi_LAN {
+   id         Int  @id @default(autoincrement())
+  nama_inovasi    String
+  produk_inovasi  String 
+  nama_instansi   String
+  deskripsi       String?
+  image_link       String?
+  created_at      DateTime @default(now())
+}
+
+model indeks_inovasi {
+  id         Int  @id @default(autoincrement())
+ id_provinsi Int
+ id_kabkot Int
+ indeks_tahun Int
+ indeks_skor Float
+ indeks_predikat String
+ nama_kabkot String
+ nama_prov String
+ level String
+ indeks_level String
+
+master_provinsi   master_provinsi? @relation(fields: [id_provinsi], references: [id_provinsi])
 }

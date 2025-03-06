@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   try {
     const { nama, link, jenis_dokumen } = await req.json();
     const newDokumen = await prisma.dokumens.create({
-      data: { nama, link, jenis_dokumen: new Date(jenis_dokumen) },
+      data: { nama, link, jenis_dokumen },
     });
     return NextResponse.json(newDokumen, { status: 201 });
   } catch (error) {
@@ -32,7 +32,7 @@ export async function PUT(req: Request) {
     const { id, nama, link, jenis_dokumen } = await req.json();
     const updatedDokumen = await prisma.dokumens.update({
       where: { id },
-      data: { nama, link, jenis_dokumen: new Date(jenis_dokumen) },
+      data: { nama, link, jenis_dokumen },
     });
     return NextResponse.json(updatedDokumen, { status: 200 });
   } catch (error) {
