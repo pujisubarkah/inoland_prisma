@@ -29,6 +29,7 @@ model master_kabupaten {
   inolands inolands[]
   inovasis inovasis[]
   kabupatens kabupatens[]
+  indeks_inovasi indeks_inovasi[]
   
 }
 
@@ -173,4 +174,6 @@ model indeks_inovasi {
  indeks_level String
 
 master_provinsi   master_provinsi? @relation(fields: [id_provinsi], references: [id_provinsi])
+master_kabupaten  master_kabupaten? @relation(fields: [id_kabkot], references: [id_kabkot])
 }
+

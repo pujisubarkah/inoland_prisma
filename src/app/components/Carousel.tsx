@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from 'next/image';
 import axios from "axios";
-import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleArrowRight, faCircleArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import './Carousel.css';
 
 const Carousel: React.FC = () => {
   const [images, setImages] = useState<{ link: string }[]>([]);
@@ -28,6 +29,10 @@ const Carousel: React.FC = () => {
     fetchImages();
   }, []);
 
+  const nextSlide = React.useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex + 3) % images.length);
+  }, [images.length]);
+
   // Start automatic sliding
   useEffect(() => {
     slideInterval.current = setInterval(() => {
@@ -40,46 +45,42 @@ const Carousel: React.FC = () => {
         clearInterval(slideInterval.current);
       }
     };
-  }, [currentIndex]);
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 3) % images.length);
-  };
+  }, [currentIndex, nextSlide]);
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 3 + images.length) % images.length);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-[#16578d] p-5 rounded-lg shadow-lg">
-      <h1 className="font-bold text-2xl text-white mb-5">
-        INFOGRAFIS INOVASI
-      </h1>
-      <hr className="w-24 h-1 bg-gradient-to-r from-[#16578d] via-black to-[#16578d] mb-5" />
-      <div className="relative flex items-center justify-center">
-        <button onClick={prevSlide} className="absolute left-5 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 text-white shadow-md hover:bg-pink-100">
-          <FontAwesomeIcon icon={faCircleArrowLeft} size="2x" color="black" />
+    <div className="carousel-container">
+      <h1 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 'bold', fontSize: '2rem', textAlign: 'center', margin: '20px 0 10px 0' }}>
+      INFOGRAFIS INOVASI
+    </h1>
+    <hr style={{ width: '100px', border: 'none', height: '2px', background: 'linear-gradient(to right, #16578d, black, #16578d)', margin: '0 auto 20px auto' }} />
+    
+      <div className="carousel">
+        <button onClick={prevSlide} className="carousel-button-prev">
+          <FontAwesomeIcon icon={faCircleArrowLeft} size="2x" color="white" />
         </button>
-        <div className="flex items-center justify-center">
-          {images.length > 0 && [...Array(3)].map((_, i) => {
-            const index = (currentIndex + i) % images.length;
-            if (images[index]) {
-              return (
-                <Image 
-                  key={index}
-                  src={images[index].link}
-                  alt={`Slide ${index}`}
-                  width={500}
-                  height={500}
-                  className="h-96 w-auto flex-shrink-0 mr-5 rounded-lg object-cover transition-transform duration-500 ease-in-out"
-                />
-              );
-            }
-            return null;
-          })}
-        </div>
-        <button onClick={nextSlide} className="absolute right-5 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 text-white shadow-md hover:bg-pink-100">
-          <FontAwesomeIcon icon={faCircleArrowRight} size="2x" color="black" />
+        <div className="carousel-images">
+  {images.length > 0 && [...Array(3)].map((_, i) => {
+    const index = (currentIndex + i) % images.length;
+    return (
+      <div key={index} className="carousel-image-container">
+        <Image 
+          src={images[index].link}
+          alt={`Slide ${index}`}
+          width={500} 
+          height={250} 
+          className="carousel-image"
+        />
+      </div>
+    );
+  })}
+</div>
+
+        <button onClick={nextSlide} className="carousel-button-next">
+          <FontAwesomeIcon icon={faCircleArrowRight} size="2x" color="white" />
         </button>
       </div>
     </div>
