@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../../../../lib/prisma';
 
-const prisma = new PrismaClient();
+
 
 /**
  * GET: Ambil data inolands berdasarkan id_kabkot

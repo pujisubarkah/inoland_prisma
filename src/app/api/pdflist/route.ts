@@ -1,13 +1,26 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../../../lib/prisma';
 
-const prisma = new PrismaClient();
+// ✅ GET: Ambil daftar PDF dengan pagination
+export async function GET(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '12', 10);
+    const offset = (page - 1) * limit;
 
-// ✅ GET: Ambil semua daftar PDF
-export async function GET() {
     try {
-        const pdfList = await prisma.pdflist.findMany();
-        return NextResponse.json(pdfList, { status: 200 });
+        const [pdfList, totalCount] = await Promise.all([
+            prisma.pdflist.findMany({
+                skip: offset,
+                take: limit,
+            }),
+            prisma.pdflist.count(),
+        ]);
+
+        return NextResponse.json({
+            data: pdfList,
+            count: totalCount,
+        }, { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "Gagal mengambil data PDF." }, { status: 500 });

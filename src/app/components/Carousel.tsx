@@ -1,23 +1,24 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from 'next/image';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
+import Image from 'next/image';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleArrowRight, faCircleArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import './Carousel.css';
 
 const Carousel: React.FC = () => {
   const [images, setImages] = useState<{ link: string }[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const slideInterval = React.useRef<NodeJS.Timeout | null>(null);
 
   // Fetch images from API
   useEffect(() => {
     const fetchImages = async () => {
       try {
         const response = await axios.get("/api/dokumens");
-        if (Array.isArray(response.data) && response.data.every(item => item.link)) {
+        if (Array.isArray(response.data) && response.data.every(item => item && item.link)) {
           setImages(response.data);
         } else {
           console.error("Unexpected response format:", response.data);
@@ -29,63 +30,80 @@ const Carousel: React.FC = () => {
     fetchImages();
   }, []);
 
-  const nextSlide = React.useCallback(() => {
-    setCurrentIndex((prevIndex) => (prevIndex + 3) % images.length);
-  }, [images.length]);
+  // Custom Next Arrow
+  const NextArrow = (props: { onClick?: () => void }) => {
+    const { onClick } = props;
+    return (
+      <button onClick={onClick} className="carousel-button-next" aria-label="Next slide">
+        <FontAwesomeIcon icon={faCircleArrowRight} size="2x" color="white" />
+      </button>
+    );
+  };
 
-  // Start automatic sliding
-  useEffect(() => {
-    slideInterval.current = setInterval(() => {
-      nextSlide();
-    }, 3000); // Change slide every 3 seconds
+  // Custom Previous Arrow
+  const PrevArrow = (props: { onClick?: () => void }) => {
+    const { onClick } = props;
+    return (
+      <button onClick={onClick} className="carousel-button-prev" aria-label="Previous slide">
+        <FontAwesomeIcon icon={faCircleArrowLeft} size="2x" color="white" />
+      </button>
+    );
+  };
 
-    // Cleanup interval on component unmount
-    return () => {
-      if (slideInterval.current) {
-        clearInterval(slideInterval.current);
-      }
-    };
-  }, [currentIndex, nextSlide]);
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 3 + images.length) % images.length);
+  // Settings for React Slick
+  const settings = {
+    dots: true, // Tampilkan dots navigasi
+    infinite: true, // Infinite looping
+    speed: 500, // Kecepatan transisi
+    slidesToShow: 3, // Jumlah slide yang ditampilkan
+    slidesToScroll: 1, // Jumlah slide yang digeser
+    autoplay: true, // Autoplay aktif
+    autoplaySpeed: 3000, // Interval autoplay (3 detik)
+    nextArrow: <NextArrow />, // Custom next arrow
+    prevArrow: <PrevArrow />, // Custom prev arrow
+    responsive: [
+      {
+        breakpoint: 1024, // Untuk layar <= 1024px
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 600, // Untuk layar <= 600px
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   return (
-    <div className="carousel-container">
+    <div className="carousel-container" style={{ backgroundColor: '#16578d' }}>
       <h1 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 'bold', fontSize: '2rem', textAlign: 'center', margin: '20px 0 10px 0' }}>
-      INFOGRAFIS INOVASI
-    </h1>
-    <hr style={{ width: '100px', border: 'none', height: '2px', background: 'linear-gradient(to right, #16578d, black, #16578d)', margin: '0 auto 20px auto' }} />
+        INFOGRAFIS INOVASI
+      </h1>
+      <hr style={{ width: '100px', border: 'none', height: '2px', background: 'linear-gradient(to right, #16578d, black, #16578d)', margin: '0 auto 20px auto' }} />
     
-      <div className="carousel">
-        <button onClick={prevSlide} className="carousel-button-prev">
-          <FontAwesomeIcon icon={faCircleArrowLeft} size="2x" color="white" />
-        </button>
-        <div className="carousel-images">
-  {images.length > 0 && [...Array(3)].map((_, i) => {
-    const index = (currentIndex + i) % images.length;
-    return (
-      <div key={index} className="carousel-image-container">
-        <Image 
-          src={images[index].link}
-          alt={`Slide ${index}`}
-          width={500} 
-          height={250} 
-          className="carousel-image"
-        />
-      </div>
-    );
-  })}
-</div>
-
-        <button onClick={nextSlide} className="carousel-button-next">
-          <FontAwesomeIcon icon={faCircleArrowRight} size="2x" color="white" />
-        </button>
-      </div>
+      <Slider {...settings}>
+        {images.map((image, index) => (
+          <div key={index} className="carousel-image-container">
+            <Image 
+              src={image.link} 
+              alt={`Slide ${index}`} 
+              width={500} 
+              height={500} 
+              className="carousel-image"
+              onError={(e) => {
+                e.currentTarget.src = '/path/to/fallback/image.jpg'; // Fallback image
+              }}
+            />
+          </div>
+        ))}
+      </Slider>
     </div>
   );
 };
 
 export default Carousel;
-

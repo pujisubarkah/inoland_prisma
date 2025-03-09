@@ -1,6 +1,7 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
+"use client";
+
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface NewsItem {
   id: string;
@@ -20,27 +21,28 @@ const NewsGrid: React.FC<NewsGridProps> = ({ items }) => {
     router.push(`/news/${id}`);
   };
 
-  const sortedItems = items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const sortedItems = items.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-5 p-5 m-5 bg-gray-100 rounded-lg shadow-md">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-5 p-5 bg-gray-100 rounded-lg shadow-md">
       {sortedItems.map((item) => (
         <div
           key={item.id}
-          className="border border-gray-300 rounded-lg p-5 bg-white transition-transform duration-300 hover:transform hover:-translate-y-1 hover:shadow-lg"
+          className="cursor-pointer border border-gray-300 rounded-lg bg-white p-4 transition-transform duration-300 hover:shadow-lg hover:-translate-y-1"
           onClick={() => handleItemClick(item.id)}
         >
           <Image
             src={item.image}
             alt={item.title}
             className="w-full h-40 object-cover rounded-t-lg"
-            layout="responsive"
             width={500}
             height={300}
           />
-          <div className="news-content">
-            <h3 className="text-lg font-bold text-gray-800 my-2">{item.title}</h3>
-            <p className="text-darkred">{item.date}</p>
+          <div className="p-2">
+            <h3 className="text-lg font-bold text-gray-800 mb-2">{item.title}</h3>
+            <p className="text-blue-700 text-sm">{item.date}</p>
           </div>
         </div>
       ))}

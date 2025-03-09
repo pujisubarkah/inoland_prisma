@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const Tuxe = () => {
+  const router = useRouter();
+
   interface NewsItem {
     id: number;
     title: string;
@@ -50,12 +53,12 @@ const Tuxe = () => {
           <div
             key={item.id}
             className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer transform transition hover:scale-105"
-            onClick={() => window.open(`https://tuxedovation.inovasi.litbang.kemendagri.go.id/detail_inovasi/${item.id}`, "_blank")}
+            onClick={() => router.push(`/detail/${item.id}`)}
           >
             <Image src={item.image} alt={item.title} width={500} height={300} className="w-full h-48 object-cover" />
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-              <p className="text-red-700 text-sm">{item.pemda}</p>
+              <p className="text-blue-800 text-sm">{item.pemda}</p>
             </div>
           </div>
         ))}

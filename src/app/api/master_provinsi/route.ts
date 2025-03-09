@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../../../lib/prisma';
 
-const prisma = new PrismaClient();
+
 
 // 📌 GET: Ambil semua data provinsi
 export async function GET() {

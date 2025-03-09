@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../../../lib/prisma';
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
-const prisma = new PrismaClient();
+
 
 // ✅ Register (Mendaftarkan pengguna baru dengan verifikasi)
 export async function REGISTER(req: Request) {

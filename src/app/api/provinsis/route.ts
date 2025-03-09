@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from '../../../lib/prisma';
 
-const prisma = new PrismaClient();
+
 
 /**
  * GET: Ambil semua data dari provinsis
@@ -18,6 +18,6 @@ export async function GET() {
 
         return NextResponse.json(data, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
 }

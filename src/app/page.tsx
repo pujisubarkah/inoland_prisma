@@ -3,6 +3,9 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Infografis from  "./components/Carousel";
+import Proper from "./components/Properexpo";
+import Berita from './components/Berita';
+
 
 const Beranda = () => {
   const router = useRouter();
@@ -61,7 +64,9 @@ const Beranda = () => {
         </div>
        
       </main>
+      <Berita />
       <Infografis/>
+      <Proper/>
     </div>
   );
 };
