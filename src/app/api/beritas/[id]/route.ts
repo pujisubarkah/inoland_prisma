@@ -1,9 +1,9 @@
 import { prisma } from '../../../../lib/prisma';
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(request: Request) {
   try {
-    // Tunggu params sebelum mengakses id
-    const { id } = params; // Menunggu params
+    const url = new URL(request.url);
+    const id = url.pathname.split('/').pop();
 
     const berita = await prisma.beritas.findUnique({
       where: { id: Number(id) },
