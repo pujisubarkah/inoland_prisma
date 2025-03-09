@@ -102,9 +102,19 @@ function InteractiveMap() {
                                     <tr key={inovasi.id} style={{ backgroundColor: '#fff', borderBottom: '1px solid #ddd' }}>
                                         <td style={{ padding: '15px' }}>{inovasi.judul_inovasi}</td>
                                         <td style={{ padding: '15px', width: '175px' }}>
-                                            <img width='75px' src={inovasi.sdgs ? inovasi.sdgs.image : ''}></img>
-                                            <div>{inovasi.sdgs ? inovasi.sdgs.sdgs : 'N/A'}</div>
-                                        </td>
+    {inovasi.sdgs ? (
+        <Image 
+            src={inovasi.sdgs.image} 
+            alt={inovasi.sdgs.sdgs} 
+            width={75} 
+            height={75} 
+            objectFit="contain"
+        />
+    ) : (
+        <div style={{ textAlign: 'center' }}>N/A</div>
+    )}
+    <div>{inovasi.sdgs ? inovasi.sdgs.sdgs : 'N/A'}</div>
+</td>
                                         <td style={{ padding: '15px' }}>{inovasi.tahun}</td>
                                         <td style={{ padding: '15px', width: '125px' }}>{inovasi.kld}</td>
                                         <td style={{ padding: '15px' }}>{inovasi.inovator}</td>
