@@ -6,7 +6,10 @@ import { prisma } from '../../../../lib/prisma';
 /**
  * GET: Ambil data inolands berdasarkan id_kabkot
  */
-export async function GET(req: Request, { params }: { params: { id_kabkot: string } }) {
+import { NextRequest } from "next/server";
+
+        const { searchParams } = new URL(request.url);
+        const id_kabkot = searchParams.get('id_kabkot');
     try {
         const { id_kabkot } = params;
 
