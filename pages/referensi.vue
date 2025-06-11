@@ -1,14 +1,6 @@
 <!-- pages/referensi.vue -->
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Header Section -->
-    <section class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white py-16">
-      <div class="container mx-auto px-6 text-center">
-        <h1 class="text-4xl font-bold mb-4">Referensi Inovasi</h1>
-        <p class="text-xl mb-8">Kumpulan referensi dan sumber daya inovasi terlengkap</p>
-      </div>
-    </section>
-
     <!-- Main Content -->
     <div class="flex min-h-screen">
       <!-- Sidebar -->
