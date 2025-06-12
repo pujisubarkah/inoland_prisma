@@ -1,62 +1,39 @@
-import { PrismaClient } from '@prisma/client'
-import { getMethod, readBody, createError, getRouterParam } from '#imports'
+// server/api/beritas/[id].ts
+import { db } from '../../database';
+import { beritas as berita } from '../../database/schema/berita';
+import { eq } from 'drizzle-orm';
+import { readBody } from 'h3';
 
-const prisma = new PrismaClient()
+export default async function (req: any) {
+  const id = parseInt(req.context.params?.id);
+  const method = req.method;
 
-export default defineEventHandler(async (event) => {
-  const method = getMethod(event)
-  const id = getRouterParam(event, 'id') // Ambil ID dari URL
+  switch (method) {
+    case 'GET':
+      const [beritaItem] = await db.select().from(berita).where(eq(berita.id, id));
+      return beritaItem || { error: 'Berita tidak ditemukan' };
 
-  if (!id || isNaN(Number(id))) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid ID' })
+    case 'PUT':
+      const body = await readBody(req);
+      const [updated] = await db
+        .update(berita)
+        .set({
+          title: body.title ?? null,
+          likes: body.likes ?? null,
+          date: body.date ? new Date(body.date) : undefined,
+          imageUrl: body.image_url ?? null,
+          deskripsi: body.deskripsi ?? null,
+          embedUrl: body.embed_url ?? null,
+        })
+        .where(eq(berita.id, id))
+        .returning();
+      return updated;
+
+    case 'DELETE':
+      await db.delete(berita).where(eq(berita.id, id));
+      return { message: 'Berita berhasil dihapus' };
+
+    default:
+      return { error: 'Method not allowed' };
   }
-
-  try {
-    switch (method) {
-      case 'GET':
-        // GET /api/berita/:id
-        const berita = await prisma.beritas.findUnique({
-          where: { id: parseInt(id) }
-        })
-
-        if (!berita) {
-          throw createError({ statusCode: 404, statusMessage: 'Berita not found' })
-        }
-
-        return { success: true, data: berita }
-
-      case 'PUT':
-        // PUT /api/berita/:id
-        const updateData = await readBody(event)
-        const updatedBerita = await prisma.beritas.update({
-          where: { id: parseInt(id) },
-          data: {
-            title: updateData.title,
-            deskripsi: updateData.deskripsi,
-            image_url: updateData.image_url,
-            embed_url: updateData.embed_url,
-            likes: updateData.likes,
-            date: updateData.date ? new Date(updateData.date) : undefined
-          }
-        })
-        return { success: true, data: updatedBerita }
-
-      case 'DELETE':
-        // DELETE /api/berita/:id
-        await prisma.beritas.delete({
-          where: { id: parseInt(id) }
-        })
-        return { success: true, message: 'Berita deleted successfully' }
-
-      default:
-        throw createError({ statusCode: 405, statusMessage: 'Method not allowed' })
-    }
-  } catch (error: any) {
-    throw createError({
-      statusCode: error.statusCode || 500,
-      statusMessage: error.message || 'Internal Server Error'
-    })
-  } finally {
-    await prisma.$disconnect()
-  }
-})
+}

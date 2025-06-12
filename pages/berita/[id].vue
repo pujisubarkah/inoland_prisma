@@ -274,7 +274,13 @@ const fetchNewsDetail = async (): Promise<void> => {
   try {
     console.log(`[Frontend] Fetching news detail for ID: ${id}`)
     
-    const response = await $fetch(`/api/berita/${id}`, {
+    interface NewsDetailApiResponse {
+      success: boolean
+      data?: any
+      message?: string
+      error?: string
+    }
+    const response: NewsDetailApiResponse = await $fetch(`/api/berita/${id}`, {
       method: 'GET',
       timeout: 10000, // 10 second timeout
       retry: 2 // Retry 2 times

@@ -7,10 +7,13 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "drizzle:init": "drizzle-kit generate",
+    "drizzle:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
+    "@supabase/supabase-js": "^2.38.0",
     "drizzle-orm": "^0.44.2",
     "framer-motion": "^12.16.0",
     "jspdf": "^3.0.1",
@@ -28,6 +31,8 @@
   "devDependencies": {
     "@iconify/json": "^2.2.347",
     "@nuxtjs/tailwindcss": "^7.0.0-beta.0",
+    "@types/pg": "^8.15.4",
+    "drizzle-kit": "^0.31.1",
     "shadcn-nuxt": "^2.2.0",
     "unplugin-icons": "^22.1.0"
   }
