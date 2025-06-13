@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import { Client } from 'pg'
 import { beritas } from './schema/berita'
 import { inovasi_LAN } from './schema/inovasi'
+import { dokumens } from './schema/infografis'
 
 // Export koneksi tanpa await
 export const client = new Client({
