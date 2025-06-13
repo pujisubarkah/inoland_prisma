@@ -1,4 +1,4 @@
-<!-- pages/berita/_id.vue -->
+<!-- pages/berita/[id].vue -->
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Loading State -->
@@ -46,10 +46,10 @@
 
       <!-- Article Header -->
       <article class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <!-- Featured Image -->
-        <div class="relative h-64 md:h-96 overflow-hidden">
+        <!-- Featured Image - Only show if imageUrl exists -->
+        <div v-if="newsDetail.imageUrl" class="relative h-64 md:h-96 overflow-hidden">
           <img 
-            :src="newsDetail.image_url" 
+            :src="newsDetail.imageUrl" 
             :alt="newsDetail.title"
             class="w-full h-full object-cover"
             @error="handleImageError"
@@ -58,7 +58,7 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
           <!-- Like Counter (if available) -->
-          <div v-if="newsDetail.likes" class="absolute top-4 right-4">
+          <div v-if="newsDetail.likes && newsDetail.likes > 0" class="absolute top-4 right-4">
             <div class="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
               <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
@@ -91,7 +91,7 @@
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              Dibuat: {{ formatDate(newsDetail.created_at) }}
+              Dibuat: {{ formatDate(newsDetail.createdAt) }}
             </div>
           </div>
 
@@ -108,11 +108,11 @@
           </div>
 
           <!-- Embed Video (if available) -->
-          <div v-if="newsDetail.embed_url" class="mt-8">
+          <div v-if="newsDetail.embedUrl" class="mt-8">
             <h3 class="text-xl font-semibold text-gray-900 mb-4">Video Terkait</h3>
             <div class="aspect-video rounded-lg overflow-hidden">
               <iframe 
-                :src="newsDetail.embed_url"
+                :src="newsDetail.embedUrl"
                 class="w-full h-full"
                 frameborder="0"
                 allowfullscreen
@@ -209,10 +209,10 @@ interface NewsDetailType {
   id: number
   title: string
   date: string
-  created_at: string
+  createdAt: string
   deskripsi: string
-  image_url: string
-  embed_url: string | null
+  imageUrl: string
+  embedUrl: string | null
   likes: number | null
 }
 
@@ -261,7 +261,7 @@ useHead({
       }
       return 'Berita inovasi daerah'
     }) },
-    { property: 'og:image', content: computed(() => newsDetail.value?.image_url || '') },
+    { property: 'og:image', content: computed(() => newsDetail.value?.imageUrl || '') },
     { property: 'og:type', content: 'article' }
   ]
 })
@@ -274,13 +274,7 @@ const fetchNewsDetail = async (): Promise<void> => {
   try {
     console.log(`[Frontend] Fetching news detail for ID: ${id}`)
     
-    interface NewsDetailApiResponse {
-      success: boolean
-      data?: any
-      message?: string
-      error?: string
-    }
-    const response: NewsDetailApiResponse = await $fetch(`/api/berita/${id}`, {
+    const response = await $fetch(`/api/berita/${id}`, {
       method: 'GET',
       timeout: 10000, // 10 second timeout
       retry: 2 // Retry 2 times
@@ -288,31 +282,46 @@ const fetchNewsDetail = async (): Promise<void> => {
 
     console.log(`[Frontend] API Response:`, response)
 
-    if (
+    // Handle different response formats
+    let dataItem = null
+    
+    if (Array.isArray(response)) {
+      // Direct array response - shouldn't happen for [id] endpoint
+      dataItem = response.length > 0 ? response[0] : null
+      console.log('[Frontend] Direct array response detected (unexpected)')
+    } else if (
       response &&
-      response.success &&
       typeof response === 'object' &&
-      'data' in response &&
-      response.data
+      'success' in response &&
+      (response as any).success &&
+      'data' in response
     ) {
+      // Wrapped response with success flag
+      dataItem = (response as any).data
+      console.log('[Frontend] Wrapped response detected')
+    } else if (response && typeof response === 'object' && 'id' in response) {
+      // Direct object response
+      dataItem = response
+      console.log('[Frontend] Direct object response detected')
+    }
+
+    if (dataItem && dataItem.id) {
       newsDetail.value = {
-        id: response.data.id,
-        title: response.data.title || 'Berita Tanpa Judul',
-        date: response.data.date || response.data.created_at || new Date().toISOString(),
-        created_at: response.data.created_at || new Date().toISOString(),
-        deskripsi: response.data.deskripsi || '',
-        image_url: response.data.image_url || '',
-        embed_url: response.data.embed_url || null,
-        likes: response.data.likes || null
+        id: dataItem.id,
+        title: dataItem.title || 'Berita Tanpa Judul',
+        date: dataItem.date || dataItem.createdAt || new Date().toISOString(),
+        createdAt: dataItem.createdAt || dataItem.created_at || new Date().toISOString(),
+        deskripsi: dataItem.deskripsi || '',
+        imageUrl: dataItem.imageUrl || dataItem.image_url || '',
+        embedUrl: dataItem.embedUrl || dataItem.embed_url || null,
+        likes: dataItem.likes || null
       }
-      console.log(`[Frontend] News detail loaded successfully`)
-    } else if (response && !response.success) {
-      // API returned error response
-      const errorMessage = (response as any).message || (response as any).error || 'Berita tidak ditemukan'
-      console.error(`[Frontend] API Error Response:`, errorMessage)
-      error.value = errorMessage
+      console.log(`[Frontend] News detail loaded successfully:`, newsDetail.value.title)
     } else {
-      throw new Error('Invalid response format')
+      // Handle API error response
+      const errorMessage = (response as any)?.message || (response as any)?.error || 'Berita tidak ditemukan'
+      console.error(`[Frontend] No valid data in response:`, response)
+      error.value = errorMessage
     }
   } catch (err: any) {
     console.error('[Frontend] Fetch error:', err)
@@ -359,6 +368,12 @@ const formatContent = (content: string): string => {
   
   // Convert hashtags to styled spans
   let formatted = content.replace(/#(\w+)/g, '<span class="text-blue-600 font-medium">#$1</span>')
+  
+  // Convert URLs to clickable links
+  formatted = formatted.replace(
+    /(https?:\/\/[^\s]+)/g, 
+    '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">$1</a>'
+  )
   
   // Basic HTML formatting
   formatted = formatted

@@ -154,6 +154,8 @@ import { ref, computed, onMounted } from 'vue'
  * @property {string} image
  * @property {string} description
  * @property {string} date
+ * @property {string|null} embedUrl
+ * @property {number} likes
  */
 
 // Reactive state
@@ -162,6 +164,7 @@ const currentPage = ref(1)
 const loading = ref(false)
 const error = ref('')
 const itemsPerPage = 8
+const totalItems = ref(0)
 
 // Computed
 const currentDate = computed(() => {
@@ -215,51 +218,107 @@ const fetchBerita = async () => {
   error.value = ''
   
   try {
-    const response = await $fetch('/api/berita')
+    console.log('[Frontend] Fetching berita from API...')
+    const response = await $fetch('/api/berita', {
+      method: 'GET',
+      timeout: 15000,
+      query: {
+        limit: 100
+      }
+    })
     
-    if (response.success && response.data) {
-      const formattedData = response.data.map((item) => ({
-        id: item.id,
-        title: item.title || item.nama || 'Berita Tanpa Judul',
-        image: item.image_url || item.image || '/placeholder-news.jpg',
-        description: item.deskripsi || item.description || 'Tidak ada deskripsi',
-        date: item.date || item.created_at || new Date().toISOString(),
-      }))
+    console.log('[Frontend] Raw API Response:', response)
+    console.log('[Frontend] Response type:', typeof response)
+    console.log('[Frontend] Is array:', Array.isArray(response))
+    
+    let dataArray = []
+    
+    // Handle different response formats
+    if (Array.isArray(response)) {
+      // Direct array response
+      dataArray = response
+      console.log('[Frontend] Direct array response detected')
+    } else if (response && response.success && Array.isArray(response.data)) {
+      // Wrapped response with success flag
+      dataArray = response.data
+      console.log('[Frontend] Wrapped response detected')
+    } else if (response && Array.isArray(response.data)) {
+      // Response with data property but no success flag
+      dataArray = response.data
+      console.log('[Frontend] Response with data property detected')
+    } else if (response && typeof response === 'object') {
+      // Try to find array in response object
+      const possibleArrays = Object.values(response).filter(val => Array.isArray(val))
+      if (possibleArrays.length > 0) {
+        dataArray = possibleArrays[0]
+        console.log('[Frontend] Found array in response object')
+      }
+    }
+    
+    console.log('[Frontend] Extracted data array:', dataArray)
+    console.log('[Frontend] Data array length:', dataArray.length)
+    
+    if (Array.isArray(dataArray) && dataArray.length > 0) {
+      // Map data sesuai dengan struktur API Anda
+      const formattedData = dataArray.map((item, index) => {
+        console.log(`[Frontend] Processing item ${index}:`, item)
+        
+        return {
+          id: item.id || index,
+          title: item.title || 'Berita Tanpa Judul',
+          image: item.imageUrl || item.image_url || '', // Handle both camelCase and snake_case
+          description: item.deskripsi || item.description || 'Tidak ada deskripsi',
+          date: item.date || item.createdAt || item.created_at || new Date().toISOString(),
+          embedUrl: item.embedUrl || item.embed_url || null,
+          likes: item.likes || 0,
+          originalIndex: index
+        }
+      })
       
-      newsItems.value = formattedData
+      // Filter out invalid items
+      const validData = formattedData.filter(item => item.id && item.title)
+      
+      // Sort by date (newest first)
+      const sortedData = validData.sort((a, b) => new Date(b.date) - new Date(a.date))
+      
+      console.log('[Frontend] Formatted and sorted data:', sortedData.length, 'items')
+      console.log('[Frontend] First 3 items:', sortedData.slice(0, 3))
+      
+      newsItems.value = sortedData
+      totalItems.value = sortedData.length
+      
+      // Reset to first page when new data loads
+      currentPage.value = 1
+      
     } else {
+      console.warn('[Frontend] No valid array data found in response')
+      console.log('[Frontend] Full response structure:', JSON.stringify(response, null, 2))
       newsItems.value = []
+      totalItems.value = 0
+      error.value = `Tidak ada data berita yang valid. Response: ${typeof response}`
     }
   } catch (err) {
-    console.error('Error fetching news:', err)
-    error.value = 'Gagal memuat berita. Silakan coba lagi.'
+    console.error('[Frontend] Error fetching news:', err)
+    console.log('[Frontend] Error details:', {
+      status: err.status,
+      statusCode: err.statusCode,
+      message: err.message,
+      data: err.data
+    })
     
-    // Fallback with mock data for development
-    if (process.dev) {
-      newsItems.value = [
-        {
-          id: 1,
-          title: "Inovasi Digital Transformasi Pelayanan Publik di Era Modern",
-          image: "/placeholder-news.jpg",
-          description: "Pemerintah daerah mengimplementasikan sistem digital untuk meningkatkan kualitas pelayanan kepada masyarakat.",
-          date: new Date().toISOString()
-        },
-        {
-          id: 2,
-          title: "Workshop Laboratorium Inovasi untuk Aparatur Sipil Negara",
-          image: "/placeholder-news.jpg", 
-          description: "Pelatihan intensif untuk meningkatkan kapasitas inovasi ASN dalam melayani masyarakat.",
-          date: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-          id: 3,
-          title: "Kolaborasi Antar Daerah dalam Pengembangan Inovasi Berkelanjutan",
-          image: "/placeholder-news.jpg",
-          description: "Sinergi lintas wilayah untuk menciptakan solusi inovatif yang dapat diadopsi secara nasional.",
-          date: new Date(Date.now() - 172800000).toISOString()
-        }
-      ]
+    // Handle different error types
+    if (err.status === 404 || err.statusCode === 404) {
+      error.value = 'Endpoint berita tidak ditemukan'
+    } else if (err.name === 'TimeoutError') {
+      error.value = 'Koneksi timeout. Data terlalu besar, silakan coba lagi.'
+    } else if (err.name === 'FetchError') {
+      error.value = 'Gagal terhubung ke server. Periksa koneksi internet Anda.'
+    } else {
+      error.value = `Gagal memuat berita: ${err.message || 'Unknown error'}`
     }
+    
+    newsItems.value = []
+    totalItems.value = 0
   } finally {
     loading.value = false
   }
@@ -268,12 +327,13 @@ const fetchBerita = async () => {
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value && page !== currentPage.value) {
     currentPage.value = page
-    // Scroll to top of news section
+    // Scroll to news section smoothly
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
 const navigateToDetail = (id) => {
+  console.log('[Frontend] Navigating to berita detail:', id)
   // Navigate to news detail page
   navigateTo(`/berita/${id}`)
 }
@@ -295,7 +355,26 @@ const formatDate = (dateString) => {
 
 const handleImageError = (event) => {
   const target = event.target
-  target.src = '/placeholder-news.jpg'
+  const container = target.closest('.relative')
+  
+  if (container) {
+    // Replace with placeholder gradient
+    const placeholder = document.createElement('div')
+    placeholder.className = 'w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center'
+    placeholder.innerHTML = `
+      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+      </svg>
+    `
+    container.replaceChild(placeholder, target)
+  } else {
+    target.style.display = 'none'
+  }
+}
+
+const retryFetch = () => {
+  console.log('[Frontend] Retrying fetch berita...')
+  fetchBerita()
 }
 
 // Lifecycle
