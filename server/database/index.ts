@@ -3,6 +3,12 @@ import { Client } from 'pg'
 import { beritas } from './schema/berita'
 import { inovasi_LAN } from './schema/inovasi'
 import { dokumens } from './schema/infografis'
+import { provinsi } from './schema/provinsi'
+import { master_provinsi } from './schema/master_provinsi'
+import { provinsis } from './schema/provinsis'
+import { inolands } from './schema/inolands'
+import { indeks_inovasi } from './schema/indeks_inovasi'
+import { sdgs } from './schema/sdgs'
 
 // Export koneksi tanpa await
 export const client = new Client({

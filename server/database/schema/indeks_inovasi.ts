@@ -1,0 +1,30 @@
+import {
+  pgTable,
+  integer,
+  real,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
+
+export const indeks_inovasi = pgTable("indeks_inovasi", {
+  id: serial("id").primaryKey(),
+  created_at: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow(),
+  id_provinsi: integer("id_provinsi"),
+  id_kabkot: integer("id_kabkot"),
+  indeks_tahun: integer("indeks_tahun"),
+  indeks_skor: real("indeks_skor"),
+  indeks_predikat: text("indeks_predikat"),
+  nama_kabkot: text("nama_kabkot"),
+  nama_prov: text("nama_prov"),
+  level: text("level"),
+  indeks_level: text("indeks_level"),
+  ipp_skor: real("ipp_skor"),
+  ipp_level: text("ipp_level"),
+  ipp_predikat: text("ipp_predikat"),
+  idsd_skor: real("idsd_skor"),
+  idsd_level: text("idsd_level"),
+  idsd_predikat: text("idsd_predikat"),
+  rb_predikat: text("rb_predikat"),
+  rb_level: text("rb_level"),
+});
