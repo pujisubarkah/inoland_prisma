@@ -79,10 +79,15 @@
         </div>
       </div>
 
-      <!-- Tombol Masuk -->
+      <span
+        v-else-if="userProfile"
+        class="text-white font-bold px-4 py-2 rounded bg-blue-700/80"
+      >
+        {{ userProfile.nama_lengkap }}
+      </span>
       <button
         v-else
-        @click="openModal"
+        @click="isModalOpen = true"
         class="border-2 border-white bg-gradient-to-r from-cyan-400 to-blue-700 text-white py-2 px-4 rounded-lg cursor-pointer text-lg font-bold shadow hover:bg-white hover:text-blue-700 transition"
       >
         Masuk
@@ -99,20 +104,162 @@
       </div>
     </div>
 
-    <!-- Login Modal -->
-    <Login v-if="isModalOpen" :show="isModalOpen" @close="closeModal" />
+    <!-- Login Modal dengan tampilan custom -->
+<Dialog v-model:open="isModalOpen">
+  <DialogContent class="p-0 max-w-lg w-full bg-white shadow-lg rounded-lg overflow-hidden">
+    <div class="relative flex">
+      <!-- Tombol Close -->
+    
+
+      <!-- Logo -->
+      <div class="bg-transparent p-6 flex flex-col justify-center items-center w-1/3">
+        <img src="/ino.png" alt="Logo" class="w-32 h-auto mb-4" />
+      </div>
+
+      <!-- Form Login -->
+      <div class="p-6 w-2/3 flex flex-col justify-center">
+        <form v-if="!showRegister" @submit.prevent="submitLogin" class="flex flex-col gap-4">
+          <div>
+            <label for="email" class="block text-sm font-semibold text-blue-700 mb-1">Email</label>
+            <input
+              id="email"
+              v-model="loginForm.email"
+              type="email"
+              required
+              class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              autocomplete="email"
+            />
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-semibold text-blue-700 mb-1">Password</label>
+            <input
+              id="password"
+              v-model="loginForm.password"
+              type="password"
+              required
+              class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              autocomplete="current-password"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-blue-700 text-white font-bold py-2 rounded-lg hover:bg-blue-800 transition"
+          >
+            Masuk
+          </button>
+          <div class="mt-4 text-sm text-center text-blue-700">
+            Belum punya akun?
+            <button type="button" class="underline font-semibold hover:text-blue-900" @click="showRegister = true">
+              Daftar di sini
+            </button>
+          </div>
+        </form>
+
+        <!-- Form Registrasi -->
+        <form v-else @submit.prevent="submitRegister" class="flex flex-col gap-4">
+          <div>
+            <label for="reg-username" class="block text-sm font-semibold text-blue-700 mb-1">Username</label>
+            <input
+              id="reg-username"
+              v-model="registerForm.username"
+              type="text"
+              required
+              class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              autocomplete="username"
+            />
+          </div>
+          <div>
+            <label for="reg-instansi" class="block text-sm font-semibold text-blue-700 mb-1">Instansi</label>
+            <input
+              id="reg-instansi"
+              v-model="registerForm.instansi"
+              type="text"
+              required
+              class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              autocomplete="organization"
+            />
+          </div>
+          <div>
+            <label for="reg-email" class="block text-sm font-semibold text-blue-700 mb-1">Email</label>
+            <input
+              id="reg-email"
+              v-model="registerForm.email"
+              type="email"
+              required
+              class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              autocomplete="email"
+            />
+          </div>
+          <div>
+            <label for="reg-password" class="block text-sm font-semibold text-blue-700 mb-1">Password</label>
+            <input
+              id="reg-password"
+              v-model="registerForm.password"
+              type="password"
+              required
+              class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              autocomplete="new-password"
+            />
+          </div>
+          <div>
+            <label for="reg-confirm" class="block text-sm font-semibold text-blue-700 mb-1">Konfirmasi Password</label>
+            <input
+              id="reg-confirm"
+              v-model="registerForm.confirm"
+              type="password"
+              required
+              class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              autocomplete="new-password"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-blue-700 text-white font-bold py-2 rounded-lg hover:bg-blue-800 transition"
+          >
+            Daftar
+          </button>
+          <div class="mt-4 text-sm text-center text-blue-700">
+            Sudah punya akun?
+            <button type="button" class="underline font-semibold hover:text-blue-900" @click="showRegister = false">
+              Login di sini
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
+
   </nav>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import Login from '~/components/Login.vue'
+import { useRouter } from 'vue-router'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { toast } from 'sonner'
+
+const router = useRouter()
 
 // State
 const isModalOpen = ref(false)
 const isMenuOpen = ref(false)
 const isProfileOpen = ref(false)
 const userProfile = ref(null)
+const showRegister = ref(false)
+
+const loginForm = ref({
+  email: '',
+  password: ''
+})
+
+const registerForm = ref({
+  username: '',
+  instansi: '',
+  email: '',
+  password: '',
+  confirm: ''
+})
 
 // Menu navbar
 const menu = [
@@ -124,14 +271,6 @@ const menu = [
 ]
 
 // Fungsi
-function openModal() {
-  isModalOpen.value = true
-}
-
-function closeModal() {
-  isModalOpen.value = false
-}
-
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
 }
@@ -157,6 +296,70 @@ async function handleLogout() {
     }
   } catch (error) {
     // Optional: handle error
+  }
+}
+
+function handleLoginSuccess(profile) {
+  userProfile.value = profile
+  isModalOpen.value = false
+  // Redirect sesuai role_id
+  if (profile.role_id === 1) {
+    router.push('/admin')
+  } else if (profile.role_id === 2) {
+    router.push('/penguna')
+  }
+}
+
+async function submitLogin() {
+  try {
+    const res = await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: {
+        email: loginForm.value.email,
+        password: loginForm.value.password
+      }
+    })
+    if (res.success && res.profile) {
+      handleLoginSuccess(res.profile)
+      loginForm.value.email = ''
+      loginForm.value.password = ''
+      toast.success('Login berhasil! Selamat datang, ' + res.profile.nama_lengkap)
+    } else {
+      toast.error(res.message || 'Login gagal')
+    }
+  } catch (error) {
+    toast.error('Login gagal')
+  }
+}
+
+async function submitRegister() {
+  if (registerForm.value.password !== registerForm.value.confirm) {
+    toast.error('Password dan konfirmasi tidak sama')
+    return
+  }
+  try {
+    const res = await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: {
+        username: registerForm.value.username,
+        instansi: registerForm.value.instansi,
+        email: registerForm.value.email,
+        password: registerForm.value.password
+      }
+    })
+    if (res.success) {
+      toast.success('Registrasi berhasil, silakan login')
+      showRegister.value = false
+      registerForm.value.username = ''
+      registerForm.value.instansi = ''
+      registerForm.value.email = ''
+      registerForm.value.password = ''
+      registerForm.value.confirm = ''
+    } else {
+      toast.error(res.message || 'Registrasi gagal')
+    }
+  } catch (error) {
+    toast.error('Registrasi gagal')
   }
 }
 </script>

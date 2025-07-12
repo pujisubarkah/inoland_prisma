@@ -32,14 +32,14 @@
             stroke="black"
             stroke-width="0.5"
             @click="loadKabupaten(provinsi.id_provinsi)"
-            @mouseenter="handleMouseEnter($event, `${provinsi.nama}<br/>Jumlah inovasi: ${provinsi.jumlah_inovasi}`)"
+            @mouseenter="handleMouseEnter($event, `${provinsi.nama}<br/>Jumlah Ide Inovasi: ${provinsi.jumlah_inovasi}`)"
 
             @mouseleave="handleMouseLeave"
           >
             <title>{{ provinsi.nama }}</title>
           </path>
           <!-- Tooltip Hover -->
-          <foreignObject v-if="hoveredArea.visible" :x="hoveredArea.x" :y="hoveredArea.y" width="220" height="80">
+          <foreignObject v-if="hoveredArea.visible" :x="svgWidth - 230" :y="10" width="220" height="80">
             <div class="bg-white border border-blue-400 rounded-lg p-2 shadow-lg text-sm font-semibold text-blue-700">
               <div v-html="hoveredArea.text"></div>
             </div>
@@ -514,28 +514,19 @@ const loadInovasi = async (id_kabkot: number) => {
 
 // Mouse event handlers for tooltip
 function handleMouseEnter(event: MouseEvent, text: string) {
-  const svg = (event.target as SVGElement).ownerSVGElement
-  let x = 0
-  let y = 0
-  if (svg) {
-    const pt = svg.createSVGPoint()
-    pt.x = event.clientX
-    pt.y = event.clientY
-    const cursorpt = pt.matrixTransform(svg.getScreenCTM()?.inverse())
-    x = Math.max(0, Math.min(cursorpt.x, svg.width.baseVal.value - 220))
-    y = Math.max(0, Math.min(cursorpt.y, svg.height.baseVal.value - 80))
-  }
   hoveredArea.value = {
     visible: true,
     text,
-    x,
-    y
+    x: 0,
+    y: 0
   }
 }
 
 function handleMouseLeave() {
   hoveredArea.value = { ...hoveredArea.value, visible: false }
 }
+
+const svgWidth = 981; // Sesuaikan dengan viewBox SVG utama
 </script>
 
 <style scoped>
