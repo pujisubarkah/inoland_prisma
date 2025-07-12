@@ -2,7 +2,7 @@
   <div class="app">
     <!-- Header -->
     <header class="bg-white shadow-md p-4 mb-6">
-      <h1 class="text-2xl font-bold text-center">SEBARAN LABORATORIUM INOVASI</h1>
+      <h1 class="text-2xl font-bold text-center">SEBARAN IDE INOVASI</h1>
       <hr class="w-1/4 h-1 bg-gradient-to-r from-red-500 via-black to-red-500 mx-auto my-2" />
     </header>
 
@@ -54,7 +54,7 @@
         <button class="close-btn absolute top-2 right-2" @click="selectedProvinsi = null">
           ✖
         </button>
-        <h1 class="text-xl font-bold mb-2">Daftar Inovasi di Provinsi {{ selectedProvinceName }}</h1>
+        <h1 class="text-xl font-bold mb-2">Daftar Ide Inovasi di Provinsi {{ selectedProvinceName }}</h1>
         <hr class="my-2" />
 
         <!-- Left Side: Map & Chart -->

@@ -79,58 +79,77 @@ const handleDeleteUser = async (id) => {
 
 <template>
   <div class="w-full mt-24">
-    <h1 class="text-2xl font-bold text-center mb-4 font-poppins">User List</h1>
-    <hr class="w-24 h-0.5 bg-gradient-to-r from-red-500 via-black to-red-500 mx-auto mb-8" />
+    <h1 class="text-3xl font-extrabold text-center mb-4 font-poppins text-blue-700 drop-shadow">Daftar Pengguna</h1>
+    <hr class="w-32 h-1 bg-gradient-to-r from-blue-700 via-cyan-400 to-blue-700 mx-auto mb-8 rounded" />
 
     <div class="w-full flex justify-center mt-16">
-      <p v-if="isLoading" class="text-center">Loading...</p>
+      <p v-if="isLoading" class="text-center text-blue-700 font-semibold">Loading...</p>
 
-      <table v-else class="border-collapse table-auto w-11/12 text-sm self-center">
+      <table v-else class="border-collapse table-auto w-11/12 text-sm shadow-xl rounded-xl overflow-hidden bg-white">
         <thead>
-          <tr>
-            <th class="border-b p-4 text-left">No</th>
-            <th class="border-b p-4 text-left">Nama</th>
-            <th class="border-b p-4 text-left">Email</th>
-            <th class="border-b p-4 text-left">Instansi</th>
-            <th class="border-b p-4 text-left">Role</th>
-            <th class="border-b p-4 text-left">Aksi</th>
+          <tr class="bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 text-white">
+            <th class="border-b text-base font-semibold p-4 text-left">No</th>
+            <th class="border-b text-base font-semibold p-4 text-left">Nama</th>
+            <th class="border-b text-base font-semibold p-4 text-left">Email</th>
+            <th class="border-b text-base font-semibold p-4 text-left">Instansi</th>
+            <th class="border-b text-base font-semibold p-4 text-left">Role</th>
+            <th class="border-b text-base font-semibold p-4 text-left">Aksi</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) in currentItems" :key="user.id" class="hover:bg-gray-50">
-            <td class="border-b p-4 font-bold">{{ indexOfFirstItem + index + 1 }}</td>
-            <td class="border-b p-4 font-bold">{{ user.nama_lengkap }}</td>
-            <td class="border-b p-4 font-bold">{{ user.email }}</td>
-            <td class="border-b p-4 font-bold">{{ user.instansi }}</td>
-            <td class="border-b p-4 font-bold">{{ user.role?.role_name }}</td>
-            <td class="border-b p-4 font-bold flex space-x-4">
-              <button @click="() => handleEditClick(user)" class="text-blue-600 hover:text-blue-500">Edit</button>
-              <button @click="() => handleDeleteUser(user.id)" class="text-red-600 hover:text-red-500">Delete</button>
+          <tr v-for="(user, index) in currentItems" :key="user.id" class="hover:bg-blue-50 transition">
+            <td class="border-b p-4 font-bold text-blue-700">{{ indexOfFirstItem + index + 1 }}</td>
+            <td class="border-b p-4 font-bold text-blue-700">{{ user.nama_lengkap }}</td>
+            <td class="border-b p-4 font-bold text-blue-700">{{ user.email }}</td>
+            <td class="border-b p-4 font-bold text-blue-700">{{ user.instansi }}</td>
+            <td class="border-b p-4 font-bold text-blue-700">{{ user.role?.role_name }}</td>
+            <td class="border-b p-4 font-bold flex gap-2">
+              <button @click="() => handleEditClick(user)" class="text-blue-600 hover:text-blue-700 bg-white border border-blue-200 rounded-lg px-3 py-1 shadow hover:scale-110 transition">
+                ✏️ Edit
+              </button>
+              <button @click="() => handleDeleteUser(user.id)" class="text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-lg px-3 py-1 shadow hover:scale-110 transition">
+                🗑️ Hapus
+              </button>
             </td>
           </tr>
           <tr v-if="currentItems.length === 0">
-            <td colspan="6" class="text-center p-4">No users found.</td>
+            <td colspan="6" class="text-center p-4 text-blue-700">Tidak ada pengguna ditemukan.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="flex justify-center mt-4 items-center">
-      <button @click="currentPage--" :disabled="currentPage === 1" class="px-4 py-2 mx-1 bg-gray-300 rounded disabled:opacity-50">Previous</button>
-      <span class="mx-2">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="currentPage++" :disabled="currentPage === totalPages" class="px-4 py-2 mx-1 bg-gray-300 rounded disabled:opacity-50">Next</button>
+    <div class="flex justify-center mt-8 gap-2">
+      <button
+        @click="currentPage--"
+        :disabled="currentPage === 1"
+        class="px-5 py-2 bg-gradient-to-r from-blue-700 to-cyan-400 text-white font-bold rounded-lg shadow hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      <span class="px-4 py-2 font-semibold text-blue-700 bg-white rounded shadow">
+        {{ currentPage }} / {{ totalPages }}
+      </span>
+      <button
+        @click="currentPage++"
+        :disabled="currentPage === totalPages"
+        class="px-5 py-2 bg-gradient-to-r from-blue-700 to-cyan-400 text-white font-bold rounded-lg shadow hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
     </div>
 
-    <div v-if="editUser" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded shadow-md w-96">
-        <h3 class="text-lg font-bold mb-4">Edit Role for {{ editUser.nama_lengkap }}</h3>
-        <select class="w-full p-2 border rounded mb-4" v-model="selectedRoleId">
-          <option disabled value="">Select a role</option>
+    <!-- Modal Edit Role -->
+    <div v-if="editUser" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-8 rounded-xl shadow-2xl w-[400px]">
+        <h3 class="text-xl font-bold mb-4 text-blue-700 text-center">Edit Role untuk <span class="text-cyan-600">{{ editUser.nama_lengkap }}</span></h3>
+        <select class="w-full p-3 border border-blue-300 rounded-lg mb-6 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400" v-model="selectedRoleId">
+          <option disabled value="">Pilih Role</option>
           <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.role_name }}</option>
         </select>
-        <div class="flex justify-end space-x-2">
-          <button @click="handleCloseEdit" class="bg-red-500 text-white py-2 px-4 rounded">Cancel</button>
-          <button @click="handleRoleChange" class="bg-blue-500 text-white py-2 px-4 rounded">Rubah</button>
+        <div class="flex justify-end gap-2">
+          <button @click="handleCloseEdit" class="bg-red-500 text-white py-2 px-5 rounded-lg font-bold shadow hover:bg-red-600 transition">Batal</button>
+          <button @click="handleRoleChange" class="bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 text-white py-2 px-5 rounded-lg font-bold shadow hover:scale-105 hover:shadow-xl transition-all">Simpan</button>
         </div>
       </div>
     </div>
