@@ -142,7 +142,7 @@ const getPageTitle = () => {
 
 const getPageSubtitle = () => {
   const subtitles = {
-    'SebaranInovasi': 'Peta interaktif sebaran inovasi di seluruh Indonesia',
+    'SebaranInovasi': 'Peta interaktif sebaran ide inovasi di seluruh Indonesia',
     'ListInovasi': 'Daftar lengkap inovasi daerah dengan fitur pencarian dan filter',
     'DashboardInovasi': 'Analisis dan visualisasi data inovasi daerah'
   }
