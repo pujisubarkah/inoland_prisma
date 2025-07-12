@@ -88,9 +88,11 @@ import BeritaSection from '~/components/Berita_slider.vue'
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradient-move 3s linear infinite, floatUpDown 2s ease-in-out infinite;
+  animation: gradient-move 3s linear infinite, floatUpDown 2s ease-in-out infinite, marqueeMove 8s linear infinite;
   display: inline-block;
+  white-space: nowrap;
 }
+
 @keyframes gradient-move {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -99,5 +101,9 @@ import BeritaSection from '~/components/Berita_slider.vue'
 @keyframes floatUpDown {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
+}
+@keyframes marqueeMove {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-40%); }
 }
 </style>

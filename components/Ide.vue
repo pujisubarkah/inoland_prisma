@@ -1,17 +1,26 @@
 <template>
   <div class="w-full px-5 py-10">
-    <!-- ShadCN stepper -->
-    <Stepper-root value="step{{activeStep}}">
-      <Stepper-navigation>
-        <div v-for="(s, idx) in steps" :key="idx" class="stepper-step">
-          <Stepper-step value="step{{idx}}" :class="{'step-active': activeStep === idx}">
-            <Stepper-step-indicator />
-            <Stepper-step-title>{{ s }}</Stepper-step-title>
-          </Stepper-step>
-          <Stepper-line v-if="idx < steps.length -1" />
-        </div>
-      </Stepper-navigation>
-    </Stepper-root>
+    <!-- Simple Stepper -->
+    <div class="simple-stepper flex gap-4 mb-8 justify-center">
+      <div
+        v-for="(s, idx) in steps"
+        :key="idx"
+        class="stepper-step flex flex-col items-center"
+      >
+        <div
+          class="stepper-circle"
+          :class="{ 'active': activeStep === idx }"
+        >{{ idx + 1 }}</div>
+        <div
+          class="stepper-label"
+          :class="{ 'active-label': activeStep === idx }"
+        >{{ s }}</div>
+        <div
+          v-if="idx < steps.length - 1"
+          class="stepper-line"
+        ></div>
+      </div>
+    </div>
 
     <form @submit.prevent="handleSubmit">
       <div class="mt-6">
@@ -47,10 +56,6 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import {
-  StepperRoot as StepperRoot, StepperNavigation, StepperStep, StepperStepIndicator,
-  StepperStepTitle, StepperLine
-} from '@/components/ui/stepper';
 import { Button } from '@/components/ui/button';
 import ContactInformation from './ContactInformation.vue';
 import InnovationIdeaForm from './InnovationIdeaForm.vue';
@@ -92,14 +97,41 @@ function handleSubmit(){
 </script>
 
 <style scoped>
+/* Custom styles for the stepper can be added here if needed */
 .stepper-step {
   display: flex;
   align-items: center;
+  flex-direction: column;
 }
-.step-active .stepper-step-indicator {
+.stepper-circle {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e5e7eb;
+  font-weight: bold;
+}
+.stepper-label {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+.stepper-line {
+  position: absolute;
+  width: 2px;
+  height: calc(100% + 1rem);
+  background-color: #e5e7eb;
+  top: 2rem;
+  left: calc(50% - 1px);
+}
+.active {
   background-color: #2563eb;
-  border-color: #2563eb;
   color: #fff;
 }
-/* Tentukan style ShadCN sesuai desain tema kamu */
+.active-label {
+  font-weight: bold;
+  color: #2563eb;
+}
+/* Tentukan style tambahan sesuai desain tema kamu */
 </style>

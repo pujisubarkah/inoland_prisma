@@ -50,45 +50,50 @@
     </form>
 
     <!-- Modal -->
-    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div class="bg-white p-6 rounded-lg w-[400px] space-y-4">
-        <h2 class="text-xl font-bold mb-4">Tambah Kegiatan</h2>
-        <div class="flex flex-col gap-2">
-          <label>Phase</label>
-          <select v-model="newActivity.phase" class="border p-2 rounded">
-            <option value="preparation">Persiapan</option>
-            <option value="implementation">Pelaksanaan</option>
-            <option value="monitoring">Monitoring</option>
-            <option value="evaluation">Evaluasi</option>
-          </select>
-          <input type="text" placeholder="Kegiatan" v-model="newActivity.activity" class="border p-2 rounded" />
-          <input type="text" placeholder="Pelaksana" v-model="newActivity.executor" class="border p-2 rounded" />
-          <input type="text" placeholder="Output" v-model="newActivity.output" class="border p-2 rounded" />
-          <input type="text" placeholder="Metode" v-model="newActivity.method" class="border p-2 rounded" />
+    <Dialog v-model:open="showModal">
+      <template #content>
+        <div class="dialog-content">
+          <h2 class="text-xl font-bold mb-4">Tambah Kegiatan</h2>
+          <div class="flex flex-col gap-2">
+            <label>Phase</label>
+            <select v-model="newActivity.phase" class="border p-2 rounded">
+              <option value="preparation">Persiapan</option>
+              <option value="implementation">Pelaksanaan</option>
+              <option value="monitoring">Monitoring</option>
+              <option value="evaluation">Evaluasi</option>
+            </select>
+            <input type="text" placeholder="Kegiatan" v-model="newActivity.activity" class="border p-2 rounded" />
+            <input type="text" placeholder="Pelaksana" v-model="newActivity.executor" class="border p-2 rounded" />
+            <input type="text" placeholder="Output" v-model="newActivity.output" class="border p-2 rounded" />
+            <input type="text" placeholder="Metode" v-model="newActivity.method" class="border p-2 rounded" />
 
-          <div>
-            <p class="mb-2 font-semibold">Timeline (Centang bulan pelaksanaan)</p>
-            <div class="grid grid-cols-6 gap-1">
-              <label v-for="(checked, idx) in newActivity.timeline" :key="idx" class="flex items-center space-x-1 text-sm">
-                <input type="checkbox" :checked="checked" @change="toggleNewTimeline(idx)" />
-                <span>{{ idx + 1 }}</span>
-              </label>
+            <div>
+              <p class="mb-2 font-semibold">Timeline (Centang bulan pelaksanaan)</p>
+              <div class="grid grid-cols-6 gap-1">
+                <label v-for="(checked, idx) in newActivity.timeline" :key="idx" class="flex items-center space-x-1 text-sm">
+                  <input type="checkbox" :checked="checked" @change="toggleNewTimeline(idx)" />
+                  <span>{{ idx + 1 }}</span>
+                </label>
+              </div>
             </div>
           </div>
+          <div class="flex justify-end gap-2 mt-4">
+            <button @click="showModal = false" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-400">Batal</button>
+            <button type="button" @click="saveNewActivity" class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-500">Simpan</button>
+          </div>
         </div>
-        <div class="flex justify-end gap-2 mt-4">
-          <button @click="showModal = false" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-400">Batal</button>
-          <button type="button" @click="saveNewActivity" class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-500">Simpan</button>
-        </div>
-      </div>
-    </div>
+      </template>
+    </Dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
 import { PaperAirplaneIcon } from '@heroicons/vue/24/outline'
-import InputField from './InputField.vue'
+import Dialog from '@/components/ui/dialog/Dialog.vue'
+import InputField from '@/components/InputField.vue'
+
+
 
 const showModal = ref(false)
 
@@ -155,4 +160,83 @@ function saveNewActivity() {
 </script>
 
 <style scoped>
+.dialog-content {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: 0 8px 32px rgba(60,130,246,0.18), 0 2px 8px rgba(0,0,0,0.10);
+  border-radius: 18px;
+  padding: 32px 24px 24px 24px;
+  width: 100%;
+  max-width: 420px;
+  animation: dialogFadeIn 0.35s cubic-bezier(.4,2,.3,1);
+  border: 2px solid #3b82f6;
+  transition: box-shadow 0.2s, border 0.2s;
+}
+
+@keyframes dialogFadeIn {
+  from { opacity: 0; transform: translateY(40px) scale(0.96);}
+  to   { opacity: 1; transform: translateY(0) scale(1);}
+}
+
+.dialog-content h2 {
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+}
+
+.dialog-content label {
+  font-weight: 500;
+  color: #2563eb;
+  margin-bottom: 2px;
+}
+
+.dialog-content select,
+.dialog-content input[type="text"] {
+  background: #f8fafc;
+  border: 1.5px solid #3b82f6;
+  font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: border 0.2s;
+}
+
+.dialog-content select:focus,
+.dialog-content input[type="text"]:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+.dialog-content .grid label {
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin-bottom: 2px;
+}
+
+.dialog-content .flex.justify-end button {
+  min-width: 90px;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(60,130,246,0.08);
+}
+
+.dialog-content .flex.justify-end button:last-child {
+  background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+  border: none;
+}
+
+.dialog-content .flex.justify-end button:last-child:hover {
+  background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
+}
+
+@media (max-width: 500px) {
+  .dialog-content {
+    max-width: 98vw;
+    padding: 18px 8px 12px 8px;
+  }
+}
 </style>
