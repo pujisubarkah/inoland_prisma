@@ -1,140 +1,139 @@
 <template>
   <div class="app">
-    <div style="display: flex; flex-direction: column; align-items: center;">
-      <!-- Peta Provinsi -->
-      <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <h1 style="font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 2rem; text-align: center; margin: 20px 0 10px 0;">
-          SEBARAN LABORATORIUM INOVASI
-        </h1>
-        <hr style="width: 100px; border: none; height: 2px; background: linear-gradient(to right, #16578d, black, #16578d); margin: 0 auto 20px auto;" />
-        <svg baseProfile="tiny" viewBox="0 0 981.98602 441.06508" width="100%" height="auto" preserveAspectRatio="xMidYMid meet">
+    <!-- Header -->
+    <header class="bg-white shadow-md p-4 mb-6">
+      <h1 class="text-2xl font-bold text-center">SEBARAN LABORATORIUM INOVASI</h1>
+      <hr class="w-1/4 h-1 bg-gradient-to-r from-red-500 via-black to-red-500 mx-auto my-2" />
+    </header>
+
+    <!-- Provinsi Map -->
+    <section class="mb-6">
+      <div class="relative overflow-hidden rounded-lg shadow-md">
+        <svg viewBox="0 0 981.98602 441.06508" width="100%" height="auto" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <linearGradient id="grad-red" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff0000" stop-opacity="1" />
-              <stop offset="100%" stop-color="#ffcccc" stop-opacity="1" />
+            <linearGradient id="grad-blue-high" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2563eb" stop-opacity="1" />
+              <stop offset="100%" stop-color="#93c5fd" stop-opacity="1" />
             </linearGradient>
-            <linearGradient id="grad-orange" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff9900" stop-opacity="1" />
-              <stop offset="100%" stop-color="#ffe5b5" stop-opacity="1" />
+            <linearGradient id="grad-blue-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3b82f6" stop-opacity="1" />
+              <stop offset="100%" stop-color="#bfdbfe" stop-opacity="1" />
             </linearGradient>
-            <linearGradient id="grad-green" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00ff00" stop-opacity="1" />
-              <stop offset="100%" stop-color="#ccffcc" stop-opacity="1" />
+            <linearGradient id="grad-blue-low" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#60a5fa" stop-opacity="1" />
+              <stop offset="100%" stop-color="#e0f2fe" stop-opacity="1" />
             </linearGradient>
           </defs>
-
           <path
             v-for="provinsi in provinsis"
             :key="provinsi.id_provinsi"
             :d="cleanSvgPath(provinsi.svg_path)"
-            :fill="getChoroplethColor(provinsi.jumlah_inovasi || 0)"
+            :fill="getChoroplethColor(provinsi.jumlah_inovasi)"
             stroke="black"
             stroke-width="0.5"
             @click="loadKabupaten(provinsi.id_provinsi)"
-            @mouseenter="handleMouseEnter($event, `${provinsi.nama} ${provinsi.jumlah_inovasi} inovasi`)"
+            @mouseenter="handleMouseEnter($event, `${provinsi.nama}<br/>Jumlah inovasi: ${provinsi.jumlah_inovasi}`)"
+
             @mouseleave="handleMouseLeave"
           >
             <title>{{ provinsi.nama }}</title>
           </path>
-
           <!-- Tooltip Hover -->
-          <foreignObject v-if="hoveredArea.visible" :x="hoveredArea.x" :y="hoveredArea.y" width="200" height="75">
-            <div style="background: white; border: solid #ccc; border-radius: 5px; padding: 5px;">
-              <strong>{{ hoveredArea.text.split('  ')[0] }}</strong><br/>
-              {{ hoveredArea.text.split('  ')[1] }}
+          <foreignObject v-if="hoveredArea.visible" :x="hoveredArea.x" :y="hoveredArea.y" width="220" height="80">
+            <div class="bg-white border border-blue-400 rounded-lg p-2 shadow-lg text-sm font-semibold text-blue-700">
+              <div v-html="hoveredArea.text"></div>
             </div>
           </foreignObject>
         </svg>
       </div>
+    </section>
 
-      <!-- Popup Kabupaten -->
-      <div v-if="selectedProvinsi !== null" class="popup-overlay">
-        <div class="popup-box">
-          <button class="close-btn" @click="selectedProvinsi = null">✖</button>
-          <h1>Daftar Inovasi di Provinsi {{ selectedProvinceName }}</h1>
-          <hr />
+    <!-- Popup Kabupaten -->
+    <div v-if="selectedProvinsi !== null" class="popup-overlay">
+      <div class="popup-box">
+        <button class="close-btn absolute top-2 right-2" @click="selectedProvinsi = null">
+          ✖
+        </button>
+        <h1 class="text-xl font-bold mb-2">Daftar Inovasi di Provinsi {{ selectedProvinceName }}</h1>
+        <hr class="my-2" />
 
-          <div style="display: flex; gap: 20px;">
-            <!-- Left Side: Map & Chart -->
-            <div style="width: 45%;">
-              <!-- Kabupaten Map -->
-              <svg viewBox="-100 0 1000 600" height="250" preserveAspectRatio="xMidYMid meet" class="map-kabupaten">
-                <path
-                  v-for="kab in kabupaten"
-                  :key="kab.id_kabkot"
-                  :d="cleanSvgPath(kab.svg_path)"
-                  :fill="getChoroplethColor(kab.jumlah_inovasi || 0)"
-                  stroke="black"
-                  stroke-width="1"
-                  @click="loadInovasi(kab.id_kabkot)"
-                />
-              </svg>
+        <!-- Left Side: Map & Chart -->
+        <div class="flex flex-col gap-4 w-full md:w-1/2">
+          <!-- Kabupaten Map -->
+          <div class="overflow-hidden rounded-lg shadow-md">
+            <svg viewBox="-100 0 1000 600" height="250" preserveAspectRatio="xMidYMid meet" class="map-kabupaten">
+              <path
+                v-for="kab in kabupaten"
+                :key="kab.id_kabkot"
+                :d="cleanSvgPath(kab.svg_path)"
+                :fill="getChoroplethColor(kab.jumlah_inovasi || 0)"
+                stroke="black"
+                stroke-width="1"
+                @click="loadInovasi(kab.id_kabkot)"
+              />
+            </svg>
+          </div>
 
-              <!-- Chart -->
-              <div style="margin-top: 10px;">
-                <select v-model="selectedIndex" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                  <option value="indeks_skor">Indeks Inovasi Daerah</option>
-                  <option value="ipp_skor">Indeks Pelayanan Publik</option>
-                  <option value="idsd_skor">Indeks Daya Saing Daerah</option>
-                  <option value="rb_level">Indeks Reformasi Birokrasi</option>
-                </select>
-                
-                <!-- Vue Chart.js Line Chart -->
-                <div style="height: 300px;">
-                  <Line 
-                    :data="chartData" 
-                    :options="chartOptions"
-                    style="max-height: 300px;"
-                  />
-                </div>
-              </div>
-            </div>
+          <!-- Chart -->
+          <div class="flex flex-col gap-2">
+            <select v-model="selectedIndex" class="w-full p-2 border border-gray-300 rounded-lg">
+              <option value="indeks_skor">Indeks Inovasi Daerah</option>
+              <option value="ipp_skor">Indeks Pelayanan Publik</option>
+              <option value="idsd_skor">Indeks Daya Saing Daerah</option>
+              <option value="rb_level">Indeks Reformasi Birokrasi</option>
+            </select>
+            <Line 
+              :data="chartData" 
+              :options="chartOptions"
+              class="max-h-60"
+            />
+          </div>
+        </div>
 
-            <!-- Right Side: Table -->
-            <div style="width: 55%;">
-              <table class="inovasi-table">
-                <thead>
-                  <tr>
-                    <th>Judul Inovasi</th>
-                    <th>Tahun</th>
-                    <th>Inovator</th>
-                    <th>Deskripsi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="inovasi in currentInovasi" :key="inovasi.id">
-                    <td>{{ inovasi.judul_inovasi }}</td>
-                    <td>{{ inovasi.tahun }}</td>
-                    <td>{{ inovasi.inovator }}</td>
-                    <td>
-                      {{ truncateText(inovasi.deskripsi, inovasi.id) }}
-                      <button v-if="inovasi.deskripsi && inovasi.deskripsi.length > maxLength && !expandedIds.includes(inovasi.id)" @click="toggleExpand(inovasi.id)">[More]</button>
-                      <button v-if="expandedIds.includes(inovasi.id)" @click="toggleExpand(inovasi.id)">[Less]</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <!-- Pagination -->
-              <div class="pagination">
-                <button v-if="currentPage > 1" @click="handlePageChange(currentPage - 1)">Prev</button>
-                <button v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }" @click="handlePageChange(page)">
-                  {{ page }}
-                </button>
-                <button v-if="currentPage < totalPages" @click="handlePageChange(currentPage + 1)">Next</button>
-              </div>
-            </div>
+        <!-- Right Side: Table -->
+        <div class="w-full md:w-1/2">
+          <table class="inovasi-table w-full">
+            <thead>
+              <tr>
+                <th>Judul Inovasi</th>
+                <th>Tahun</th>
+                <th>Inovator</th>
+                <th>Deskripsi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="inovasi in currentInovasi" :key="inovasi.id">
+                <td>{{ inovasi.judul_inovasi }}</td>
+                <td>{{ inovasi.tahun }}</td>
+                <td>{{ inovasi.inovator }}</td>
+                <td>
+                  {{ truncateText(inovasi.deskripsi, inovasi.id) }}
+                  <button v-if="inovasi.deskripsi && inovasi.deskripsi.length > maxLength && !expandedIds.includes(inovasi.id)" @click="toggleExpand(inovasi.id)">[More]</button>
+                  <button v-if="expandedIds.includes(inovasi.id)" @click="toggleExpand(inovasi.id)">[Less]</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Pagination -->
+          <div class="pagination flex justify-center mt-4">
+            <button :disabled="currentPage === 1" @click="handlePageChange(currentPage - 1)">Prev</button>
+            <button v-for="page in totalPages" :key="page" :class="{ 'bg-blue-500 text-white': page === currentPage }" @click="handlePageChange(page)">
+              {{ page }}
+            </button>
+            <button :disabled="currentPage === totalPages" @click="handlePageChange(currentPage + 1)">Next</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Legend -->
-    <div class="legend">
-      <h3>LEGENDA</h3>
-      <div class="legend-item" v-for="(color, label) in legendColors" :key="label">
-        <div class="legend-color" :style="{ backgroundColor: color }"></div>
-        <span>{{ label }}</span>
+    <div class="legend bg-white p-4 rounded-lg shadow-md mt-6">
+      <h3 class="font-bold mb-2">LEGENDA</h3>
+      <div class="flex flex-wrap gap-2">
+        <div v-for="(color, label) in legendColors" :key="label" class="flex items-center">
+          <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: color }"></div>
+          <span class="ml-2">{{ label }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -174,7 +173,6 @@ interface Provinsi {
   svg_path: string
   jumlah_inovasi: number
 }
-
 interface Kabupaten {
   id_kabkot: number
   id_provinsi: number
@@ -182,7 +180,6 @@ interface Kabupaten {
   svg_path: string
   jumlah_inovasi: number
 }
-
 interface Inovasi {
   id: number
   judul_inovasi: string
@@ -191,7 +188,6 @@ interface Inovasi {
   deskripsi: string
   id_kabkot: number
 }
-
 interface IndeksInovasi {
   id_provinsi: number
   id_kabkot: number
@@ -230,9 +226,9 @@ const selectedIndex = ref<'indeks_skor' | 'ipp_skor' | 'idsd_skor' | 'rb_level'>
 
 // Legend colors
 const legendColors = ref({
-  'Tinggi (≥20)': '#ff0000',
-  'Sedang (10-19)': '#ff9900', 
-  'Rendah (1-9)': '#00ff00',
+  'Tinggi (≥20)': '#2563eb',
+  'Sedang (10-19)': '#3b82f6',
+  'Rendah (1-9)': '#60a5fa',
   'Tidak ada data': '#e0e0e0'
 })
 
@@ -265,14 +261,11 @@ const chartData = computed(() => {
 
   // Group data by year and get averages
   const years = [...new Set(indeksInovasi.value.map(item => item.indeks_tahun))].sort()
-  
   let yAxisLabel = ''
   let dataColor = '#3B82F6'
-  
   const data = years.map(year => {
     const yearData = indeksInovasi.value.filter(item => item.indeks_tahun === year)
     const key = selectedIndex.value
-    
     if (key === 'rb_level') {
       // For rb_level, calculate average of numeric values
       const values = yearData.map(item => item.rb_level).filter(val => val !== null)
@@ -409,7 +402,7 @@ const chartOptions = computed(() => ({
 function getIndexLabel(index: string): string {
   const labels = {
     'indeks_skor': 'Skor Indeks Inovasi',
-    'ipp_skor': 'Skor Indeks Pelayanan Publik', 
+    'ipp_skor': 'Skor Indeks Pelayanan Publik',
     'idsd_skor': 'Skor Indeks Daya Saing Daerah',
     'rb_level': 'Level Reformasi Birokrasi'
   }
@@ -419,7 +412,6 @@ function getIndexLabel(index: string): string {
 // Truncate functionality
 const expandedIds = ref<number[]>([])
 const maxLength = 50
-
 function toggleExpand(id: number) {
   const idx = expandedIds.value.indexOf(id)
   if (idx === -1) {
@@ -428,7 +420,6 @@ function toggleExpand(id: number) {
     expandedIds.value.splice(idx, 1)
   }
 }
-
 function truncateText(text: string, id: number): string {
   if (!text) return ''
   if (expandedIds.value.includes(id)) return text
@@ -449,21 +440,27 @@ function cleanSvgPath(path: string | undefined): string {
 
 // Choropleth color function
 function getChoroplethColor(jumlah: number): string {
-  if (jumlah >= 20) return 'url(#grad-red)'
-  if (jumlah >= 10) return 'url(#grad-orange)'
-  if (jumlah > 0) return 'url(#grad-green)'
+  if (jumlah >= 20) return 'url(#grad-blue-high)'
+  if (jumlah >= 10) return 'url(#grad-blue-mid)'
+  if (jumlah > 0) return 'url(#grad-blue-low)'
   return '#e0e0e0'
 }
 
 // Load initial data
 onMounted(async () => {
-  const { data } = await useFetch('/api/provinsis')
-  provinsis.value = (data.value ?? []).map((item: any) => ({
-    id_provinsi: item.id_provinsi ?? item.id ?? 0,
-    nama: item.nama ?? '',
-    svg_path: item.svg_path ?? '',
-    jumlah_inovasi: item.jumlah_inovasi ?? 0
-  })) as Provinsi[]
+  try {
+    const { data } = await useFetch('/api/provinsi')
+    provinsis.value = Array.isArray(data.value)
+      ? data.value.map((item: any) => ({
+          id_provinsi: item.id ?? item.id_provinsi ?? 0,
+          nama: item.nama_provinsi ?? item.nama ?? '',
+          svg_path: item.svg_path ?? '',
+          jumlah_inovasi: item.jumlah_inovasi ?? 0
+        }))
+      : []
+  } catch (error) {
+    console.error('Error fetching provinces:', error)
+  }
 })
 
 const fetchProvinsiData = async () => {
@@ -479,38 +476,40 @@ const fetchProvinsiData = async () => {
 fetchProvinsiData()
 
 const loadKabupaten = async (id_provinsi: number) => {
-  const { data } = await useFetch(`/api/kabupaten-maps`, { query: { provId: id_provinsi } })
-  kabupaten.value = data.value as Kabupaten[]
-
-  const kabIds = kabupaten.value.map(k => k.id_kabkot)
-  const { data: kabkotData } = await useFetch(`/api/kabkot`, { query: { ids: kabIds.join(',') } })
-
-  // Safely extract data array from kabkotData response
-  const kabkotArray = (kabkotData.value && Array.isArray((kabkotData.value as any).data))
-    ? (kabkotData.value as any).data
-    : []
-
-  kabupaten.value = kabupaten.value.map(k => ({
-    ...k,
-    jumlah_inovasi: kabkotArray.find((dk: any) => (dk.id_kabkot ?? dk.Id_kabkot) === k.id_kabkot)?.jumlah_inovasi || 0
-  }))
-
-  const { data: inovasiData } = await useFetch(`/api/inolands`, { query: { provId: id_provinsi } })
-  const { data: indeksData } = await useFetch(`/api/indeks-inovasi`, { query: { provId: id_provinsi, level: 'Provinsi' } })
-
-  inovasiKabupaten.value = (inovasiData.value && Array.isArray((inovasiData.value as any).data) ? (inovasiData.value as any).data : []) as Inovasi[]
-  indeksInovasi.value = indeksData.value as IndeksInovasi[]
-  selectedProvinsi.value = id_provinsi
+  try {
+    const { data } = await useFetch(`/api/kabupaten-maps`, { query: { provId: id_provinsi } })
+    kabupaten.value = data.value as Kabupaten[]
+    const kabIds = kabupaten.value.map(k => k.id_kabkot)
+    const { data: kabkotData } = await useFetch(`/api/kabkot`, { query: { ids: kabIds.join(',') } })
+    // Safely extract data array from kabkotData response
+    const kabkotArray = (kabkotData.value && Array.isArray((kabkotData.value as any).data))
+      ? (kabkotData.value as any).data
+      : []
+    kabupaten.value = kabupaten.value.map(k => ({
+      ...k,
+      jumlah_inovasi: kabkotArray.find((dk: any) => (dk.id_kabkot ?? dk.Id_kabkot) === k.id_kabkot)?.jumlah_inovasi || 0
+    }))
+    const { data: inovasiData } = await useFetch(`/api/inolands`, { query: { provId: id_provinsi } })
+    const { data: indeksData } = await useFetch(`/api/indeks-inovasi`, { query: { provId: id_provinsi, level: 'Provinsi' } })
+    inovasiKabupaten.value = (inovasiData.value && Array.isArray((inovasiData.value as any).data) ? (inovasiData.value as any).data : []) as Inovasi[]
+    indeksInovasi.value = indeksData.value as IndeksInovasi[]
+    selectedProvinsi.value = id_provinsi
+  } catch (error) {
+    console.error('Error loading kabupaten or inovasi data:', error)
+  }
 }
 
 const loadInovasi = async (id_kabkot: number) => {
-  const { data: inovasiData } = await useFetch(`/api/inolands`, { query: { kabkotId: id_kabkot } })
-  const { data: indeksData } = await useFetch(`/api/indeks-inovasi`, { query: { kabkotId: id_kabkot } })
-
-  inovasiKabupaten.value = (inovasiData.value && Array.isArray((inovasiData.value as any).data) ? (inovasiData.value as any).data : []) as Inovasi[]
-  indeksInovasi.value = indeksData.value as IndeksInovasi[]
-  selectedKabkot.value = id_kabkot
-  currentPage.value = 1
+  try {
+    const { data: inovasiData } = await useFetch(`/api/inolands`, { query: { kabkotId: id_kabkot } })
+    const { data: indeksData } = await useFetch(`/api/indeks-inovasi`, { query: { kabkotId: id_kabkot } })
+    inovasiKabupaten.value = (inovasiData.value && Array.isArray((inovasiData.value as any).data) ? (inovasiData.value as any).data : []) as Inovasi[]
+    indeksInovasi.value = indeksData.value as IndeksInovasi[]
+    selectedKabkot.value = id_kabkot
+    currentPage.value = 1
+  } catch (error) {
+    console.error('Error loading inovasi data:', error)
+  }
 }
 
 // Mouse event handlers for tooltip
@@ -523,8 +522,8 @@ function handleMouseEnter(event: MouseEvent, text: string) {
     pt.x = event.clientX
     pt.y = event.clientY
     const cursorpt = pt.matrixTransform(svg.getScreenCTM()?.inverse())
-    x = cursorpt.x
-    y = cursorpt.y
+    x = Math.max(0, Math.min(cursorpt.x, svg.width.baseVal.value - 220))
+    y = Math.max(0, Math.min(cursorpt.y, svg.height.baseVal.value - 80))
   }
   hoveredArea.value = {
     visible: true,
@@ -544,6 +543,10 @@ function handleMouseLeave() {
   font-family: 'Poppins', sans-serif;
 }
 
+svg path {
+  cursor: pointer;
+}
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -561,8 +564,8 @@ function handleMouseLeave() {
   background: white;
   padding: 20px;
   border-radius: 10px;
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 90vw;
+  max-height: 90vh;
   overflow-y: auto;
   position: relative;
 }
@@ -588,7 +591,8 @@ function handleMouseLeave() {
 .inovasi-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  font-size: 0.95rem;
+  word-break: break-word;
 }
 
 .inovasi-table th,
@@ -603,11 +607,25 @@ function handleMouseLeave() {
   font-weight: bold;
 }
 
+.inovasi-table button {
+  background: none;
+  border: none;
+  color: #16578d;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-left: 4px;
+  padding: 0;
+}
+
+.inovasi-table button:hover {
+  text-decoration: underline;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
   margin-top: 20px;
-  gap: 5px;
+  gap: 8px;
 }
 
 .pagination button {
@@ -634,7 +652,8 @@ function handleMouseLeave() {
   border: 1px solid #ccc;
   border-radius: 5px;
   background: #f9f9f9;
-  max-width: 300px;
+  max-width: 100%;
+  font-size: 0.95rem;
 }
 
 .legend h3 {
@@ -661,5 +680,10 @@ function handleMouseLeave() {
   border: 1px solid #ccc;
   border-radius: 5px;
   background: #f9f9f9;
+}
+
+foreignObject > div {
+  pointer-events: none;
+  z-index: 9999;
 }
 </style>

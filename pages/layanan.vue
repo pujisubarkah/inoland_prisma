@@ -7,7 +7,7 @@
     <div class="flex min-h-screen">
       <!-- Sidebar -->
       <div 
-        class="transition-all duration-300 overflow-hidden bg-gray-800 text-white p-3"
+        class="transition-all duration-300 overflow-y-auto bg-gray-800 text-white p-3"
         :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }"
       >
         <button 
@@ -25,11 +25,14 @@
             <button 
               @click="handleVideoSelect(video)"
               class="bg-gray-700 text-white border-none p-3 cursor-pointer rounded-md w-full flex items-center hover:bg-gray-600 transition-colors"
-              :class="{ 
-                'justify-center': !isSidebarOpen, 
-                'justify-start': isSidebarOpen,
-                'bg-blue-600': selectedVideo.id === video.id
-              }"
+              :class="[
+                'bg-gray-700 text-white border-none p-3 cursor-pointer rounded-md w-full flex items-center hover:bg-gray-600 transition-colors',
+                { 
+                  'justify-center': !isSidebarOpen, 
+                  'justify-start': isSidebarOpen,
+                  'bg-blue-600 border-2 border-blue-400': selectedVideo.id === video.id
+                }
+              ]"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -48,7 +51,7 @@
 
       <!-- Main Content -->
       <div class="flex-1 p-5 bg-gray-100">
-        <section class="video-section p-6 w-full max-w-5xl mx-auto bg-white shadow-lg rounded-lg">
+        <section class="video-section p-4 w-full max-w-5xl mx-auto bg-white shadow-lg rounded-lg">
           <h1 class="font-poppins font-bold text-3xl text-center mb-2 text-gray-800">
             {{ selectedVideo.title }}
           </h1>
@@ -100,7 +103,7 @@
             <div class="relative">
               <iframe
                 width="100%"
-                height="500"
+                :height="isSidebarOpen ? 500 : 300"
                 :src="currentVideoSrc"
                 :title="selectedVideo.title"
                 frameBorder="0"
@@ -125,10 +128,10 @@
 
             <!-- Quiz Component -->
             <div class="mt-6">
-              <Quiz 
-                :quiz="selectedVideo.quiz" 
-                @quiz-complete="() => handleQuizComplete(selectedVideo.id - 1)" 
+              <Quiz
+                :quiz="selectedVideo.quiz"
                 :is-completed="completedQuizzes[selectedVideo.id - 1]"
+                @quiz-complete="() => handleQuizComplete(selectedVideo.id - 1)"
               />
             </div>
           </div>
@@ -168,6 +171,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import Quiz from '~/components/Quiz.vue'
 
 // Set page title
 useHead({
@@ -177,91 +181,6 @@ useHead({
   ]
 })
 
-// Quiz Component
-const Quiz = defineComponent({
-  props: {
-    quiz: Object,
-    isCompleted: Boolean
-  },
-  emits: ['quiz-complete'],
-  setup(props, { emit }) {
-    const selectedOption = ref('')
-    const isSubmitted = ref(false)
-
-    // Reset when quiz changes
-    watch(() => props.quiz, () => {
-      selectedOption.value = ''
-      isSubmitted.value = props.isCompleted
-    })
-
-    const handleSubmit = () => {
-      isSubmitted.value = true
-      if (selectedOption.value === props.quiz.correctAnswer) {
-        emit('quiz-complete')
-      }
-    }
-
-    return {
-      selectedOption,
-      isSubmitted,
-      handleSubmit
-    }
-  },
-  template: `
-    <div class="quiz-section p-6 bg-gray-50 rounded-lg border border-gray-200">
-      <div class="flex items-center mb-4">
-        <svg class="w-6 h-6 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
-        </svg>
-        <h3 class="text-xl font-semibold text-gray-800">Kuis Pemahaman</h3>
-        <div v-if="isCompleted" class="ml-auto">
-          <span class="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded">Selesai</span>
-        </div>
-      </div>
-      
-      <p class="text-lg text-gray-700 mb-6">{{ quiz.question }}</p>
-      
-      <form @submit.prevent="handleSubmit" v-if="!isCompleted">
-        <div v-for="(option, index) in quiz.options" :key="index" class="mb-3">
-          <label class="flex items-start cursor-pointer p-3 rounded-lg hover:bg-white transition-colors">
-            <input
-              type="radio"
-              :value="option"
-              v-model="selectedOption"
-              class="mt-1 mr-3 text-blue-600"
-            />
-            <span class="text-gray-700 flex-1">{{ option }}</span>
-          </label>
-        </div>
-        <button 
-          type="submit" 
-          :disabled="!selectedOption" 
-          class="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg mt-4 transition-colors"
-        >
-          Kirim Jawaban
-        </button>
-      </form>
-      
-      <div v-if="isSubmitted" class="quiz-result mt-6 p-4 rounded-lg" :class="selectedOption === quiz.correctAnswer ? 'bg-green-100 border border-green-300' : 'bg-red-100 border border-red-300'">
-        <div v-if="selectedOption === quiz.correctAnswer" class="flex items-center text-green-800">
-          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          <span class="font-medium">Jawaban Anda Benar!</span>
-        </div>
-        <div v-else class="text-red-800">
-          <div class="flex items-center mb-2">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-            </svg>
-            <span class="font-medium">Jawaban Anda Salah</span>
-          </div>
-          <p class="text-sm">Jawaban yang benar adalah: <strong>{{ quiz.correctAnswer }}</strong></p>
-        </div>
-      </div>
-    </div>
-  `
-})
 
 // Data
 const videos = [

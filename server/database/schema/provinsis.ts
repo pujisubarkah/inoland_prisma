@@ -5,7 +5,7 @@ import {
   varchar,
   timestamp,
 } from 'drizzle-orm/pg-core';
-import { masterProvinsi } from './master_provinsi'; // pastikan path dan nama file sesuai
+import { master_provinsi } from './master_provinsi'; // pastikan path dan nama file sesuai
 
 export const provinsis = pgTable('provinsis', {
   id: integer('id').primaryKey().unique(),

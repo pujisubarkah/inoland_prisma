@@ -11,6 +11,12 @@
       <p>
         INOLAND adalah web informasi oleh <strong>Pusat Inovasi Administrasi Negara</strong> yang juga merupakan sistem integrasi untuk penguatan kapasitas berinovasi, terdiri dari berbagai program advokasi pembelajaran inovasi.
       </p>
+      <NuxtLink
+        to="/cari"
+        class="inline-block mt-2 px-3 py-1 rounded bg-green-600 text-white text-sm font-semibold shadow hover:bg-green-700 transition"
+      >
+        Lihat Data Inovasi Lengkap &rarr;
+      </NuxtLink>
     </div>
 
     <!-- Popup untuk menampilkan informasi marker -->

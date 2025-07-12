@@ -4,7 +4,16 @@ import { eq } from "drizzle-orm";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-  const id_provinsi = parseInt(query.id_provinsi as string);
+  const id_provinsi = Number(query.id_provinsi);
+
+  if (!id_provinsi || isNaN(id_provinsi)) {
+    setResponseStatus(event, 400);
+    return {
+      success: false,
+      message: "Parameter id_provinsi tidak valid",
+      data: [],
+    };
+  }
 
   try {
     const result = await db
@@ -22,9 +31,11 @@ export default defineEventHandler(async (event) => {
       data: result,
     };
   } catch (err: any) {
+    setResponseStatus(event, 500);
     return {
       success: false,
-      message: err.message ?? "Internal Server Error",
+      message: err?.message ?? "Internal Server Error",
+      data: [],
     };
   }
 });

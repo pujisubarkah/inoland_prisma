@@ -2,10 +2,31 @@
 definePageMeta({
   layout: "default"
 })
+
+import BeritaSection from '~/components/Berita_slider.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+  <div class="min-h-screen bg-gradient-to-br from-white via-gray-100 to-cyan-100">
+    <!-- Animated Title Section -->
+    <section class="py-8 bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-700">
+      <div class="container mx-auto px-6 flex flex-col items-center justify-center">
+        <h1 class="animated-title text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-2 tracking-wide drop-shadow-lg">
+          <span class="block animate-gradient">Everyone Can Innovate</span>
+        </h1>
+        <p class="text-white text-lg font-medium opacity-90 mt-2 drop-shadow">
+          Inovasi untuk semua!
+        </p>
+      </div>
+    </section>
+
+    <!-- Berita Section -->
+    <section class="py-12 bg-white">
+      <div class="container mx-auto px-6">
+        <BeritaSection />
+      </div>
+    </section>
+
     <!-- Map Section -->
     <section class="py-16 bg-white">
       <div class="container mx-auto px-6">
@@ -38,12 +59,7 @@ definePageMeta({
       </div>
     </section>
 
-    <!-- Properexpo Section -->
-    <section class="py-16 bg-gray-50">
-      <div class="container mx-auto">
-        <Properexpo />
-      </div>
-    </section>
+ 
 
     <!-- Carousel Section -->
     <section class="py-16 bg-white">
@@ -60,3 +76,28 @@ definePageMeta({
     </section>
   </div>
 </template>
+
+<style scoped>
+.animated-title {
+  position: relative;
+  overflow: hidden;
+}
+.animate-gradient {
+  background: linear-gradient(90deg, #22c55e, #84cc16, #4ade80, #22c55e);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-move 3s linear infinite, floatUpDown 2s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes gradient-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+</style>
