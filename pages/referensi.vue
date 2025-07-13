@@ -79,6 +79,9 @@
           
           <!-- Tuxedovation -->
           <Tuxedovation v-else-if="activeComponent === 'Tuxedovation'" />
+
+          <!-- Direktori -->
+          <Direktori v-else-if="activeComponent === 'Direktori'" />
           
           <!-- Default/Error State -->
           <div v-else class="text-center py-20">
@@ -110,6 +113,7 @@ import Berita from '~/components/Berita.vue'
 import Infografis from '~/components/Infografis.vue'
 import ProperExpo from '~/components/Properexpo.vue'
 import Tuxedovation from '~/components/Tuxedovation.vue'
+import Direktori from '~/components/Direktory.vue'
 
 // Icon Components
 const TableIcon = {
@@ -145,6 +149,14 @@ const VideoIcon = {
     </svg>
   `
 }
+
+const TuxedovationIcon = {
+  template: `
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM6.5 7a1.5 1.5 0 113 0v1.5h1V7a2.5 2.5 0 00-5 0v1.5h1V7zm3.5 6a1.5 1.5 0 11-3 0v-1h3v1z"/>
+    </svg>
+  `
+} 
 
 // Meta
 useHead({
@@ -191,9 +203,15 @@ const menuItems = [
   },
   { 
     label: 'Tuxedovation', 
-    icon: VideoIcon, 
+    icon: TuxedovationIcon, 
     component: 'Tuxedovation',
     description: 'Platform inovasi Kementerian Dalam Negeri'
+  },
+  { 
+    label: 'Direktori', 
+    icon: TableIcon, 
+    component: 'Direktori',
+    description: 'Kumpulan dokumen inovasi daerah'
   }
 ]
 

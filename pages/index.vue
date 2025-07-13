@@ -17,17 +17,25 @@ import BeritaSection from '~/components/Berita_slider.vue'
           </h1>
           <div class="absolute left-1/2 -bottom-4 -translate-x-1/2 w-24 h-2 bg-gradient-to-r from-green-400 via-blue-400 to-blue-700 rounded-full opacity-70"></div>
         </div>
-        <div class="hero-text-box px-4 py-3 rounded-xl shadow-lg max-w-2xl w-full">
-          <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 mb-3 text-center">
-            Setiap gagasan atau ide adalah berharga dan layak dikembangkan,<br class="hidden sm:inline" />
-            <span class="font-semibold text-cyan-200">inolands</span> memfasilitasi, menghubungkan, dan mendorong setiap ide menuju aksi nyata.
-          </p>
-          <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 text-center">
-            <span class="font-semibold text-cyan-200">Inolands</span> adalah ekosistem kolaborasi instansi,<br class="hidden sm:inline" />
-            tempat ide lintas sektor bertemu dan tumbuh bersama,<br class="hidden sm:inline" />
-            membangun masa depan yang adaptif, efektif, dan berdampak.
-          </p>
-        </div>
+       <div class="hero-text-box px-4 py-3 rounded-xl shadow-lg max-w-4xl w-full">
+  <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 mb-3 text-center">
+    Setiap gagasan atau ide adalah berharga dan layak dikembangkan,<br class="hidden sm:inline" />
+    <span class="font-semibold text-cyan-200">Inolands</span> memfasilitasi, menghubungkan, dan mendorong setiap ide menuju aksi nyata.
+  </p>
+  <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 text-center">
+    <span class="font-semibold text-cyan-200">Inolands</span> adalah ekosistem kolaborasi instansi,<br class="hidden sm:inline" />
+    tempat ide lintas sektor bertemu dan tumbuh bersama,<br class="hidden sm:inline" />
+    membangun masa depan yang adaptif, efektif, dan berdampak.
+  </p>
+  <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 text-center mt-4">
+    🌱 ide sederhana hanya butuh ruang untuk tumbuh.<br class="hidden sm:inline" />
+    Di <span class="font-semibold text-cyan-200">Inolands</span>, kami merawat ruang itu bersama lewat Laboratorium Inovasi.
+  </p>
+  <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 text-center mt-2">
+    Sejak 2015, pendekatan Laboratorium Inovasi telah kami terapkan<br class="hidden sm:inline" />
+    sebagai cara untuk mendekatkan ide dengan realitas dan kebutuhan masyarakat.
+  </p>
+</div>
       </div>
     </section>
 

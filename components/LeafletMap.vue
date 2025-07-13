@@ -9,7 +9,7 @@
     <!-- Overlay Info -->
     <div class="info-box">
       <p>
-        INOLAND adalah web informasi oleh <strong>Pusat Inovasi Administrasi Negara</strong> yang juga merupakan sistem integrasi untuk penguatan kapasitas berinovasi, terdiri dari berbagai program advokasi pembelajaran inovasi.
+        INOLAND adalah web informasi oleh <strong>Lembaga  Administrasi Negara</strong> yang juga merupakan sistem integrasi untuk penguatan kapasitas berinovasi, terdiri dari berbagai program advokasi pembelajaran inovasi.
       </p>
       <NuxtLink
         to="/cari"
