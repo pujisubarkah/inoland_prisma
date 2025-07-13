@@ -1,4 +1,3 @@
-// server/api/auth/login.post.ts
 import { db } from '@/server/database'
 import { user } from '@/server/database/schema/user'
 import { eq } from 'drizzle-orm'
@@ -15,7 +14,12 @@ export default defineEventHandler(async (event) => {
 
   if (!foundUser || !foundUser.password) {
     setResponseStatus(event, 401)
-    return { message: 'Email tidak ditemukan' }
+    return { message: 'Email atau password salah' }
+  }
+
+  if (!foundUser.is_verified) {
+    setResponseStatus(event, 403)
+    return { message: 'Akun Anda belum diverifikasi oleh admin.' }
   }
 
   const isMatch = await bcrypt.compare(password, foundUser.password)
@@ -25,7 +29,7 @@ export default defineEventHandler(async (event) => {
     return { message: 'Password salah' }
   }
 
-  // Simpan ke session / cookie (Nuxt Auth minimal bisa pakai H3 `setCookie`)
+  // Simpan ke cookie
   setCookie(event, 'session_token', String(foundUser.id), {
     httpOnly: true,
     path: '/',

@@ -161,6 +161,9 @@
               >
                 Masuk
               </button>
+              <div v-if="loginError" class="mt-3 text-red-600 text-sm text-center font-semibold">
+                {{ loginError }}
+              </div>
               <div class="mt-4 text-sm text-center text-blue-700">
                 Belum punya akun?
                 <button type="button" class="underline font-semibold hover:text-blue-900" @click="showRegister = true">
@@ -263,6 +266,7 @@ const isProfileOpen = ref(false)
 const userProfile = ref(null)
 const isLoginModalOpen = ref(false)
 const showRegister = ref(false)
+const loginError = ref('')
 
 const loginForm = ref({
   email: '',
@@ -298,6 +302,7 @@ function changeLanguage(lng) {
 }
 
 async function submitLogin() {
+  loginError.value = ''
   try {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
@@ -306,23 +311,22 @@ async function submitLogin() {
     })
     const data = await res.json()
     if (res.ok && data.user) {
-      // Simpan ke localStorage
       localStorage.setItem('userProfile', JSON.stringify(data.user))
       userProfile.value = data.user
       isLoginModalOpen.value = false
-      toast.success('Login berhasil!')
+      loginError.value = ''
     } else {
-      toast.error(data.message || 'Login gagal')
+      loginError.value = data.message || 'Login gagal'
     }
   } catch (error) {
     console.error('Login error:', error)
-    toast.error('Login gagal, silakan coba lagi.')
+    loginError.value = 'Login gagal, silakan coba lagi.'
   }
 }
 
 async function submitRegister() {
   try {
-    const res = await fetch('/api/registrasi', {
+    const res = await fetch('/api/auth/registrasi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(registerForm.value)
