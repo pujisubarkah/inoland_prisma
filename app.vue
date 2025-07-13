@@ -1,7 +1,11 @@
+<!-- app.vue -->
 <template>
-  <div>
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </div>
+  <NuxtLayout>
+    <NuxtPage />
+    <Toaster position="top-center" richColors />
+  </NuxtLayout>
 </template>
+
+<script setup>
+import { Toaster, toast } from 'vue-sonner'
+</script>

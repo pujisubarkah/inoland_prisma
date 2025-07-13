@@ -4,10 +4,7 @@
     <form @submit.prevent="handleSubmit">
       <div class="flex flex-col gap-4 mb-5">
         <InputField label="Nama OPD" v-model="formData.opdName" />
-        <InputField label="Contact Person" v-model="formData.contactPerson" />
-        <InputField label="Telp/HP" v-model="formData.phone" />
-        <InputField label="Email OPD" v-model="formData.email" type="email" />
-        <InputField label="Judul Inovasi" v-model="formData.innovationTitle" />
+   
       </div>
 
       <div class="flex justify-end mb-5">
@@ -49,30 +46,40 @@
       </div>
     </form>
 
-    <!-- Modal -->
+    <!-- Modal Tambah Kegiatan -->
     <Dialog v-model:open="showModal">
       <template #content>
-        <div class="dialog-content">
+        <div
+          class="bg-white/90 backdrop-blur-lg shadow-2xl rounded-2xl border-2 border-blue-500 px-8 py-8 w-full max-w-2xl animate-fade-in"
+        >
           <h2 class="text-xl font-bold mb-4">Tambah Kegiatan</h2>
           <div class="flex flex-col gap-2">
-            <label>Phase</label>
-            <select v-model="newActivity.phase" class="border p-2 rounded">
-              <option value="preparation">Persiapan</option>
-              <option value="implementation">Pelaksanaan</option>
-              <option value="monitoring">Monitoring</option>
-              <option value="evaluation">Evaluasi</option>
-            </select>
-            <input type="text" placeholder="Kegiatan" v-model="newActivity.activity" class="border p-2 rounded" />
-            <input type="text" placeholder="Pelaksana" v-model="newActivity.executor" class="border p-2 rounded" />
-            <input type="text" placeholder="Output" v-model="newActivity.output" class="border p-2 rounded" />
-            <input type="text" placeholder="Metode" v-model="newActivity.method" class="border p-2 rounded" />
+            <!-- DropdownMenu Phase -->
+            <div class="mb-2">
+              <label class="block font-medium text-blue-700 mb-1">Phase</label>
+              <select v-model="newActivity.phase" class="border p-2 rounded w-full bg-white text-left">
+                <option disabled value="">Pilih Tahapan</option>
+                <option value="preparation">Persiapan</option>
+                <option value="implementation">Pelaksanaan</option>
+                <option value="monitoring">Monitoring</option>
+              </select>
+            </div>
+            <textarea placeholder="Kegiatan" v-model="newActivity.activity" class="border p-2 rounded resize-none" rows="2"></textarea>
+            <textarea placeholder="Pelaksana" v-model="newActivity.executor" class="border p-2 rounded resize-none" rows="2"></textarea>
+            <textarea placeholder="Output" v-model="newActivity.output" class="border p-2 rounded resize-none" rows="2"></textarea>
+            <textarea placeholder="Metode" v-model="newActivity.method" class="border p-2 rounded resize-none" rows="2"></textarea>
 
             <div>
-              <p class="mb-2 font-semibold">Timeline (Centang bulan pelaksanaan)</p>
-              <div class="grid grid-cols-6 gap-1">
-                <label v-for="(checked, idx) in newActivity.timeline" :key="idx" class="flex items-center space-x-1 text-sm">
-                  <input type="checkbox" :checked="checked" @change="toggleNewTimeline(idx)" />
-                  <span>{{ idx + 1 }}</span>
+              <p class="mb-2 font-semibold text-blue-700">Timeline (Centang bulan pelaksanaan)</p>
+              <div class="grid grid-cols-6 gap-2">
+                <label
+                  v-for="(checked, idx) in newActivity.timeline"
+                  :key="idx"
+                  class="flex flex-col items-center cursor-pointer transition-all bg-slate-100 rounded-xl px-2 py-2 mb-1 border-2 border-slate-200 shadow"
+                  :class="{ 'bg-gradient-to-r from-cyan-400 to-blue-700 border-blue-600 shadow-lg text-white': checked }"
+                >
+                  <Checkbox :checked="checked" @update:checked="val => toggleNewTimeline(idx, val)" class="mb-1" />
+                  <span class="month-label text-xs font-semibold">{{ monthName(idx) }}</span>
                 </label>
               </div>
             </div>
@@ -92,6 +99,7 @@ import { ref, reactive } from 'vue'
 import { PaperAirplaneIcon } from '@heroicons/vue/24/outline'
 import Dialog from '@/components/ui/dialog/Dialog.vue'
 import InputField from '@/components/InputField.vue'
+import { Checkbox } from '@/components/ui/checkbox'
 
 
 
@@ -133,8 +141,8 @@ function toggleTimeline(phase, index, month) {
   formData.activities[phase][index].timeline[month] = !formData.activities[phase][index].timeline[month]
 }
 
-function toggleNewTimeline(month) {
-  newActivity.timeline[month] = !newActivity.timeline[month]
+function toggleNewTimeline(month, value) {
+  newActivity.timeline[month] = value
 }
 
 function saveNewActivity() {
@@ -157,6 +165,18 @@ function saveNewActivity() {
   newActivity.timeline = Array(12).fill(false)
   showModal.value = false
 }
+
+function phaseLabel(val) {
+  if (val === 'preparation') return 'Persiapan'
+  if (val === 'implementation') return 'Pelaksanaan'
+  if (val === 'monitoring') return 'Monitoring'
+  return val
+}
+
+function monthName(idx) {
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des']
+  return months[idx]
+}
 </script>
 
 <style scoped>
@@ -165,9 +185,9 @@ function saveNewActivity() {
   backdrop-filter: blur(10px) saturate(160%);
   box-shadow: 0 8px 32px rgba(60,130,246,0.18), 0 2px 8px rgba(0,0,0,0.10);
   border-radius: 18px;
-  padding: 32px 24px 24px 24px;
+  padding: 32px 32px 28px 32px; /* padding lebih besar */
   width: 100%;
-  max-width: 420px;
+  max-width: 640px; /* lebar dialog diperbesar */
   animation: dialogFadeIn 0.35s cubic-bezier(.4,2,.3,1);
   border: 2px solid #3b82f6;
   transition: box-shadow 0.2s, border 0.2s;
@@ -233,7 +253,33 @@ function saveNewActivity() {
   background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
 }
 
-@media (max-width: 500px) {
+.timeline-badge {
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 8px 6px 4px 6px;
+  margin-bottom: 2px;
+  border: 2px solid #e0e7ef;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.06);
+  transition: border 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.timeline-badge.active {
+  background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
+  border-color: #2563eb;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.12);
+}
+.timeline-badge .month-label {
+  color: #2563eb;
+  letter-spacing: 0.5px;
+}
+.timeline-badge.active .month-label {
+  color: #fff;
+  text-shadow: 0 1px 4px #2563eb44;
+}
+.timeline-badge .mb-1 {
+  accent-color: #2563eb;
+}
+
+@media (max-width: 700px) {
   .dialog-content {
     max-width: 98vw;
     padding: 18px 8px 12px 8px;

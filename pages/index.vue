@@ -10,13 +10,24 @@ import BeritaSection from '~/components/Berita_slider.vue'
   <div class="min-h-screen bg-gradient-to-br from-white via-gray-100 to-cyan-100">
     <!-- Animated Title Section -->
     <section class="py-8 bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-700">
-      <div class="container mx-auto px-6 flex flex-col items-center justify-center">
-        <h1 class="animated-title text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-2 tracking-wide drop-shadow-lg">
-          <span class="block animate-gradient">Everyone Can Innovate</span>
-        </h1>
-        <p class="text-white text-lg font-medium opacity-90 mt-2 drop-shadow">
-          Inovasi untuk semua!
-        </p>
+      <div class="container mx-auto px-6 flex flex-col items-center justify-center py-12">
+        <div class="relative w-fit mb-6">
+          <h1 class="animated-title text-center text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-wide drop-shadow-lg">
+            <span class="block animate-gradient">Everyone Can Innovate</span>
+          </h1>
+          <div class="absolute left-1/2 -bottom-4 -translate-x-1/2 w-24 h-2 bg-gradient-to-r from-green-400 via-blue-400 to-blue-700 rounded-full opacity-70"></div>
+        </div>
+        <div class="hero-text-box px-4 py-3 rounded-xl shadow-lg max-w-2xl w-full">
+          <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 mb-3 text-center">
+            Setiap gagasan atau ide adalah berharga dan layak dikembangkan,<br class="hidden sm:inline" />
+            <span class="font-semibold text-cyan-200">inolands</span> memfasilitasi, menghubungkan, dan mendorong setiap ide menuju aksi nyata.
+          </p>
+          <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 text-center">
+            <span class="font-semibold text-cyan-200">Inolands</span> adalah ekosistem kolaborasi instansi,<br class="hidden sm:inline" />
+            tempat ide lintas sektor bertemu dan tumbuh bersama,<br class="hidden sm:inline" />
+            membangun masa depan yang adaptif, efektif, dan berdampak.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -105,5 +116,24 @@ import BeritaSection from '~/components/Berita_slider.vue'
 @keyframes marqueeMove {
   0% { transform: translateX(0); }
   100% { transform: translateX(-40%); }
+}
+
+.hero-text {
+  text-shadow:
+    2px 2px 6px #000,
+    0px 0px 2px #000;
+  line-height: 1.7;
+  letter-spacing: 0.2px;
+}
+
+.hero-text-box {
+  background: rgba(0,0,0,0.18);
+  /* Untuk mobile, background lebih gelap agar teks tetap terbaca */
+}
+
+@media (max-width: 640px) {
+  .hero-text-box {
+    background: rgba(0,0,0,0.32);
+  }
 }
 </style>

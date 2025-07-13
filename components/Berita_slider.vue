@@ -2,21 +2,21 @@
 <template>
   <div class="w-full px-0 py-6 bg-gradient-to-b from-gray-50 to-white">
     <header class="mb-2 text-center">
-      <h1 class="text-3xl font-bold font-poppins text-green-700 drop-shadow">
+      <h1 class="text-3xl font-bold font-poppins text-blue-700 drop-shadow">
         🌟 Jangan Lewatkan Berita Inovasi Terbaru, Sobat Kreatif!
       </h1>
       <p class="text-gray-500 mt-1 text-base">{{ currentDate }}</p>
     </header>
 
     <div v-if="loading" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600"></div>
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
     </div>
 
     <div v-else-if="error" class="text-center py-12">
-      <p class="text-red-600 mb-4">{{ error }}</p>
+      <p class="text-blue-600 mb-4">{{ error }}</p>
       <button 
         @click="fetchBerita"
-        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
       >
         Coba Lagi
       </button>
@@ -40,7 +40,7 @@
               <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
             </div>
             <div class="p-2 flex-1 flex flex-col justify-end items-center">
-              <h2 class="text-green-700 text-xs font-semibold text-center mt-1 line-clamp-2 group-hover:text-green-900 transition-colors">
+              <h2 class="text-blue-700 text-xs font-semibold text-center mt-1 line-clamp-2 group-hover:text-blue-900 transition-colors">
                 {{ item.title }}
               </h2>
               <div class="text-gray-400 text-xs text-center mt-1">
@@ -142,11 +142,11 @@ const handleImageError = (event) => {
   event.target.src = 'https://via.placeholder.com/800x600/gray/white?text=Image+Not+Found'
 }
 
-// Tampilkan 7 item mulai dari currentIndex, looping jika di akhir
+// Tampilkan 5 item mulai dari currentIndex, looping jika di akhir
 const visibleItems = computed(() => {
   if (newsItems.value.length === 0) return []
   const items = []
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 5; i++) { // ubah dari 7 ke 5
     items.push(newsItems.value[(currentIndex.value + i) % newsItems.value.length])
   }
   return items
@@ -179,15 +179,15 @@ onUnmounted(() => {
   height: 12px;
   border-radius: 50%;
   border: none;
-  background: rgba(34,197,94,0.4);
+  background: rgba(59,130,246,0.4); /* biru-500 */
   cursor: pointer;
   transition: all 0.3s ease;
 }
 .dot.active {
-  background: #22c55e;
+  background: #2563eb; /* biru-600 */
   transform: scale(1.2);
 }
 .dot:hover {
-  background: #4ade80;
+  background: #3b82f6; /* biru-500 */
 }
 </style>

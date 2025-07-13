@@ -1,10 +1,23 @@
 <template>
   <div class="app">
     <!-- Header -->
-    <header class="bg-white shadow-md p-4 mb-6">
-      <h1 class="text-2xl font-bold text-center">SEBARAN IDE INOVASI</h1>
-      <hr class="w-1/4 h-1 bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 mx-auto my-2" />
-    </header>
+<header class="bg-white shadow-md p-4 mb-6">
+  <h1 class="text-2xl font-bold text-center">SEBARAN IDE INOVASI</h1>
+  <p class="text-center text-black mt-4 max-w-4xl mx-auto text-base leading-relaxed">
+    Sejak 2015, ribuan ide bermunculan dari berbagai penjuru instansi. 
+    Peta ini bukan sekadar tampilan visual, tapi bukti nyata bahwa semangat inovasi di sektor publik terus hidup dan berkembang.  
+    Ribuan ide telah terpetakan—dan setiap titiknya menyimpan kisah perubahan yang nyata.
+  </p>
+  <p class="text-center text-black mt-2 max-w-4xl mx-auto text-base leading-relaxed">
+    Dari satu gagasan sederhana hingga solusi berdampak besar, setiap titik di peta ini menyimpan kisah tentang keberanian untuk 
+    berubah, berkreasi, dan melayani lebih baik. Siapa tahu, titik berikutnya akan berasal dari instansimu, memberi warna baru 
+    bagi ekosistem inovasi kita bersama.
+  </p>
+
+  <hr class="w-1/4 h-1 bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 mx-auto my-4" />
+</header>
+
+
 
     <!-- Provinsi Map -->
     <section class="mb-6">

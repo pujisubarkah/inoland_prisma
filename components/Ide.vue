@@ -15,10 +15,6 @@
           class="stepper-label"
           :class="{ 'active-label': activeStep === idx }"
         >{{ s }}</div>
-        <div
-          v-if="idx < steps.length - 1"
-          class="stepper-line"
-        ></div>
       </div>
     </div>
 
