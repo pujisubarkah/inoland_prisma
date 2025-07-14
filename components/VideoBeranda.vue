@@ -1,5 +1,6 @@
 <template>
-  <div class="flex w-full items-center bg-[#1C2F5D] text-white p-6 md:p-10 rounded-xl shadow-lg relative">
+  <div class="flex w-full items-center text-white p-6 md:p-10 rounded-xl shadow-lg relative"
+       style="background: linear-gradient(90deg, #0a3570 0%, #154c8c 30%, #2563eb 60%, #1976d2 85%, #42a5f5 100%);">
     <!-- Video YouTube -->
     <div class="relative w-full md:w-1/2">
       <iframe
@@ -12,7 +13,7 @@
       ></iframe>
 
       <!-- Tulisan samping (vertical text) -->
-      <div class="absolute left-[-140px] top-1/2 -translate-y-1/2 rotate-90 text-xs md:text-sm tracking-wider text-gray-300">
+      <div class="absolute left-[-140px] top-1/2 -translate-y-1/2 rotate-90 text-xs md:text-sm tracking-wider text-gray-200">
         KOLABORASI UNTUK PERUBAHAN
       </div>
     </div>
@@ -28,7 +29,7 @@
       <h3 class="text-2xl font-bold leading-tight">
         Kreativitas dan Kolaborasi Bersatu di INOLAND untuk Menciptakan Inovasi yang Berarti.
       </h3>
-      <p class="text-gray-300 text-sm mt-4">
+      <p class="text-gray-200 text-sm mt-4">
         "Inovasi dapat dicapai oleh siapa saja melalui kreativitas dan kolaborasi, 
         di mana beragam ide saling dibagikan untuk menciptakan dampak yang berarti. 
         INOLAND, sebagai platform informasi dari Pusat Inovasi Administrasi Negara, 
