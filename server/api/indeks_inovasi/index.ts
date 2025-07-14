@@ -2,37 +2,38 @@
 
 import { db } from '../../database';
 import { indeks_inovasi } from '../../database/schema/indeks_inovasi';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 export default defineEventHandler(async (event) => {
   // Get query parameters
   const query = getQuery(event);
 
   try {
-    let data;
+    let whereConditions = [];
     
-    // Check if we have specific filters
+    // Build where conditions based on query parameters
     if (query.provId && typeof query.provId === 'string') {
       const provId = parseInt(query.provId.trim());
       if (!isNaN(provId)) {
-        data = await db.select().from(indeks_inovasi).where(
-          eq(indeks_inovasi.id_provinsi, provId)
-        );
-      } else {
-        data = await db.select().from(indeks_inovasi);
+        whereConditions.push(eq(indeks_inovasi.id_provinsi, provId));
       }
-    } else if (query.kabkotId && typeof query.kabkotId === 'string') {
+    }
+    
+    if (query.kabkotId && typeof query.kabkotId === 'string') {
       const kabkotId = parseInt(query.kabkotId.trim());
       if (!isNaN(kabkotId)) {
-        data = await db.select().from(indeks_inovasi).where(
-          eq(indeks_inovasi.id_kabkot, kabkotId)
-        );
-      } else {
-        data = await db.select().from(indeks_inovasi);
+        whereConditions.push(eq(indeks_inovasi.id_kabkot, kabkotId));
       }
-    } else if (query.level && typeof query.level === 'string') {
+    }
+    
+    if (query.level && typeof query.level === 'string') {
+      whereConditions.push(eq(indeks_inovasi.level, query.level));
+    }
+      // Execute query with combined conditions
+    let data;
+    if (whereConditions.length > 0) {
       data = await db.select().from(indeks_inovasi).where(
-        eq(indeks_inovasi.level, query.level)
+        whereConditions.length === 1 ? whereConditions[0] : and(...whereConditions)
       );
     } else {
       // Get all data if no specific filter
