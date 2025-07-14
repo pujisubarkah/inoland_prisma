@@ -9,7 +9,7 @@ import BeritaSection from '~/components/Berita_slider.vue'
 <template>
   <div class="min-h-screen bg-gradient-to-br from-white via-gray-100 to-cyan-100">
     <!-- Animated Title Section -->
-    <section class="py-8 bg-gradient-to-r from-cyan-400 via-blue-400 to-blue-700">
+    <section class="py-8 bg-gradient-to-r from-blue-900 via-blue-700 to-blue-600">
       <div class="container mx-auto px-6 flex flex-col items-center justify-center py-12">
         <div class="relative w-fit mb-6">
           <h1 class="animated-title text-center text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-wide drop-shadow-lg"
