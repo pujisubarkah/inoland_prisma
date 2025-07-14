@@ -150,10 +150,39 @@
 </template>
 
 <script setup lang="ts">
-// Define page meta
-definePageMeta({
-  title: 'Cari Inovasi',
-  description: 'Temukan dan jelajahi inovasi daerah di seluruh Indonesia'
+// Set page title and meta description
+useHead({
+  title: 'Temukan Inovasi | INOLAND',
+  meta: [
+    {
+      name: 'description',
+      content: 'Temukan dan jelajahi berbagai inovasi daerah di seluruh Indonesia melalui peta interaktif, daftar lengkap, dan dashboard analitik yang komprehensif.'
+    },
+    {
+      property: 'og:title',
+      content: 'Temukan Inovasi | INOLAND'
+    },
+    {
+      property: 'og:description',
+      content: 'Temukan dan jelajahi berbagai inovasi daerah di seluruh Indonesia melalui peta interaktif, daftar lengkap, dan dashboard analitik yang komprehensif.'
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    },
+    {
+      name: 'twitter:title',
+      content: 'Temukan Inovasi | INOLAND'
+    },
+    {
+      name: 'twitter:description',
+      content: 'Temukan dan jelajahi berbagai inovasi daerah di seluruh Indonesia melalui peta interaktif, daftar lengkap, dan dashboard analitik yang komprehensif.'
+    }
+  ]
 })
 </script>
 

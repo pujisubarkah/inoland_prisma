@@ -68,6 +68,34 @@
     </div>    <!-- Main Content -->
     <div class="px-8 pb-8">
       <div class="bg-white rounded-lg shadow-sm p-6">
+        <!-- Download Section -->
+        <div v-if="filteredInovasi.length > 0 && !loading" class="mb-6 flex items-center justify-between download-section">
+          <div class="flex items-center gap-4">
+            <h3 class="text-lg font-semibold text-gray-900">
+              {{ filteredInovasi.length }} inovasi ditemukan
+            </h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-600">Export data:</span>            <select 
+              v-model="selectedExportFormat"
+              class="export-select"
+            >
+              <option value="xlsx">Excel (.xlsx)</option>
+              <option value="csv">CSV (.csv)</option>
+              <option value="pdf">PDF (.pdf)</option>
+            </select>            <button 
+              @click="downloadData"
+              :disabled="isDownloading"
+              class="download-btn"
+            >
+              <i v-if="!isDownloading" class="fas fa-download"></i>
+              <i v-else class="fas fa-spinner fa-spin"></i>
+              <span v-if="!isDownloading">Download</span>
+              <span v-else>Mengunduh...</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Loading State -->
         <div v-if="loading" class="loading">
           <div class="spinner"></div>
@@ -206,7 +234,7 @@
                 <span class="text-sm text-gray-600">Tampilkan:</span>
                 <select 
                   v-model="itemsPerPage" 
-                  @change="changeItemsPerPage(Number($event.target.value))"
+                  @change="changeItemsPerPage(Number(($event.target as HTMLSelectElement)?.value || itemsPerPage))"
                   class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option :value="25">25</option>
@@ -270,10 +298,38 @@ interface Inovasi {
   showFullDescription?: boolean  // Add this for tracking expanded state
 }
 
-// Define page meta
-definePageMeta({
-  title: 'Daftar Inovasi',
-  description: 'Daftar lengkap inovasi daerah dengan fitur pencarian dan filter'
+useHead({
+  title: 'List Inovasi | INOLAND',
+  meta: [
+    {
+      name: 'description',
+      content: 'Daftar list lengkap idéinovasi daerah dengan fitur pencarian dan filter'
+    },
+    {
+      property: 'og:title',
+      content: 'List Inovasi | INOLAND'
+    },
+    {
+      property: 'og:description',
+      content: 'Daftar list lengkap ide inovasi daerah dengan fitur pencarian dan filter'
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    },
+    {
+      name: 'twitter:title',
+      content: 'List Inovasi | INOLAND'
+    },
+    {
+      name: 'twitter:description',
+      content: 'Daftar list lengkap ide inovasi daerah dengan fitur pencarian dan filter'
+    }
+  ]
 })
 
 // Reactive State
@@ -288,6 +344,8 @@ const error = ref('')
 const sortField = ref<keyof Inovasi | ''>('tahun')
 const sortDirection = ref<'asc' | 'desc'>('desc')
 const expandedDescriptions = ref<Set<number>>(new Set())
+const selectedExportFormat = ref<'xlsx' | 'csv' | 'pdf'>('xlsx')
+const isDownloading = ref(false)
 
 // Load Data Function
 const loadInovasi = async () => {
@@ -453,6 +511,139 @@ const changeItemsPerPage = (newItemsPerPage: number) => {
   expandedDescriptions.value.clear()  // Reset expanded descriptions
 }
 
+// Download functionality
+const downloadData = async () => {
+  if (isDownloading.value) return
+  
+  try {
+    isDownloading.value = true
+    
+    // Prepare data for export (use filteredInovasi to include current filters)
+    const dataToExport = filteredInovasi.value.map(item => ({
+      'Judul Inovasi': item.judul_inovasi || '',
+      'SDGS': item.sdgs?.nama || '',
+      'Tahun': item.tahun || '',
+      'Pemda': item.kld || '',
+      'Inovator': item.inovator || '',
+      'Deskripsi': item.deskripsi || 'Tidak ada deskripsi'
+    }))
+
+    if (selectedExportFormat.value === 'csv') {
+      downloadCSV(dataToExport)
+    } else if (selectedExportFormat.value === 'xlsx') {
+      await downloadExcel(dataToExport)
+    } else if (selectedExportFormat.value === 'pdf') {
+      await downloadPDF(dataToExport)
+    }
+    
+  } catch (error) {
+    console.error('Error downloading data:', error)
+    alert('Terjadi kesalahan saat mengunduh data. Silakan coba lagi.')
+  } finally {
+    isDownloading.value = false
+  }
+}
+
+const downloadCSV = (data: any[]) => {
+  if (data.length === 0) return
+  
+  const headers = Object.keys(data[0])
+  const csvContent = [
+    headers.join(','),
+    ...data.map(row => 
+      headers.map(header => {
+        const value = row[header] || ''
+        // Escape quotes and wrap in quotes if contains comma
+        return value.includes(',') || value.includes('"') 
+          ? `"${value.replace(/"/g, '""')}"` 
+          : value
+      }).join(',')
+    )
+  ].join('\n')
+  
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = `daftar_inovasi_${new Date().toISOString().split('T')[0]}.csv`
+  link.click()
+}
+
+const downloadExcel = async (data: any[]) => {
+  // Import xlsx library dynamically
+  const XLSX = await import('xlsx')
+  
+  const worksheet = XLSX.utils.json_to_sheet(data)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Daftar Inovasi')
+  
+  // Auto-width columns
+  const maxWidth = 50
+  const colWidths = Object.keys(data[0] || {}).map(key => {
+    const maxLength = Math.max(
+      key.length,
+      ...data.map(row => String(row[key] || '').length)
+    )
+    return { width: Math.min(maxLength + 2, maxWidth) }
+  })
+  worksheet['!cols'] = colWidths
+  
+  XLSX.writeFile(workbook, `daftar_inovasi_${new Date().toISOString().split('T')[0]}.xlsx`)
+}
+
+const downloadPDF = async (data: any[]) => {
+  // Import jsPDF library dynamically
+  const { jsPDF } = await import('jspdf')
+  const autoTable = (await import('jspdf-autotable')).default
+  
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  })
+  
+  // Add title
+  doc.setFontSize(16)
+  doc.text('Daftar Ide Inovasi Laboratorium Inovasi LAN | INOLAND', 14, 20)
+  
+  // Add date
+  doc.setFontSize(10)
+  doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 14, 30)
+  doc.text(`Total Data: ${data.length} inovasi`, 14, 35)
+  doc.text(`Sumber: https://inoland.lan.go.id`, 14, 35)
+  
+  // Prepare table data
+  const headers = Object.keys(data[0] || {})
+  const rows = data.map(item => headers.map(header => item[header] || ''))
+  
+  // Add table
+  autoTable(doc, {
+    head: [headers],
+    body: rows,
+    startY: 45,    styles: { 
+      fontSize: 8,
+      cellPadding: 3,
+      overflow: 'linebreak'
+    },
+    headStyles: { 
+      fillColor: [102, 126, 234],
+      textColor: 255,
+      fontSize: 9,
+      fontStyle: 'bold'
+    },
+    columnStyles: {
+      0: { cellWidth: 50 }, // Judul Inovasi
+      1: { cellWidth: 25 }, // SDGS
+      2: { cellWidth: 20 }, // Tahun
+      3: { cellWidth: 40 }, // Pemda
+      4: { cellWidth: 40 }, // Inovator
+      5: { cellWidth: 60 }  // Deskripsi
+    },
+    margin: { top: 45, right: 14, bottom: 20, left: 14 },
+  })
+  
+  doc.save(`daftar_inovasi_${new Date().toISOString().split('T')[0]}.pdf`)
+}
+
 // Watchers
 watch([searchTerm, selectedYear, selectedSDGS], () => {
   currentPage.value = 1 // Reset to first page when filtering
@@ -616,7 +807,7 @@ onMounted(() => {
 .retry-btn:hover {
   background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 8px rgba(248, 113, 113, 0.3);
 }
 
 /* Modern Pagination */
@@ -659,6 +850,88 @@ onMounted(() => {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Download Section Styles */
+.download-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.download-section h3 {
+  margin: 0;
+  color: #1e293b;
+}
+
+.download-section select {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #374151;
+  min-width: 140px;
+  transition: all 0.2s ease;
+}
+
+.export-select {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #374151;
+  min-width: 140px;
+  transition: all 0.2s ease;
+}
+
+.download-section select:hover,
+.export-select:hover {
+  border-color: #9ca3af;
+}
+
+.download-section select:focus,
+.export-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+.download-btn {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.download-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+}
+
+.download-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.download-btn i {
+  font-size: 13px;
 }
 
 /* Responsive Design */
@@ -764,5 +1037,4 @@ onMounted(() => {
     border-bottom: none;
   }
 }
-
 </style>

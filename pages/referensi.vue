@@ -160,9 +160,36 @@ const TuxedovationIcon = {
 
 // Meta
 useHead({
-  title: 'Referensi Inovasi - Inolands',
+  title: 'Referensi Inovasi | INOLAND',
   meta: [
-    { name: 'description', content: 'Kumpulan referensi dan sumber daya inovasi terlengkap dari berbagai daerah di Indonesia' }
+    {
+      name: 'description',
+      content: 'Kumpulan referensi dan sumber daya inovasi terlengkap dari berbagai daerah di Indonesia'
+    },
+    {
+      property: 'og:title',
+      content: 'Referensi Inovasi | INOLAND'
+    },
+    {
+      property: 'og:description',
+      content: 'Kumpulan referensi dan sumber daya inovasi terlengkap dari berbagai daerah di Indonesia'
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    },
+    {
+      name: 'twitter:title',
+      content: 'Referensi Inovasi | INOLAND'
+    },
+    {
+      name: 'twitter:description',
+      content: 'Kumpulan referensi dan sumber daya inovasi terlengkap dari berbagai daerah di Indonesia'
+    }
   ]
 })
 

@@ -134,15 +134,18 @@
                 <div class="flex flex-col md:flex-row gap-6 mb-6">                  <!-- Table Inovasi Kabupaten -->
                   <div class="w-full md:w-1/2">                    <h2 class="font-bold mb-2 text-blue-700 flex items-center justify-between">
                       <span>Daftar Ide Inovasi {{ selectedKabkot ? dialogKabkotName : selectedProvinceName }}</span>
-                      <button 
-                        v-if="selectedKabkot" 
-                        @click="resetToProvinceData"
-                        class="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
-                        title="Lihat semua inovasi di provinsi"
-                      >
-                        Lihat Semua di Provinsi
-                      </button>
-                    </h2>
+                      <div class="flex items-center gap-2">
+                        <button 
+                          v-if="selectedKabkot" 
+                          @click="resetToProvinceData"
+                          class="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                          title="Lihat semua inovasi di provinsi"
+                        >
+                          Lihat Semua di Provinsi
+                        </button>
+                      </div>
+                    </h2>                    
+                    
                     
                     <!-- Info Boxes -->
                     <div class="flex justify-between gap-3 mb-4">
@@ -175,6 +178,57 @@
                              :class="selectedKabkot ? 'text-green-500' : 'text-gray-400'">
                           Kabupaten/Kota
                         </div>
+                      </div>
+                    </div>
+
+                    <!-- Download Buttons -->
+                    <div v-if="dialogKabkotInovasi.length > 0" class="mb-4">
+                      <div class="text-sm text-gray-600 mb-2">
+                        📊 Tersedia {{ dialogKabkotInovasi.length }} data untuk diunduh
+                      </div>
+                      <div class="flex flex-wrap gap-2">
+                        <button 
+                          @click="downloadExcel"
+                          :disabled="isDownloading || dialogKabkotInovasi.length === 0"
+                          class="flex items-center gap-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Download data sebagai Excel"
+                        >
+                          <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                          </svg>
+                          <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+                          </svg>
+                          Excel
+                        </button>
+                        <button 
+                          @click="downloadCSV"
+                          :disabled="isDownloading || dialogKabkotInovasi.length === 0"
+                          class="flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Download data sebagai CSV"
+                        >
+                          <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                          </svg>
+                          <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+                          </svg>
+                          CSV
+                        </button>
+                        <button 
+                          @click="downloadPDF"
+                          :disabled="isDownloading || dialogKabkotInovasi.length === 0"
+                          class="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Download data sebagai PDF"
+                        >
+                          <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                          </svg>
+                          <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+                          </svg>
+                          PDF
+                        </button>
                       </div>
                     </div>
                     
@@ -446,11 +500,41 @@ import { Line } from 'vue-chartjs'
 import axios from 'axios'
 import Dialog from '@/components/ui/dialog/Dialog.vue'
 import Table from '@/components/ui/table/Table.vue'
+import * as XLSX from 'xlsx'
 
 // Define page meta
-definePageMeta({
-  title: 'Sebaran Inovasi',
-  description: 'Peta interaktif sebaran ide inovasi di seluruh Indonesia'
+useHead({
+  title: 'Sebaran Inovasi | INOLAND',
+  meta: [
+    {
+      name: 'description',
+      content: 'Peta interaktif sebaran ide inovasi di seluruh Indonesia'
+    },
+    {
+      property: 'og:title',
+      content: 'Sebaran Inovasi | INOLAND'
+    },
+    {
+      property: 'og:description',
+      content: 'Peta interaktif sebaran ide inovasi di seluruh Indonesia'
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    },
+    {
+      name: 'twitter:title',
+      content: 'Sebaran Inovasi | INOLAND'
+    },
+    {
+      name: 'twitter:description',
+      content: 'Peta interaktif sebaran ide inovasi di seluruh Indonesia'
+    }
+  ]
 })
 
 // Register Chart.js components
@@ -542,6 +626,7 @@ const dialogSelectedIndex = ref<'indeks_skor' | 'ipp_skor' | 'idsd_skor' | 'rb_l
 const dialogKabkotInovasi = ref<Inovasi[]>([])
 const hasShownWelcomeModal = ref(false)
 const kabupatenTooltip = ref({ visible: false, nama: '', jumlah: 0, x: 0, y: 0 })
+const isDownloading = ref(false)
 
 // Dialog chart color based on selected index
 const dialogChartColor = computed(() => {
@@ -1090,14 +1175,243 @@ async function showKabupatenChart(kab: Kabupaten) {
       console.log('❌ No valid kabupaten innovation data received')
       dialogKabkotInovasi.value = []
     }
-    
-    // Also update the main chart data with kabupaten-specific data
+      // Also update the main chart data with kabupaten-specific data
     await loadInovasi(kab.id_kabkot)
   } catch (error) {
     console.error('❌ Error loading kabupaten data:', error)
     dialogKabkotIndeks.value = []
     dialogKabkotInovasi.value = []
   }
+}
+
+// Download Functions
+async function downloadExcel() {
+  if (isDownloading.value || dialogKabkotInovasi.value.length === 0) return
+  
+  try {
+    isDownloading.value = true
+    
+    const data = dialogKabkotInovasi.value.map((item, index) => ({
+      'No': index + 1,
+      'Tahun': item.tahun,
+      'Judul Inovasi': item.judul_inovasi,
+      'SDGS': item.sdgs?.nama || '-',
+      'Inovator': item.inovator || '-',
+      'Deskripsi': item.deskripsi || 'Tidak ada deskripsi',
+      'Provinsi': item.wilayah?.nama_provinsi || '',
+      'Kabupaten/Kota': item.wilayah?.nama_kabkot || ''
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(data)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Inovasi')
+    
+    const fileName = `Daftar_Inovasi_${selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value}_${new Date().toISOString().split('T')[0]}.xlsx`.replace(/[^a-zA-Z0-9_.-]/g, '_')
+    XLSX.writeFile(workbook, fileName)
+  } catch (error) {
+    console.error('Error downloading Excel:', error)
+    alert('Terjadi kesalahan saat mengunduh file Excel')
+  } finally {
+    isDownloading.value = false
+  }
+}
+
+async function downloadCSV() {
+  if (isDownloading.value || dialogKabkotInovasi.value.length === 0) return
+  
+  try {
+    isDownloading.value = true
+    
+    const data = dialogKabkotInovasi.value.map((item, index) => ({
+      'No': index + 1,
+      'Tahun': item.tahun,
+      'Judul Inovasi': item.judul_inovasi,
+      'SDGS': item.sdgs?.nama || '-',
+      'Inovator': item.inovator || '-',
+      'Deskripsi': item.deskripsi || 'Tidak ada deskripsi',
+      'Provinsi': item.wilayah?.nama_provinsi || '',
+      'Kabupaten/Kota': item.wilayah?.nama_kabkot || ''
+    }))
+
+    const worksheet = XLSX.utils.json_to_sheet(data)
+    const csv = XLSX.utils.sheet_to_csv(worksheet)
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `Daftar_Inovasi_${selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value}_${new Date().toISOString().split('T')[0]}.csv`.replace(/[^a-zA-Z0-9_.-]/g, '_'))
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('Error downloading CSV:', error)
+    alert('Terjadi kesalahan saat mengunduh file CSV')
+  } finally {
+    isDownloading.value = false
+  }
+}
+
+async function downloadPDF() {
+  if (isDownloading.value || dialogKabkotInovasi.value.length === 0) return
+  
+  try {
+    isDownloading.value = true
+    
+    // Try main PDF generation first
+    await generateMainPDF()
+    
+  } catch (error) {
+    console.error('Error downloading PDF:', error)
+    
+    // Try fallback PDF without autoTable
+    try {
+      await generateFallbackPDF()
+    } catch (fallbackError) {
+      console.error('Fallback PDF also failed:', fallbackError)
+      alert('Terjadi kesalahan saat mengunduh file PDF. Silakan coba refresh halaman atau gunakan format Excel/CSV sebagai alternatif.')
+    }
+  } finally {
+    isDownloading.value = false
+  }
+}
+
+async function generateMainPDF() {
+  // Import jsPDF with proper module syntax
+  const jsPDF = (await import('jspdf')).default
+  await import('jspdf-autotable')
+  
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'mm',
+    format: 'a4'
+  })
+  
+  // Add title
+  doc.setFontSize(16)
+  doc.setFont('helvetica', 'bold')
+  const title = `Daftar Ide Inovasi ${selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value}`
+  
+  // Split title if too long
+  const titleLines = doc.splitTextToSize(title, 250)
+  doc.text(titleLines, 20, 20)
+  
+  // Add generation date
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Diunduh pada: ${new Date().toLocaleDateString('id-ID')}`, 20, 35)
+  
+  // Add total count
+  doc.text(`Total data: ${dialogKabkotInovasi.value.length} inovasi`, 20, 40)
+  
+  // Prepare table data with safe text handling
+  const tableData = dialogKabkotInovasi.value.map((item, index) => [
+    (index + 1).toString(),
+    (item.tahun || '-').toString(),
+    (item.judul_inovasi || '-').toString().slice(0, 60) + ((item.judul_inovasi || '').length > 60 ? '...' : ''),
+    (item.sdgs?.nama || '-').toString(),
+    (item.inovator || '-').toString().slice(0, 25) + ((item.inovator || '').length > 25 ? '...' : ''),
+    (item.deskripsi || 'Tidak ada deskripsi').toString().slice(0, 80) + ((item.deskripsi || '').length > 80 ? '...' : '')
+  ])
+  
+  // Add table using autoTable
+  ;(doc as any).autoTable({
+    head: [['No', 'Tahun', 'Judul Inovasi', 'SDGS', 'Inovator', 'Deskripsi']],
+    body: tableData,
+    startY: 50,
+    styles: {
+      fontSize: 8,
+      cellPadding: 2,
+      overflow: 'linebreak'
+    },
+    headStyles: {
+      fillColor: [59, 130, 246],
+      textColor: 255,
+      fontStyle: 'bold'
+    },
+    columnStyles: {
+      0: { cellWidth: 15 },
+      1: { cellWidth: 20 },
+      2: { cellWidth: 70 },
+      3: { cellWidth: 35 },
+      4: { cellWidth: 35 },
+      5: { cellWidth: 70 }
+    },
+    margin: { top: 50, right: 15, bottom: 20, left: 15 },
+    showHead: 'everyPage'
+  })
+  
+  // Create safe filename
+  const regionName = selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value
+  const safeRegionName = regionName.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_')
+  const dateStr = new Date().toISOString().split('T')[0]
+  const fileName = `Daftar_Inovasi_${safeRegionName}_${dateStr}.pdf`
+  
+  doc.save(fileName)
+}
+
+async function generateFallbackPDF() {
+  // Simple PDF without autoTable
+  const jsPDF = (await import('jspdf')).default
+  
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  })
+  
+  let yPosition = 20
+  
+  // Add title
+  doc.setFontSize(16)
+  doc.setFont('helvetica', 'bold')
+  const title = `Daftar Ide Inovasi ${selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value}`
+  doc.text(title, 20, yPosition)
+  yPosition += 15
+  
+  // Add generation date
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Diunduh pada: ${new Date().toLocaleDateString('id-ID')}`, 20, yPosition)
+  yPosition += 10
+  
+  // Add total count
+  doc.text(`Total data: ${dialogKabkotInovasi.value.length} inovasi`, 20, yPosition)
+  doc.text(`Sumber: https://inoland.lan.go.id`, 20, yPosition)
+  yPosition += 15
+  
+  // Add data as text list
+  doc.setFontSize(9)
+  dialogKabkotInovasi.value.forEach((item, index) => {
+    if (yPosition > 270) {
+      doc.addPage()
+      yPosition = 20
+    }
+    
+    const text = `${index + 1}. ${item.judul_inovasi} (${item.tahun})`
+    const inovatorText = `   Inovator: ${item.inovator || 'N/A'}`
+    const sdgsText = `   SDGS: ${item.sdgs?.nama || 'N/A'}`
+    
+    const lines = doc.splitTextToSize(text, 170)
+    doc.text(lines, 20, yPosition)
+    yPosition += lines.length * 4
+    
+    doc.text(inovatorText, 20, yPosition)
+    yPosition += 4
+    
+    doc.text(sdgsText, 20, yPosition)
+    yPosition += 8
+  })
+  
+  // Create safe filename
+  const regionName = selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value
+  const safeRegionName = regionName.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_')
+  const dateStr = new Date().toISOString().split('T')[0]
+  const fileName = `Daftar_Inovasi_Simple_${safeRegionName}_${dateStr}.pdf`
+  
+  doc.save(fileName)
 }
 </script>
 
