@@ -309,10 +309,12 @@ const selectedIndex = ref<'indeks_skor' | 'ipp_skor' | 'idsd_skor' | 'rb_level'>
 
 // Legend colors
 const legendColors = ref({
-  'Tinggi (≥20)': '#2563eb',
-  'Sedang (10-19)': '#3b82f6',
-  'Rendah (1-9)': '#60a5fa',
-  'Tidak ada data': '#e0e0e0'
+  'Sangat Tinggi (>200)': '#08306b',
+  'Tinggi (>150)': '#08519c',
+  'Menengah (>100)': '#2171b5',
+  'Cukup (>50)': '#4292c6',
+  'Rendah (>0)': '#6baed6',
+  'Tidak ada data': '#fff'
 })
 
 // Computed: Paginated inovasi for current page
@@ -522,11 +524,13 @@ function cleanSvgPath(path: string | undefined): string {
 }
 
 // Choropleth color function
-function getChoroplethColor(jumlah: number): string {
-  if (jumlah >= 20) return 'url(#grad-blue-high)'
-  if (jumlah >= 10) return 'url(#grad-blue-mid)'
-  if (jumlah > 0) return 'url(#grad-blue-low)'
-  return '#e0e0e0'
+function getChoroplethColor(jumlah_inovasi: number): string {
+  if (jumlah_inovasi > 200) return '#0d47a1'; // dark vibrant blue
+  if (jumlah_inovasi > 150) return '#1976d2'; // primary blue
+  if (jumlah_inovasi > 100) return '#42a5f5'; // sky blue
+  if (jumlah_inovasi > 50) return '#90caf9';  // soft blue
+  if (jumlah_inovasi > 0) return '#e3f2fd';   // very light blue
+  return '#ffffff'; // white for 0
 }
 
 // Load initial data
