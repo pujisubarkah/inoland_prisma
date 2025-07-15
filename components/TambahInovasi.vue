@@ -76,100 +76,71 @@
         Next
       </button>
     </div>
+<!-- Modal Tambah Inovasi (manual) -->
+<div
+  v-if="showModalAdd"
+  class="fixed inset-0 z-50 flex items-center justify-center"
+  style="background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(2px);"
+>
+  <div
+    class="bg-gradient-to-br from-blue-700 via-blue-400 to-cyan-400 rounded-xl shadow-xl p-8 max-w-lg w-full mx-auto relative overflow-y-auto"
+    style="max-height: 90vh;"
+  >
+    <button
+      @click="onClose"
+      class="absolute top-4 right-4 text-white text-2xl font-bold hover:text-red-400 transition"
+    >×</button>
+    <h2 class="text-2xl font-extrabold text-center text-white mb-6 drop-shadow">Tambah Inovasi Baru</h2>
+    <form @submit.prevent="handleAddInovasi" class="space-y-5">
+      <div>
+        <label class="block text-sm font-bold text-white mb-2">Tahun</label>
+        <input v-model="formInovasi.tahun" type="text" required placeholder="Tahun"
+          class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-white mb-2">Judul Inovasi</label>
+        <input v-model="formInovasi.judul_inovasi" type="text" required placeholder="Judul Inovasi"
+          class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-white mb-2">KLD</label>
+        <input v-model="formInovasi.kld" type="text" required placeholder="KLD"
+          class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-white mb-2">Urusan</label>
+        <input v-model="formInovasi.urusan" type="text" required placeholder="Urusan"
+          class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-white mb-2">Inovator</label>
+        <input v-model="formInovasi.inovator" type="text" placeholder="Inovator"
+          class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-white mb-2">SDGS</label>
+        <input v-model="formInovasi.sdgs" type="text" placeholder="SDGS"
+          class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
+      </div>
+      <div>
+        <label class="block text-sm font-bold text-white mb-2">Deskripsi</label>
+        <textarea v-model="formInovasi.deskripsi" rows="3" required placeholder="Deskripsi inovasi"
+          class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow resize-none"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" @click="onClose"
+          class="bg-gray-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-gray-600 transition">
+          Batal
+        </button>
+        <button type="submit"
+          class="bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 text-white px-5 py-2 rounded-lg font-bold shadow hover:scale-105 hover:shadow-xl transition-all">
+          Simpan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    <!-- Modal Tambah Inovasi (shadcn dialog) -->
-    <Dialog v-model:open="showModalAdd">
-      <DialogContent class="bg-gradient-to-br from-blue-700 via-blue-400 to-cyan-400 rounded-xl shadow-xl p-8 max-w-lg w-full mx-auto mt-8">
-        <h2 class="text-2xl font-extrabold text-center text-white mb-6 drop-shadow">Tambah Inovasi Baru</h2>
-        <form @submit.prevent="handleAddInovasi" class="space-y-5">
-          <div>
-            <label class="block text-sm font-bold text-white mb-2">Tahun</label>
-            <input
-              v-model="formInovasi.tahun"
-              type="text"
-              required
-              placeholder="Tahun"
-              class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-white mb-2">Judul Inovasi</label>
-            <input
-              v-model="formInovasi.judul_inovasi"
-              type="text"
-              required
-              placeholder="Judul Inovasi"
-              class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-white mb-2">KLD</label>
-            <input
-              v-model="formInovasi.kld"
-              type="text"
-              required
-              placeholder="KLD"
-              class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-white mb-2">Urusan</label>
-            <input
-              v-model="formInovasi.urusan"
-              type="text"
-              required
-              placeholder="Urusan"
-              class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-white mb-2">Inovator</label>
-            <input
-              v-model="formInovasi.inovator"
-              type="text"
-              placeholder="Inovator"
-              class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-white mb-2">SDGS</label>
-            <input
-              v-model="formInovasi.sdgs"
-              type="text"
-              placeholder="SDGS"
-              class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-white mb-2">Deskripsi</label>
-            <textarea
-              v-model="formInovasi.deskripsi"
-              rows="3"
-              required
-              placeholder="Deskripsi inovasi"
-              class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow resize-none"
-            ></textarea>
-          </div>
-          <div class="flex justify-end gap-3 mt-6">
-            <DialogClose as-child>
-              <button
-                type="button"
-                @click="onClose"
-                class="bg-gray-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-gray-600 transition"
-              >
-                Batal
-              </button>
-            </DialogClose>
-            <button
-              type="submit"
-              class="bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 text-white px-5 py-2 rounded-lg font-bold shadow hover:scale-105 hover:shadow-xl transition-all"
-            >
-              Simpan
-            </button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
   </div>
 </template>
 

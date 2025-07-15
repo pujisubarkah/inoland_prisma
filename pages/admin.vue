@@ -38,6 +38,15 @@
         </li>
         <li>
           <button
+            @click="setActive('Artikel')"
+            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
+          >
+            <span v-if="isSidebarOpen" class="ml-2">Tambah Artikel</span>
+            <span v-else>📝</span>
+          </button>
+        </li>
+        <li>
+          <button
             @click="setActive('Role')"
             class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
           >
@@ -52,6 +61,7 @@
     <div class="flex-1">
       <TambahBerita v-if="activeComponent === 'Berita'" />
       <TambahInovasi v-if="activeComponent === 'Inovasi'" />
+      <TambahArtikel v-if="activeComponent === 'Artikel'" />
       <AturRole v-if="activeComponent === 'Role'" />
     </div>
   </div>
@@ -62,6 +72,7 @@ import { ref } from 'vue'
 import TambahBerita from '@/components/TambahBerita.vue'
 import TambahInovasi from '@/components/TambahInovasi.vue'
 import AturRole from '@/components/AturRole.vue'
+import TambahArtikel from '@/components/TambahArtikel.vue'
 
 const isSidebarOpen = ref(false)
 const activeComponent = ref('Berita')
