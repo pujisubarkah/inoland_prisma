@@ -8,14 +8,14 @@
       <div class="flex items-center mb-4">
         <div class="avatar-ring mr-3 hover:scale-105 transition">
           <img
-            :src="selectedArticle.photo || selectedArticle.avatar"
+            :src="selectedArticle.avatar"
             alt="avatar"
             class="w-12 h-12 rounded-full object-cover shadow"
           />
         </div>
         <div>
           <h3 class="text-xl font-bold mb-1 text-blue-700">{{ selectedArticle.title }}</h3>
-          <p class="text-gray-500 text-sm">{{ selectedArticle.date }}</p>
+          <p class="text-gray-500 text-sm">{{ formatDate(selectedArticle.date) }}</p>
         </div>
       </div>
       <div class="text-gray-800 leading-relaxed" v-html="selectedArticle.content"></div>
@@ -29,14 +29,14 @@
       >
         <div class="avatar-ring mr-3 group-hover:scale-105 transition">
           <img
-            :src="article.photo || article.avatar"
+            :src="article.avatar"
             alt="avatar"
             class="w-10 h-10 rounded-full object-cover shadow"
           />
         </div>
         <div>
           <h3 class="font-semibold text-lg mb-1 text-blue-700 group-hover:underline">{{ article.title }}</h3>
-          <p class="text-gray-500 text-sm mb-1">{{ article.date }}</p>
+          <p class="text-gray-500 text-sm mb-1">{{ formatDate(article.date) }}</p>
           <p class="text-gray-700 text-sm line-clamp-2">{{ article.summary }}</p>
         </div>
       </div>
@@ -45,45 +45,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
-function getDicebearAvatar(name) {
-  return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=1976d2,e3f2fd`
+const articles = ref([])
+const selectedArticle = ref(null)
+
+function formatDate(dateStr) {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-const articles = [
-  {
-    id: 1,
-    title: 'Mengenal Laboratorium Inovasi',
-    date: '15 Juli 2025',
-    summary: 'Laboratorium Inovasi adalah wadah pengembangan ide dan solusi kreatif untuk instansi pemerintah...',
-    photo: 'https://randomuser.me/api/portraits/men/32.jpg', // contoh foto dummy
-    avatar: getDicebearAvatar('Lab Inovasi'),
-    content: `<p>Laboratorium Inovasi merupakan metode pengembangan inovasi yang telah diterapkan sejak 2015. Melalui pendekatan ini, ide-ide kreatif dari berbagai instansi dapat dikembangkan menjadi solusi nyata yang berdampak bagi masyarakat.</p>
-    <ul class="list-disc ml-6 mt-2">
-      <li>Kolaborasi lintas sektor</li>
-      <li>Pendampingan inovator</li>
-      <li>Implementasi dan monitoring</li>
-    </ul>`
-  },
-  {
-    id: 2,
-    title: 'Langkah Praktis Menjadi Inovator',
-    date: '10 Juli 2025',
-    summary: 'Artikel ini membahas tahapan dan tips menjadi inovator di lingkungan birokrasi...',
-    photo: '', // kosong, pakai Dicebear
-    avatar: getDicebearAvatar('Inovator'),
-    content: `<p>Menjadi inovator di lingkungan birokrasi membutuhkan keberanian dan strategi yang tepat. Berikut beberapa langkah praktis:</p>
-    <ol class="list-decimal ml-6 mt-2">
-      <li>Identifikasi masalah yang relevan</li>
-      <li>Kembangkan ide kreatif</li>
-      <li>Kolaborasi dengan tim</li>
-      <li>Uji coba dan evaluasi</li>
-    </ol>`
+async function fetchArticles() {
+  try {
+    const res = await $fetch('/api/artikel')
+    // Jika response berupa array langsung
+    articles.value = Array.isArray(res) ? res : (res.data || [])
+  } catch (error) {
+    console.error('Gagal mengambil artikel:', error)
   }
-]
+}
 
-const selectedArticle = ref(null)
+onMounted(fetchArticles)
 </script>
 
 <style scoped>

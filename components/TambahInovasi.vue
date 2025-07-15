@@ -19,10 +19,11 @@
             <th class="border-b text-base font-semibold p-4 pl-8 text-left w-24">Tahun</th>
             <th class="border-b text-base font-semibold p-4 text-left w-56">Judul Inovasi</th>
             <th class="border-b text-base font-semibold p-4 text-left w-40">KLD</th>
-            <th class="border-b text-base font-semibold p-4 text-left w-40">Urusan</th>
+            <!-- <th class="border-b text-base font-semibold p-4 text-left w-40">Urusan</th> -->
             <th class="border-b text-base font-semibold p-4 text-left w-32">Inovator</th>
             <th class="border-b text-base font-semibold p-4 text-left w-32">SDGS</th>
             <th class="border-b text-base font-semibold p-4 text-left w-96">Deskripsi</th>
+            <th class="border-b text-base font-semibold p-4 text-left w-40">Wilayah</th>
             <th class="border-b text-base font-semibold p-4 text-left w-32">Aksi</th>
           </tr>
         </thead>
@@ -35,11 +36,15 @@
             <td class="border-b p-4 font-bold text-blue-700">{{ item.tahun }}</td>
             <td class="border-b p-4 font-bold text-blue-700">{{ item.judul_inovasi }}</td>
             <td class="border-b p-4 font-bold text-blue-700">{{ item.kld }}</td>
-            <td class="border-b p-4 font-bold text-blue-700">{{ item.urusan }}</td>
+            <!-- <td class="border-b p-4 font-bold text-blue-700">{{ item.urusan || '-' }}</td> -->
             <td class="border-b p-4 font-bold text-blue-700">{{ item.inovator || '-' }}</td>
             <td class="border-b p-4 font-bold text-blue-700">{{ item.sdgs || '-' }}</td>
             <td class="border-b p-4 text-blue-700 w-96">
               <div class="whitespace-pre-line">{{ item.deskripsi }}</div>
+            </td>
+            <td class="border-b p-4 text-blue-700">
+              {{ item.wilayah?.nama_provinsi || '-' }}<br>
+              {{ item.wilayah?.nama_kabkot || '-' }}
             </td>
             <td class="border-b p-4 font-bold flex gap-2 w-32">
               <button @click="handleEditClick(item.id)" class="text-blue-600 hover:text-blue-700 bg-white border border-blue-200 rounded-lg px-2 py-1 shadow hover:scale-110 transition">
@@ -107,11 +112,11 @@
         <input v-model="formInovasi.kld" type="text" required placeholder="KLD"
           class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
       </div>
-      <div>
+      <!-- <div>
         <label class="block text-sm font-bold text-white mb-2">Urusan</label>
         <input v-model="formInovasi.urusan" type="text" required placeholder="Urusan"
           class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
-      </div>
+      </div> -->
       <div>
         <label class="block text-sm font-bold text-white mb-2">Inovator</label>
         <input v-model="formInovasi.inovator" type="text" placeholder="Inovator"
@@ -146,7 +151,6 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog'
 
 const inolands = ref([])
 const showModalAdd = ref(false)
@@ -166,7 +170,8 @@ const formInovasi = ref({
 const fetchInolands = async () => {
   try {
     const res = await $fetch('/api/inolands')
-    inolands.value = Array.isArray(res) ? res : []
+    // Ambil data dari res.data
+    inolands.value = Array.isArray(res.data) ? res.data : []
   } catch (error) {
     console.error('Gagal mengambil data inovasi:', error)
   }
@@ -191,7 +196,12 @@ const handlePageChange = (newPage) => {
 }
 
 const handleAddInovasi = () => {
-  inolands.value.unshift({ ...formInovasi.value, id: Date.now() })
+  // id baru dari Date.now(), wilayah kosong
+  inolands.value.unshift({
+    ...formInovasi.value,
+    id: Date.now(),
+    wilayah: { nama_provinsi: '', nama_kabkot: '' }
+  })
   showModalAdd.value = false
   formInovasi.value = {
     tahun: '',
