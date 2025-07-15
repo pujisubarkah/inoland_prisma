@@ -196,12 +196,12 @@ const fetchBeritaFromAPI = async (): Promise<void> => {
       pagination?: { total: number }
     }
 
-    const response = await $fetch('/api/inovasi_lan', {
+    const response: any = await $fetch('/api/inovasi_lan', {
       query: {
         page: currentPage.value,
         limit: itemsPerPage * 10 // Get more items to handle client-side pagination
       }
-    }) as ApiResponse
+    })
 
     if (response.success && Array.isArray(response.data)) {
       const formattedData: NewsItem[] = response.data.map((item: any) => ({

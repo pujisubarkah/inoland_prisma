@@ -82,15 +82,9 @@
 
           <!-- Direktori -->
           <Direktori v-else-if="activeComponent === 'Direktori'" />
-          
-          <!-- Default/Error State -->
-          <div v-else class="text-center py-20">
-            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.5-.9-6.122-2.377M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-            <h3 class="text-xl font-medium text-gray-600 mb-2">Konten tidak ditemukan</h3>
-            <p class="text-gray-500">Silakan pilih menu dari sidebar</p>
-          </div>
+
+          <!-- Artikel Lab Inovasi -->
+          <Artikel v-else-if="activeComponent === 'Artikel'" />
         </div>
       </div>
     </div>
@@ -114,6 +108,7 @@ import Infografis from '~/components/Infografis.vue'
 import ProperExpo from '~/components/Properexpo.vue'
 import Tuxedovation from '~/components/Tuxedovation.vue'
 import Direktori from '~/components/Direktory.vue'
+import Artikel from '~/components/Artikel.vue'
 
 // Icon Components
 const TableIcon = {
@@ -204,6 +199,12 @@ const isMobile = computed(() => windowWidth.value < 768)
 
 // Menu items configuration
 const menuItems = [
+  { 
+    label: 'Artikel', 
+    icon: NewsIcon, 
+    component: 'Artikel',
+    description: 'Artikel terkait Lab Inovasi dan pengembangan inovasi daerah'
+  },
   { 
     label: 'List Inovasi', 
     icon: TableIcon, 
