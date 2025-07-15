@@ -547,11 +547,10 @@ const initCharts = async () => {
   await nextTick()
   
   if (typeof window === 'undefined') return
+    // Dynamic import untuk Chart.js
+  const { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend, PieController, BarController } = await import('chart.js')
   
-  // Dynamic import untuk Chart.js
-  const { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend } = await import('chart.js')
-  
-  Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend)
+  Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend, PieController, BarController)
   
   // Pie Chart
   if (pieChart.value) {
