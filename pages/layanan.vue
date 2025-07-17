@@ -33,10 +33,25 @@
                   'bg-blue-600 border-2 border-blue-400': selectedVideo.id === video.id
                 }
               ]"
-            >
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd"/>
+            >              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <!-- Lab Inovasi - Laboratory Beaker Icon -->
+                <path v-if="video.icon === 'lab'" fill-rule="evenodd" d="M6 2a1 1 0 011-1h6a1 1 0 110 2v.5c0 1.5-.5 3.5-2 5.086L8 10.914C6.5 9.5 6 7.5 6 6V2zm4 14c-4 0-6-1.5-6-4 0-1.5 1-3 2.5-4.5L8 6v4c0 2.5 1.5 4 2 4s2-1.5 2-4V6l1.5 1.5C15 9 16 10.5 16 12c0 2.5-2 4-6 4z" clip-rule="evenodd"/>
+                
+                <!-- Drum Up - Megaphone/Speaker Icon -->
+                <path v-if="video.icon === 'drum'" fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h3.763l7.79 3.894A1 1 0 0018 15V3zM5 8a1 1 0 100 2h.764l.236-.118V8.118L5.764 8H5z" clip-rule="evenodd"/>
+                
+                <!-- Diagnose - Search/Magnifying Glass Icon -->
+                <path v-if="video.icon === 'diagnose'" fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                
+                <!-- Design - Pencil/Drawing Icon -->
+                <path v-if="video.icon === 'design'" d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                
+                <!-- Deliver - Truck/Delivery Icon -->
+                <path v-if="video.icon === 'deliver'" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                <path v-if="video.icon === 'deliver'" d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+                
+                <!-- Display - Monitor/Screen Icon -->
+                <path v-if="video.icon === 'display'" fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd"/>
               </svg>
               <span v-if="isSidebarOpen" class="ml-3 flex items-center text-sm">
                 {{ video.title }}
@@ -190,6 +205,7 @@ const videos = [
     views: 169,
     src: "https://youtube.com/embed/n9JVaNiQ8Rg",
     description: "Laboratorium Inovasi merupakan salah satu terobosan Lembaga Administrasi Negara (LAN) dalam mendorong Reformasi Birokrasi di tingkat daerah. Hal ini sejalan dengan pesan Presiden RI Joko Widodo yang meminta seluruh elemen pemerintah untuk bekerja tidak menggunakan cara-cara biasa namun menggagas terobosan baru untuk mempercepat pelayanan kepada masyarakat.",
+    icon: "lab",
     quiz: {
       question: "Apa tujuan utama dari Laboratorium Inovasi yang digagas oleh LAN?",
       options: [
@@ -207,6 +223,7 @@ const videos = [
     views: 169,
     src: "https://youtube.com/embed/gJ0jAmLssjc",
     description: "Tahap Drum Up adalah tahap membangun kesadaran dan keinginan untuk berinovasi. Tahapan Drum Up bertujuan untuk menginspirasi dan mengembangkan semangat inovasi peserta Labinov baik secara individu maupun kolektif. Dengan demikian, willingness to innovate atau kemauan berinovasi akan terbentuk yang merupakan modal awal untuk melanjutkan ke tahap-tahap Labinov berikutnya.",
+    icon: "drum",
     quiz: {
       question: "Apa tujuan dari Tahap Drum Up dalam Laboratorium Inovasi?",
       options: [
@@ -228,6 +245,7 @@ const videos = [
       "https://youtube.com/embed/lqAaNZ2oMFw"
     ],
     description: "Tahap Diagnose adalah tahap proses mengidentifikasi kesenjangan antara kondisi saat ini dan kondisi yang seharusnya/diharapkan terjadi, yang hal tersebut dapat dijadikan sebagai pijakan untuk adanya inovasi. Tahap Diagnose ini bertujuan untuk memfasilitasi peserta untuk menemukan ide inovasi, yaitu gagasan-gagasan yang mengandung unsur kebaruan, serta diharapkan akan dapat meningkatkan kinerja organisasinya.",
+    icon: "diagnose",
     quiz: {
       question: "Apa yang menjadi fokus utama dalam Tahap Diagnose?",
       options: [
@@ -245,6 +263,7 @@ const videos = [
     views: 169,
     src: "https://youtube.com/embed/rei_mhPsCm0",
     description: "Tahap Design merupakan penuangan ide inovasi yang telah dihasilkan pada Tahap Diagnose ke dalam suatu rancangan rencana aksi yang teknis dan detail. Tahap Design inovasi sangat penting karena akan mendetailkan langkah-langkah mewujudkan ide inovasi yang sudah digagas.",
+    icon: "design",
     quiz: {
       question: "Apa yang dihasilkan pada Tahap Design dalam Laboratorium Inovasi?",
       options: [
@@ -265,6 +284,7 @@ const videos = [
       "https://youtube.com/embed/_wMeuWXedLI"
     ],
     description: "Tahap Deliver atau tahap pelaksanaan inovasi merupakan tahap dimana peserta Labinov mulai melaksanakan ide inovasi yang dihasilkan pada tahap Diagnose berdasarkan jadwal atau agenda Rencana Aksi Inovasi yang telah disusun pada tahap Design. Pada Tahap Deliver terdapat 2 (dua) kegiatan utama, yaitu Launching Inovasi dan Monitoring Inovasi.",
+    icon: "deliver",
     quiz: {
       question: "Apa saja kegiatan utama yang dilakukan pada Tahap Deliver?",
       options: [
@@ -282,6 +302,7 @@ const videos = [
     views: 250,
     src: "https://youtube.com/embed/KArqARoQI5w",
     description: "Display Inovasi yaitu kegiatan penyebarluasan hasil pelaksanaan atau implementasi inovasi yang telah diperjanjikan oleh Pimpinan Tertinggi Instansi Pemerintah dan Pimpinan Unit Organisasi instansi pemerintah yang didampingi. Hal ini merupakan salah satu bentuk akuntabilitas pemerintah kepada masyarakat dalam meningkatkan kinerja pemberian layanan pada masyarakat.",
+    icon: "display",
     quiz: {
       question: "Apa tujuan utama dari Display Inovasi dalam Laboratorium Inovasi?",
       options: [
@@ -299,7 +320,7 @@ const videos = [
 const selectedVideo = ref(videos[0])
 const completedQuizzes = ref(new Array(videos.length).fill(false))
 const userName = ref('')
-const isSidebarOpen = ref(false)
+const isSidebarOpen = ref(true)
 const currentSrcIndex = ref(0)
 
 // Computed

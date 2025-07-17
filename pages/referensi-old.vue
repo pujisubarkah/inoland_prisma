@@ -107,7 +107,7 @@ import Berita from '~/components/Berita.vue'
 import Infografis from '~/components/Infografis.vue'
 import ProperExpo from '~/components/Properexpo.vue'
 import Tuxedovation from '~/components/Tuxedovation.vue'
-import Direktori from '~/components/Direktory.vue'
+import Direktori from '~/components/Direktori.vue'
 import Artikel from '~/components/Artikel.vue'
 
 // Icon Components
@@ -236,7 +236,7 @@ const menuItems = [
     description: 'Platform inovasi Kementerian Dalam Negeri'
   },
   { 
-    label: 'Direktori', 
+    label: 'Direktori Inovasi', 
     icon: TableIcon, 
     component: 'Direktori',
     description: 'Kumpulan dokumen inovasi daerah'

@@ -9,6 +9,7 @@ export const pdflist = pgTable("pdflist", {
   pdf_kategori: varchar("pdf_kategori", { length: 100 }),
   pdf_cover: varchar("pdf_cover", { length: 255 }),
   pdf_publisher: varchar("pdf_publisher", { length: 100 }),
+  pdf_year: integer("pdf_year"),
 });
 
 

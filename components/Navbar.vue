@@ -286,7 +286,7 @@ const menu = [
   { name: 'Layanan Inovasi', path: '/layanan' },
   { name: 'Cari Inovasi', path: '/cari' },
   { name: 'Referensi', path: '/referensi' },
-  { name: 'Gallery', path: '/gallery' }
+  { name: 'Galeri', path: '/galeri' }
 ]
 
 function toggleMenu() {

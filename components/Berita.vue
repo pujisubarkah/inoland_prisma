@@ -335,7 +335,7 @@ const goToPage = (page) => {
 const navigateToDetail = (id) => {
   console.log('[Frontend] Navigating to berita detail:', id)
   // Navigate to news detail page
-  navigateTo(`/berita/${id}`)
+  navigateTo(`/referensi/berita/${id}`)
 }
 
 const formatDate = (dateString) => {

@@ -1,25 +1,23 @@
 <template>
   <div class="p-4">
     <h1 class="font-bold text-2xl text-center my-5 font-poppins">DIREKTORI INOVASI</h1>
-    <hr class="w-[100px] h-[2px] mx-auto mb-5 border-none bg-gradient-to-r from-blue-800 via-black to-blue-800" />
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      <div
+    <hr class="w-[100px] h-[2px] mx-auto mb-5 border-none bg-gradient-to-r from-blue-800 via-black to-blue-800" />    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <NuxtLink
         v-for="item in currentItems"
         :key="item.id"
-        class="bg-white rounded-lg shadow hover:scale-[1.03] transition cursor-pointer"
-        @click="goToDetail(item.id)"
+        :to="`/referensi/direktori/${item.id}`"
+        class="bg-white rounded-lg shadow hover:scale-[1.03] transition cursor-pointer block no-underline"
       >
         <img
           :src="item.image"
           :alt="item.title"
           class="w-full h-[220px] object-cover rounded-t-lg"
           @error="handleImageError"
-        />
-        <div class="p-4">
+        />        <div class="p-4">
           <h3 class="font-bold text-base mb-1">{{ item.title }}</h3>
           <p class="text-blue-800 text-sm">{{ item.pemda }}</p>
         </div>
-      </div>
+      </NuxtLink>
     </div>
 
     <div v-if="totalPages > 1" class="mt-6 flex justify-center items-center gap-2">
@@ -50,7 +48,6 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const router = useRouter()
@@ -84,10 +81,6 @@ const fetchPdfList = async () => {
 
 onMounted(fetchPdfList)
 watch(currentPage, fetchPdfList)
-
-const goToDetail = id => {
-  router.push(`/directory/${id}`)
-}
 
 const currentItems = computed(() => newsItems.value)
 

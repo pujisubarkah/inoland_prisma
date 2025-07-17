@@ -257,7 +257,7 @@ const fetchBeritaFromAPI = async (): Promise<void> => {
 }
 
 const handleItemClick = (id: number): void => {
-  navigateTo(`/inovasi/${id}`)
+  navigateTo(`/referensi/inovasi/${id}`)
 }
 
 const handleImageError = (event: Event): void => {
