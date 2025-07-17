@@ -1,320 +1,397 @@
 <!-- components/Infografis.vue -->
-<template>
-  <div class="carousel-container">
+<template>  <div class="carousel-container">
     <h1 class="font-poppins font-bold text-3xl text-center my-5">
       INFOGRAFIS INOVASI
     </h1>
-    <hr class="w-24 h-0.5 bg-gradient-to-r from-blue-700 via-black to-blue-700 mx-auto mb-5 border-none" />
+    <hr class="w-24 h-0.5 bg-gradient-to-r from-blue-700 via-black to-blue-700 mx-auto mb-8 border-none" />
     
-    <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
-      <span class="ml-3 text-gray-600">Memuat infografis...</span>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="text-center py-20">
-      <div class="bg-red-100 p-4 rounded-lg mb-4 max-w-md mx-auto">
-        <p class="text-red-600 mb-4">{{ error }}</p>
-        <div class="text-xs text-gray-600">{{ errorDetails }}</div>
+    <!-- Search and Filter Section -->
+    <div v-if="!loading && !error && images.length > 0" class="max-w-4xl mx-auto px-4 mb-8">
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <div class="flex flex-col md:flex-row gap-4 items-center">
+          <!-- Search Input -->
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+            <input 
+              v-model="searchQuery"
+              type="text" 
+              placeholder="Cari infografis..." 
+              class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+            />
+          </div>
+          
+          <!-- Filter Dropdown -->
+          <div class="relative">
+            <select 
+              v-model="selectedFilter"
+              class="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+            >
+              <option value="">Semua Kategori</option>
+              <option v-for="category in availableCategories" :key="category" :value="category">
+                {{ category }}
+              </option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Results count -->
+          <div class="text-sm text-gray-600 whitespace-nowrap">
+            {{ filteredImages.length }} dari {{ images.length }} infografis
+          </div>
+        </div>
       </div>
-      <button 
-        @click="fetchImages"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-      >
-        Coba Lagi
-      </button>
     </div>
-
-    <!-- Empty State -->
-    <div v-else-if="images.length === 0" class="text-center py-20">
-      <div class="bg-orange-100 p-4 rounded-lg mb-4 max-w-md mx-auto">
-        <svg class="w-16 h-16 text-orange-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        <p class="text-orange-600">Tidak ada infografis tersedia</p>
+      <!-- Loading State dengan animasi yang lebih menarik -->
+    <div v-if="loading" class="flex flex-col justify-center items-center py-20">
+      <div class="relative">
+        <!-- Animated circles -->
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-200"></div>
+        <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent absolute top-0 left-0" style="animation-duration: 2s;"></div>
+        <div class="animate-ping rounded-full h-4 w-4 bg-blue-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
       </div>
-    </div>
+      <div class="mt-6 text-center">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Memuat Infografis</h3>
+        <p class="text-gray-500 text-sm">Mohon tunggu sebentar...</p>
+        <div class="flex justify-center mt-3 space-x-1">
+          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+        </div>
+      </div>
+    </div>    <!-- Error State dengan desain yang lebih menarik -->
+    <div v-else-if="error" class="text-center py-20 max-w-md mx-auto">
+      <div class="bg-gradient-to-br from-red-50 to-pink-50 p-8 rounded-2xl border border-red-100 shadow-lg">
+        <!-- Error Icon -->
+        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+          </svg>
+        </div>
+        
+        <h3 class="text-xl font-bold text-gray-800 mb-3">Oops! Terjadi Kesalahan</h3>
+        <p class="text-red-600 mb-2 font-medium">{{ error }}</p>
+        <div class="text-xs text-gray-600 mb-6 p-3 bg-gray-50 rounded-lg border">{{ errorDetails }}</div>
+        
+        <button 
+          @click="fetchImages"
+          class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Coba Lagi
+        </button>
+      </div>
+    </div>    <!-- Empty State dengan desain yang lebih menarik -->
+    <div v-else-if="images.length === 0" class="text-center py-20 max-w-lg mx-auto">
+      <div class="bg-gradient-to-br from-orange-50 to-yellow-50 p-8 rounded-2xl border border-orange-100 shadow-lg">
+        <!-- Empty Icon -->
+        <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        
+        <h3 class="text-xl font-bold text-gray-800 mb-3">Belum Ada Infografis</h3>
+        <p class="text-orange-600 mb-4">Saat ini belum ada infografis yang tersedia untuk ditampilkan.</p>
+        <p class="text-sm text-gray-600">Silakan kembali lagi nanti atau hubungi administrator untuk informasi lebih lanjut.</p>
+        
+        <button 
+          @click="fetchImages"
+          class="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-yellow-600 text-white rounded-xl hover:from-orange-600 hover:to-yellow-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Muat Ulang
+        </button>
+      </div>
+    </div>    <!-- Image Gallery -->
+    <div v-else-if="images.length > 0" class="max-w-7xl mx-auto px-4 py-6">
+      <!-- No results from search/filter -->
+      <div v-if="filteredImages.length === 0" class="text-center py-16">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl border border-blue-100 shadow-lg max-w-md mx-auto">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center shadow-lg">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-3">Tidak Ditemukan</h3>
+          <p class="text-blue-600 mb-4">Tidak ada infografis yang sesuai dengan pencarian Anda.</p>
+          <button 
+            @click="() => { searchQuery = ''; selectedFilter = '' }"
+            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Reset Filter
+          </button>
+        </div>
+      </div>
 
-    <!-- Image Gallery -->
-    <div v-else class="max-w-6xl mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div 
-          v-for="(image, index) in images" 
+      <!-- Grid dengan breakpoints yang lebih halus -->
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6"><div 
+          v-for="(image, index) in filteredImages" 
           :key="image.id"
-          class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 cursor-pointer group transform hover:-translate-y-1"
+          class="bg-white rounded-2xl shadow-sm hover:shadow-2xl border border-gray-100 overflow-hidden cursor-pointer group transition-all duration-500 ease-out transform hover:-translate-y-2 hover:scale-[1.03] hover:border-blue-200"
           @click="openModal(image)"
         >
-          <!-- Image Container -->
-          <div class="relative h-64 bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
-            <!-- Decorative Background Pattern -->
-            <div class="absolute inset-0 opacity-10">
-              <div class="w-full h-full" style="background-image: radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.3) 1px, transparent 0); background-size: 20px 20px;"></div>
-            </div>
-            
-            <!-- Image -->
+          <!-- Image Container dengan aspect ratio yang konsisten -->
+          <div class="relative aspect-[4/5] bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden">            <!-- Image -->
             <img 
               :src="image.link" 
               :alt="image.nama || `Infografis ${index + 1}`"
-              class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+              class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
               :class="{
-                'opacity-0': !imageStates[image.id]?.loaded && !imageStates[image.id]?.error,
-                'opacity-100': imageStates[image.id]?.loaded
+                'opacity-0 scale-95': !imageStates[image.id]?.loaded && !imageStates[image.id]?.error,
+                'opacity-100 scale-100': imageStates[image.id]?.loaded
               }"
               @load="() => handleImageLoad(image.id)"
               @error="() => handleImageError(image.id)"
               loading="lazy"
             />
-            
-            <!-- Loading State dengan design menarik -->
+              <!-- Loading State dengan desain yang lebih menarik -->
             <div 
               v-if="!imageStates[image.id]?.loaded && !imageStates[image.id]?.error"
-              class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center"
-            >
-              <div class="text-center text-white">
-                <!-- Icon Infografis -->
-                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm1 0v12h12V4H4z"/>
-                    <path d="M6 8a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zM6 12a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z"/>
-                  </svg>
-                </div>
-                <h4 class="font-semibold text-lg mb-2">{{ image.nama || 'Infografis' }}</h4>
-                <p class="text-sm opacity-90 mb-4">{{ image.jenis_dokumen || 'Infografis' }}</p>
-                
-                <!-- Loading Animation -->
-                <div class="flex justify-center items-center">
-                  <div class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent mr-2"></div>
-                  <span class="text-sm">Memuat gambar...</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Error State dengan design menarik -->
-            <div 
-              v-if="imageStates[image.id]?.error"
-              class="absolute inset-0 bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center"
+              class="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-blue-600 flex items-center justify-center"
             >
               <div class="text-center text-white p-4">
-                <!-- Icon Error -->
                 <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-8 h-8 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
                   </svg>
                 </div>
-                <h4 class="font-semibold text-lg mb-2">{{ image.nama || 'Infografis' }}</h4>
-                <p class="text-sm opacity-90 mb-3">{{ image.jenis_dokumen || 'Infografis' }}</p>
-                <div class="text-xs bg-white bg-opacity-20 rounded-lg p-2 backdrop-blur-sm">
-                  Gambar tidak dapat dimuat
+                <div class="flex justify-center items-center space-x-1 mb-2">
+                  <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                  <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                  <div class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay: 300ms"></div>
                 </div>
+                <p class="text-xs font-medium opacity-90">Memuat gambar...</p>
               </div>
-            </div>
-
-            <!-- Hover Overlay dengan Preview -->
+            </div>            <!-- Error State dengan desain yang lebih baik -->
+            <div 
+              v-if="imageStates[image.id]?.error"
+              class="absolute inset-0 bg-gradient-to-br from-red-500 via-pink-500 to-red-600 flex items-center justify-center"
+            >
+              <div class="text-center text-white p-4">
+                <div class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                  </svg>
+                </div>
+                <p class="text-sm font-medium opacity-90">Gagal memuat</p>
+                <p class="text-xs opacity-70 mt-1">Klik untuk coba lagi</p>
+              </div>
+            </div>            <!-- Hover Overlay dengan efek yang lebih smooth -->
             <div 
               v-if="imageStates[image.id]?.loaded"
-              class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center"
+              class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center"
             >
-              <div class="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
-                <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-full p-4">
-                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100">
+                <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-full p-4 shadow-lg">
+                  <svg class="w-8 h-8 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                   </svg>
                 </div>
-                <p class="text-white text-sm mt-2 text-center font-medium">Lihat Detail</p>
+                <p class="text-white text-sm mt-3 text-center font-semibold drop-shadow-lg">Lihat Detail</p>
               </div>
-            </div>
-
-            <!-- Badge untuk kategori -->
-            <div class="absolute top-3 left-3">
-              <span class="bg-emerald-500 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg">
-                📊 {{ image.jenis_dokumen || 'Infografis' }}
-              </span>
-            </div>
-
-            <!-- Badge untuk tanggal -->
-            <div class="absolute top-3 right-3">
-              <span class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg">
-                📅 {{ formatDate(image.created_at) }}
-              </span>
-            </div>
+            </div>            
           </div>
-          
-          <!-- Image Info Card -->
-          <div class="p-5 bg-white">
-            <h3 class="font-bold text-gray-800 mb-3 line-clamp-2 text-lg leading-tight">
+            <!-- Image Info Card dengan desain yang lebih menarik -->
+          <div class="p-4 bg-gradient-to-t from-gray-50 to-white">
+            <h3 class="font-semibold text-gray-800 mb-3 line-clamp-2 text-sm md:text-base leading-tight group-hover:text-blue-600 transition-colors duration-300">
               {{ image.nama || 'Infografis' }}
             </h3>
             
-            <!-- Features Badges -->
-            <div class="flex flex-wrap gap-2 mb-3">
-              <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-md font-medium">
-                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                HD Quality
-              </span>
-              <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded-md font-medium">
-                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-1zM3 7a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V7zM3 12a1 1 0 011-1h12a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-1z"/>
-                </svg>
-                Infografis
-              </span>
-            </div>
-
-            <!-- Action Button -->
+            <!-- Stats dan Action dalam satu baris -->
             <div class="flex items-center justify-between">
-              <div class="text-sm text-gray-500">
-                Klik untuk memperbesar
+              <div class="flex items-center space-x-3 text-xs text-gray-500">
+                <!-- View indicator -->
+                <div class="flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
+                  </svg>
+                  <span>Lihat</span>
+                </div>
+                
+                <!-- Size indicator jika tersedia -->
+                <div v-if="image.file_size" class="flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/>
+                  </svg>
+                  <span>{{ formatFileSize(image.file_size) }}</span>
+                </div>
               </div>
-              <div class="flex items-center text-blue-600">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              
+              <!-- Action Button -->
+              <div class="group-hover:bg-blue-50 group-hover:text-blue-600 p-2 rounded-lg transition-colors duration-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
                 </svg>
-                <span class="text-sm font-medium">Lihat</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Modal for enlarged view dengan scroll -->
-    <div 
-      v-if="showModal" 
-      class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
-      @click="closeModal"
-    >
-      <!-- Toolbar -->
-      <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-        <div class="bg-black bg-opacity-60 backdrop-blur-sm rounded-full px-6 py-3 flex items-center space-x-4">
-          <!-- Close Button -->
-          <button 
-            @click="closeModal"
-            class="text-white hover:text-gray-300 transition-colors p-2 rounded-full hover:bg-white hover:bg-opacity-10"
-            title="Tutup (ESC)"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-          
-          <!-- Zoom Controls -->
-          <div class="flex items-center space-x-2">
+    </div>    <!-- Modal dengan animasi yang lebih halus -->
+    <Transition name="modal" appear>
+      <div 
+        v-if="showModal" 
+        class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-2 sm:p-4"
+        @click="closeModal"
+      >
+        <!-- Modal Container dengan animasi -->
+        <div 
+          class="relative bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden transform transition-all duration-300"
+          @click.stop
+        >
+        <!-- Toolbar -->
+        <div class="absolute top-4 right-4 z-20">
+          <div class="bg-black bg-opacity-60 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center space-x-3">
+            <!-- Zoom Controls -->
+            <div class="flex items-center space-x-2">
+              <button 
+                @click="zoomOut"
+                :disabled="zoomLevel <= 0.5"
+                class="text-white hover:text-gray-300 disabled:text-gray-500 transition-colors p-1 rounded-lg hover:bg-white hover:bg-opacity-10 disabled:cursor-not-allowed"
+                title="Perkecil"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9"/>
+                </svg>
+              </button>
+              
+              <span class="text-white text-sm font-medium min-w-12 text-center">
+                {{ Math.round(zoomLevel * 100) }}%
+              </span>
+              
+              <button 
+                @click="zoomIn"
+                :disabled="zoomLevel >= 3"
+                class="text-white hover:text-gray-300 disabled:text-gray-500 transition-colors p-1 rounded-lg hover:bg-white hover:bg-opacity-10 disabled:cursor-not-allowed"
+                title="Perbesar"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9"/>
+                </svg>
+              </button>
+              
+              <button 
+                @click="resetZoom"
+                class="text-white hover:text-gray-300 transition-colors p-1 rounded-lg hover:bg-white hover:bg-opacity-10"
+                title="Reset Zoom"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+              </button>
+            </div>
+            
+            <!-- Download Button -->
             <button 
-              @click="zoomOut"
-              :disabled="zoomLevel <= 0.5"
-              class="text-white hover:text-gray-300 disabled:text-gray-500 transition-colors p-2 rounded-full hover:bg-white hover:bg-opacity-10 disabled:cursor-not-allowed"
-              title="Perkecil"
+              @click="downloadImage"
+              class="text-white hover:text-gray-300 transition-colors p-1 rounded-lg hover:bg-white hover:bg-opacity-10"
+              title="Download"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9"/>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
             </button>
             
-            <span class="text-white text-sm font-medium min-w-16 text-center">
-              {{ Math.round(zoomLevel * 100) }}%
-            </span>
-            
+            <!-- Close Button -->
             <button 
-              @click="zoomIn"
-              :disabled="zoomLevel >= 3"
-              class="text-white hover:text-gray-300 disabled:text-gray-500 transition-colors p-2 rounded-full hover:bg-white hover:bg-opacity-10 disabled:cursor-not-allowed"
-              title="Perbesar"
+              @click="closeModal"
+              class="text-white hover:text-gray-300 transition-colors p-1 rounded-lg hover:bg-white hover:bg-opacity-10"
+              title="Tutup (ESC)"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9"/>
-              </svg>
-            </button>
-            
-            <button 
-              @click="resetZoom"
-              class="text-white hover:text-gray-300 transition-colors p-2 rounded-full hover:bg-white hover:bg-opacity-10"
-              title="Reset Zoom"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
             </button>
           </div>
-          
-          <!-- Download Button -->
-          <button 
-            @click="downloadImage"
-            class="text-white hover:text-gray-300 transition-colors p-2 rounded-full hover:bg-white hover:bg-opacity-10"
-            title="Download"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-          </button>
         </div>
-      </div>
 
-      <!-- Scrollable Image Container -->
-      <div 
-        ref="modalContainer"
-        class="w-full h-full overflow-auto p-4 flex items-center justify-center"
-        @click.stop
-        @wheel="handleWheel"
-      >
+        <!-- Image Container -->
         <div 
-          class="relative inline-block"
-          :style="{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }"
+          ref="modalContainer"
+          class="relative overflow-auto max-h-[70vh] bg-gray-50"
+          @wheel="handleWheel"
         >
-          <img 
-            ref="modalImage"
-            :src="selectedImage?.link" 
-            :alt="selectedImage?.nama"
-            class="max-w-none h-auto rounded-lg shadow-2xl cursor-move"
-            :class="{ 'cursor-grab': !isDragging, 'cursor-grabbing': isDragging }"
-            @mousedown="startDrag"
-            @mousemove="onDrag"
-            @mouseup="endDrag"
-            @mouseleave="endDrag"
-            @click.stop
-            @dragstart.prevent
-          />
-          
-          <!-- Loading overlay for modal image -->
           <div 
-            v-if="modalImageLoading"
-            class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg"
+            class="flex items-center justify-center p-4"
+            :style="{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }"
           >
-            <div class="text-white text-center">
-              <div class="animate-spin rounded-full h-12 w-12 border-2 border-white border-t-transparent mx-auto mb-3"></div>
-              <p>Memuat gambar...</p>
+            <img 
+              ref="modalImage"
+              :src="selectedImage?.link" 
+              :alt="selectedImage?.nama"
+              class="max-w-full max-h-full h-auto rounded-lg shadow-lg cursor-move"
+              :class="{ 'cursor-grab': !isDragging, 'cursor-grabbing': isDragging }"
+              @mousedown="startDrag"
+              @mousemove="onDrag"
+              @mouseup="endDrag"
+              @mouseleave="endDrag"
+              @click.stop
+              @dragstart.prevent
+              style="max-height: 60vh; object-fit: contain;"
+            />
+            
+            <!-- Loading overlay for modal image -->
+            <div 
+              v-if="modalImageLoading"
+              class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center rounded-lg"
+            >
+              <div class="text-gray-600 text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-2 border-blue-600 border-t-transparent mx-auto mb-3"></div>
+                <p>Memuat gambar...</p>
+              </div>
+            </div>
+          </div>
+        </div>        <!-- Image Info -->
+        <div class="p-6 bg-white border-t border-gray-100">
+          <h3 class="text-xl font-bold text-gray-800 mb-2">{{ selectedImage?.nama || 'Infografis' }}</h3>
+          <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
+              </svg>
+              {{ selectedImage?.jenis_dokumen || 'Infografis' }}
+            </div>
+            <div v-if="selectedImage?.created_at" class="flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
+              </svg>
+              {{ formatDate(selectedImage.created_at) }}
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Image Info Overlay -->
-      <div v-if="selectedImage?.nama" class="absolute bottom-4 left-4 right-4 z-20">
-        <div class="bg-black bg-opacity-60 backdrop-blur-sm text-white p-4 rounded-lg max-w-2xl mx-auto">
-          <h3 class="text-xl font-bold mb-2">{{ selectedImage.nama }}</h3>
-          <div class="flex items-center justify-between text-sm">
-            <span class="opacity-90">{{ selectedImage.jenis_dokumen }}</span>
-            <span class="opacity-90">{{ formatDate(selectedImage.created_at) }}</span>
+        <!-- Zoom Hint -->
+        <div v-if="zoomLevel > 1" class="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10">
+          <div class="bg-blue-600 bg-opacity-90 text-white text-xs px-3 py-2 rounded-lg shadow-lg">
+            💡 Scroll untuk zoom • Drag untuk menggeser
           </div>
         </div>
-      </div>
-
-      <!-- Scroll Hint -->
-      <div v-if="zoomLevel > 1" class="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10">
-        <div class="bg-blue-600 bg-opacity-80 text-white text-xs px-3 py-2 rounded-full">
-          💡 Scroll untuk navigasi • Drag untuk menggeser
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 
 // Reactive state
 const images = ref([])
@@ -324,6 +401,10 @@ const errorDetails = ref('')
 const showModal = ref(false)
 const selectedImage = ref(null)
 const modalImageLoading = ref(false)
+
+// Search and filter state
+const searchQuery = ref('')
+const selectedFilter = ref('')
 
 // Zoom and Pan states
 const zoomLevel = ref(1)
@@ -337,6 +418,35 @@ const modalImage = ref(null)
 
 // Track individual image states
 const imageStates = reactive({})
+
+// Computed properties
+const availableCategories = computed(() => {
+  const categories = images.value
+    .map(img => img.jenis_dokumen)
+    .filter(cat => cat && cat.trim())
+    .filter((cat, index, arr) => arr.indexOf(cat) === index)
+  return categories.sort()
+})
+
+const filteredImages = computed(() => {
+  let filtered = images.value
+
+  // Filter by search query
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(img => 
+      (img.nama && img.nama.toLowerCase().includes(query)) ||
+      (img.jenis_dokumen && img.jenis_dokumen.toLowerCase().includes(query))
+    )
+  }
+
+  // Filter by category
+  if (selectedFilter.value) {
+    filtered = filtered.filter(img => img.jenis_dokumen === selectedFilter.value)
+  }
+
+  return filtered
+})
 
 // Initialize image state
 const initImageState = (imageId) => {
@@ -456,7 +566,19 @@ const formatDate = (dateString) => {
   }
 }
 
-// Modal methods
+const formatFileSize = (bytes) => {
+  if (!bytes) return ''
+  
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  
+  if (i === 0) return `${bytes} ${sizes[i]}`
+  
+  const size = (bytes / Math.pow(1024, i)).toFixed(1)
+  return `${size} ${sizes[i]}`
+}
+
+// Modal methods dengan lazy loading
 const openModal = (image) => {
   selectedImage.value = image
   showModal.value = true
@@ -466,17 +588,15 @@ const openModal = (image) => {
   
   document.body.style.overflow = 'hidden'
   
-  // Wait for next tick to ensure modal is rendered
-  nextTick(() => {
-    if (modalImage.value) {
-      modalImage.value.onload = () => {
-        modalImageLoading.value = false
-      }
-      modalImage.value.onerror = () => {
-        modalImageLoading.value = false
-      }
-    }
-  })
+  // Preload image untuk modal
+  const img = new Image()
+  img.onload = () => {
+    modalImageLoading.value = false
+  }
+  img.onerror = () => {
+    modalImageLoading.value = false
+  }
+  img.src = image.link
 }
 
 const closeModal = () => {
@@ -616,6 +736,32 @@ img {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
+/* Modal animations */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-active .relative,
+.modal-leave-active .relative {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .relative {
+  transform: scale(0.8) translateY(20px);
+  opacity: 0;
+}
+
+.modal-leave-to .relative {
+  transform: scale(0.8) translateY(20px);
+  opacity: 0;
+}
+
 /* Modal scrollbar styling */
 .overflow-auto::-webkit-scrollbar {
   width: 8px;
@@ -657,5 +803,46 @@ img {
 /* Prevent text selection while dragging */
 .cursor-grabbing {
   user-select: none;
+}
+
+/* Responsive grid improvements */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid {
+    gap: 1.5rem;
+  }
+}
+
+/* Loading animation improvements */
+@keyframes bounce-dots {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-bounce {
+  animation: bounce-dots 1.4s infinite ease-in-out both;
+}
+
+/* Hover effects yang lebih halus */
+.group:hover .bg-gradient-to-t {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2), transparent);
+}
+
+/* Badge animations */
+.group:hover span {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
 }
 </style>

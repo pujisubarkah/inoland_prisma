@@ -70,8 +70,8 @@
           <h1 class="font-poppins font-bold text-3xl text-center mb-2 text-gray-800">
             {{ selectedVideo.title }}
           </h1>
-          <hr class="w-24 h-0.5 bg-gradient-to-r from-red-500 via-black to-red-500 mx-auto mb-5 border-none" />
-          
+          <hr class="w-24 h-0.5 bg-gradient-to-r from-blue-700 via-black to-blue-700 mx-auto mb-5 border-none" />
+    
           <p class="text-lg text-gray-700 mb-6 leading-relaxed">{{ selectedVideo.description }}</p>
           
           <!-- Video Player -->
@@ -190,9 +190,10 @@ import Quiz from '~/components/Quiz.vue'
 
 // Set page title
 useHead({
-  title: 'Layanan Pembelajaran Inovasi - Inolands',
+  title: 'Pembelajaran Inovasi | INOLAND',
   meta: [
-    { name: 'description', content: 'Pembelajaran mandiri Laboratorium Inovasi dengan 6 tahap inovasi lengkap dengan quiz dan sertifikat' }
+    { name: 'description', 
+    content: 'Pembelajaran mandiri Laboratorium Inovasi dengan 6 tahap inovasi lengkap dengan quiz dan sertifikat' }
   ]
 })
 

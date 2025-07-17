@@ -70,9 +70,12 @@ const fetchPdfList = async () => {
         image: item.pdf_cover,
         pemda: item.pdf_publisher,
         url: item.pdf_url, // jika ingin dipakai detail
+        year: item.pdf_year,
         kategori: item.pdf_kategori,
         created_at: item.created_at
       }))
+      // Urutkan berdasarkan year (descending)
+      .sort((a, b) => (b.year || 0) - (a.year || 0))
     }
   } catch (err) {
     console.error('Error fetching data:', err)
