@@ -15,7 +15,7 @@ definePageMeta({
 
 // Meta
 useHead({
-  title: 'Artikel Lab Inovasi | INOLAND',
+  title: 'Artikel Inovasi | INOLAND',
   meta: [
     {
       name: 'description',
@@ -23,7 +23,7 @@ useHead({
     },
     {
       property: 'og:title',
-      content: 'Artikel Lab Inovasi | INOLAND'
+      content: 'Artikel Inovasi | INOLAND'
     },
     {
       property: 'og:description',

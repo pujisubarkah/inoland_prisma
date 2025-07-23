@@ -1,10 +1,8 @@
 <template>
   <div class="font-poppins min-h-screen flex flex-col">
     <!-- Navbar Component -->
-    <Navbar />
-
-    <!-- Main Content -->
-    <main class="flex-1">
+    <Navbar />    <!-- Main Content with top padding to account for fixed navbar -->
+    <main class="flex-1 pt-[52px] sm:pt-[56px]">
       <slot />
     </main>
 

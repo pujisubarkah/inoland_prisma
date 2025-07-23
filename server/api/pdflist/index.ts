@@ -12,12 +12,11 @@ export default defineEventHandler(async (event) => {
   const [{ count: totalCount }] = await db
     .select({ count: count(pdflist.id) })
     .from(pdflist)
-
-  // Ambil data paginated
+  // Ambil data paginated, urutkan berdasarkan tahun terbaru, lalu id sebagai fallback
   const data = await db
     .select()
     .from(pdflist)
-    .orderBy(desc(pdflist.id))
+    .orderBy(desc(pdflist.pdf_year), desc(pdflist.id))
     .limit(limit)
     .offset(offset)
 

@@ -1,25 +1,25 @@
 <!-- components/Berita.vue -->
 <template>
-  <div class="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+  <div class="max-w-6xl mx-auto p-3 sm:p-6 bg-gray-50 min-h-screen">
     <!-- Header -->
-    <header class="mb-6 text-center">
-      <h1 class="text-3xl font-bold font-poppins">
+    <header class="mb-4 sm:mb-6 text-center px-2">
+      <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold font-poppins leading-tight">
         🔥 Update Terkini untuk Sobat Inovasi! Simak Beritanya
       </h1>
-      <p class="text-gray-500 mt-2">{{ currentDate }}</p>
+      <p class="text-gray-500 mt-2 text-sm sm:text-base">{{ currentDate }}</p>
     </header>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    <div v-if="loading" class="flex justify-center items-center py-12 sm:py-20">
+      <div class="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600"></div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="text-center py-20">
-      <p class="text-red-600 mb-4">{{ error }}</p>
+    <div v-else-if="error" class="text-center py-12 sm:py-20 px-4">
+      <p class="text-red-600 mb-4 text-sm sm:text-base">{{ error }}</p>
       <button 
         @click="fetchBerita"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors min-h-[44px] touch-action-manipulation"
       >
         Coba Lagi
       </button>
@@ -28,22 +28,22 @@
     <!-- Content -->
     <div v-else>
       <!-- Berita Utama -->
-      <section v-if="newsItems.length > 0" class="mb-8">
-        <div class="relative w-full h-96 rounded-lg overflow-hidden group cursor-pointer" @click="navigateToDetail(newsItems[0].id)">
+      <section v-if="newsItems.length > 0" class="mb-6 sm:mb-8">
+        <div class="relative w-full h-48 sm:h-64 lg:h-96 rounded-lg overflow-hidden group cursor-pointer touch-action-manipulation" @click="navigateToDetail(newsItems[0].id)">
           <img 
             :src="newsItems[0].image" 
             :alt="newsItems[0].title" 
             class="w-full h-full object-cover brightness-110 group-hover:scale-105 transition-transform duration-300"
             @error="handleImageError"
           />
-          <div class="absolute inset-0 flex items-end p-6 bg-gradient-to-t from-black via-transparent to-transparent">
-            <h2 class="text-white text-2xl font-bold hover:underline transition-all duration-300">
+          <div class="absolute inset-0 flex items-end p-3 sm:p-6 bg-gradient-to-t from-black via-transparent to-transparent">
+            <h2 class="text-white text-lg sm:text-xl lg:text-2xl font-bold hover:underline transition-all duration-300 leading-tight">
               {{ newsItems[0].title }}
             </h2>
           </div>
           <!-- Featured Badge -->
-          <div class="absolute top-4 left-4">
-            <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+          <div class="absolute top-2 sm:top-4 left-2 sm:left-4">
+            <span class="bg-red-600 text-white px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium">
               Berita Utama
             </span>
           </div>
@@ -51,29 +51,29 @@
       </section>
 
       <!-- Empty State -->
-      <div v-else class="text-center py-20">
-        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div v-else class="text-center py-12 sm:py-20 px-4">
+        <svg class="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
         </svg>
-        <h3 class="text-xl font-medium text-gray-600 mb-2">Belum ada berita</h3>
-        <p class="text-gray-500">Berita akan segera hadir untuk Anda</p>
+        <h3 class="text-lg sm:text-xl font-medium text-gray-600 mb-2">Belum ada berita</h3>
+        <p class="text-gray-500 text-sm sm:text-base">Berita akan segera hadir untuk Anda</p>
       </div>
 
       <!-- Daftar Berita dengan Pagination -->
       <section v-if="newsItems.length > 1">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-2xl font-semibold font-poppins">Berita Lainnya</h2>
-          <span class="text-sm text-gray-500">{{ newsItems.length }} berita tersedia</span>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+          <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold font-poppins">Berita Lainnya</h2>
+          <span class="text-xs sm:text-sm text-gray-500">{{ newsItems.length }} berita tersedia</span>
         </div>
         
-        <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div 
             v-for="news in currentItems" 
             :key="news.id" 
-            class="flex items-center gap-4 bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group"
+            class="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group touch-action-manipulation"
             @click="navigateToDetail(news.id)"
           >
-            <div class="relative w-32 h-20 flex-shrink-0">
+            <div class="relative w-full sm:w-24 lg:w-32 h-32 sm:h-16 lg:h-20 flex-shrink-0">
               <img 
                 :src="news.image" 
                 :alt="news.title" 
@@ -81,62 +81,72 @@
                 @error="handleImageError"
               />
             </div>
-            <div class="flex-1">
-              <h3 class="text-lg font-bold hover:text-blue-600 transition-colors duration-300 line-clamp-2">
+            <div class="flex-1 min-w-0">
+              <h3 class="text-sm sm:text-base lg:text-lg font-bold hover:text-blue-600 transition-colors duration-300 line-clamp-2 leading-tight">
                 {{ news.title }}
               </h3>
-              <p class="text-gray-600 text-sm mt-1 line-clamp-2">
+              <p class="text-gray-600 text-xs sm:text-sm mt-1 line-clamp-2 leading-relaxed">
                 {{ news.description }}
               </p>
               <div class="flex items-center justify-between mt-2">
                 <p class="text-gray-500 text-xs">{{ formatDate(news.date) }}</p>
-                <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Custom Pagination -->
-        <div v-if="totalPages > 1" class="flex justify-center items-center space-x-2">
-          <!-- Previous Button -->
-          <button
-            @click="goToPage(currentPage - 1)"
-            :disabled="currentPage === 1"
-            class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Previous
-          </button>
-          
-          <!-- Page Numbers -->
-          <button
-            v-for="page in visiblePages"
-            :key="page"
-            @click="goToPage(page)"
-            class="px-3 py-2 text-sm font-medium rounded-md transition-colors"
-            :class="{
-              'text-white bg-blue-600 border border-blue-600': page === currentPage,
-              'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50': page !== currentPage
-            }"
-          >
-            {{ page }}
-          </button>
-          
-          <!-- Next Button -->
-          <button
-            @click="goToPage(currentPage + 1)"
-            :disabled="currentPage === totalPages"
-            class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Next
-          </button>
+        </div>        <!-- Custom Pagination -->
+        <div v-if="totalPages > 1" class="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-2">
+          <!-- Mobile: Stack pagination controls -->
+          <div class="flex justify-center items-center space-x-1 sm:space-x-2">
+            <!-- Previous Button -->
+            <button
+              @click="goToPage(currentPage - 1)"
+              :disabled="currentPage === 1"
+              class="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] touch-action-manipulation"
+            >
+              <span class="hidden sm:inline">Previous</span>
+              <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <!-- Page Numbers -->
+            <button
+              v-for="page in visiblePages"
+              :key="page"
+              @click="goToPage(page)"
+              class="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors min-h-[44px] min-w-[44px] touch-action-manipulation"
+              :class="{
+                'text-white bg-blue-600 border border-blue-600': page === currentPage,
+                'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50': page !== currentPage
+              }"
+            >
+              {{ page }}
+            </button>
+            
+            <!-- Next Button -->
+            <button
+              @click="goToPage(currentPage + 1)"
+              :disabled="currentPage === totalPages"
+              class="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] touch-action-manipulation"
+            >
+              <span class="hidden sm:inline">Next</span>
+              <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- Page Info -->
-        <div class="text-center mt-4 text-sm text-gray-500">
-          Halaman {{ currentPage }} dari {{ totalPages }} | 
-          Menampilkan {{ currentItems.length }} dari {{ newsItems.length }} berita
+        <div class="text-center mt-4 text-xs sm:text-sm text-gray-500 px-4">
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+            <span>Halaman {{ currentPage }} dari {{ totalPages }}</span>
+            <span class="hidden sm:inline">|</span>
+            <span>Menampilkan {{ currentItems.length }} dari {{ newsItems.length }} berita</span>
+          </div>
         </div>
       </section>
     </div>

@@ -2,27 +2,27 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    <div v-if="loading" class="flex justify-center items-center py-16 md:py-20">
+      <div class="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 border-blue-600"></div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="max-w-4xl mx-auto px-6 py-20 text-center">
-      <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div v-else-if="error" class="max-w-4xl mx-auto px-4 md:px-6 py-16 md:py-20 text-center">
+      <svg class="w-12 h-12 md:w-16 md:h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
       </svg>
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">Berita Tidak Ditemukan</h2>
-      <p class="text-red-600 mb-6">{{ error }}</p>
-      <div class="space-x-4">
+      <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Berita Tidak Ditemukan</h2>
+      <p class="text-red-600 mb-6 text-sm md:text-base">{{ error }}</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <button 
           @click="fetchNewsDetail"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          class="px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base touch-target"
         >
           Coba Lagi
         </button>
         <NuxtLink 
           to="/referensi"
-          class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors inline-block"
+          class="px-4 md:px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors inline-block text-sm md:text-base touch-target"
         >
           Kembali ke Referensi
         </NuxtLink>
@@ -30,14 +30,14 @@
     </div>
 
     <!-- News Detail Content -->
-    <div v-else-if="newsDetail" class="max-w-4xl mx-auto px-6 py-8">
+    <div v-else-if="newsDetail" class="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-8">
       <!-- Back Button -->
-      <div class="mb-6">
+      <div class="mb-4 md:mb-6">
         <NuxtLink 
           to="/referensi"
-          class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+          class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base touch-target"
         >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
           </svg>
           Kembali ke Referensi
@@ -47,7 +47,7 @@
       <!-- Article Header -->
       <article class="bg-white rounded-lg shadow-lg overflow-hidden">
         <!-- Featured Image - Only show if imageUrl exists -->
-        <div v-if="newsDetail.imageUrl" class="relative h-64 md:h-96 overflow-hidden">
+        <div v-if="newsDetail.imageUrl" class="relative h-48 sm:h-64 md:h-96 overflow-hidden">
           <img 
             :src="newsDetail.imageUrl" 
             :alt="newsDetail.title"
@@ -58,37 +58,37 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
           
           <!-- Like Counter (if available) -->
-          <div v-if="newsDetail.likes && newsDetail.likes > 0" class="absolute top-4 right-4">
-            <div class="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
-              <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+          <div v-if="newsDetail.likes && newsDetail.likes > 0" class="absolute top-2 right-2 md:top-4 md:right-4">
+            <div class="bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 md:px-3 md:py-1 flex items-center space-x-1">
+              <svg class="w-3 h-3 md:w-4 md:h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
               </svg>
-              <span class="text-sm font-medium text-gray-700">{{ newsDetail.likes }}</span>
+              <span class="text-xs md:text-sm font-medium text-gray-700">{{ newsDetail.likes }}</span>
             </div>
           </div>
         </div>
 
         <!-- Article Content -->
-        <div class="p-6 md:p-8">
+        <div class="p-4 md:p-6 lg:p-8">
           <!-- Title -->
-          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4 leading-tight">
             {{ newsDetail.title }}
           </h1>
 
           <!-- Meta Information -->
-          <div class="flex items-center justify-between text-gray-600 mb-6 pb-4 border-b">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-gray-600 mb-4 md:mb-6 pb-3 md:pb-4 border-b gap-2">
             <div class="flex items-center">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
-              <time :datetime="newsDetail.date" class="text-sm">
+              <time :datetime="newsDetail.date" class="text-xs md:text-sm">
                 {{ formatDate(newsDetail.date) }}
               </time>
             </div>
             
             <!-- Created Date -->
             <div class="flex items-center text-xs text-gray-500">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-3 h-3 md:w-4 md:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
               Dibuat: {{ formatDate(newsDetail.createdAt) }}
@@ -96,8 +96,8 @@
           </div>
 
           <!-- Article Content -->
-          <div class="prose prose-lg max-w-none">
-            <div 
+          <div class="prose prose-sm md:prose-lg max-w-none">
+            <div
               v-if="newsDetail.deskripsi"
               class="text-gray-700 leading-relaxed whitespace-pre-line"
               v-html="formatContent(newsDetail.deskripsi)"
@@ -105,11 +105,9 @@
             <p v-else class="text-gray-500 italic">
               Tidak ada konten untuk berita ini.
             </p>
-          </div>
-
-          <!-- Embed Video (if available) -->
-          <div v-if="newsDetail.embedUrl" class="mt-8">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Video Terkait</h3>
+          </div>          <!-- Embed Video (if available) -->
+          <div v-if="newsDetail.embedUrl" class="mt-6 md:mt-8">
+            <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">Video Terkait</h3>
             <div class="aspect-video rounded-lg overflow-hidden">
               <iframe 
                 :src="newsDetail.embedUrl"
@@ -124,14 +122,14 @@
       </article>
 
       <!-- Share Section -->
-      <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Bagikan Berita</h3>
-        <div class="flex flex-wrap gap-4">
+      <div class="mt-6 md:mt-8 bg-white rounded-lg shadow-lg p-4 md:p-6">
+        <h3 class="text-base md:text-lg font-semibold text-gray-900 mb-3 md:mb-4">Bagikan Berita</h3>
+        <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 md:gap-4">
           <button 
             @click="shareToFacebook"
-            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            class="flex items-center justify-center px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm touch-target"
           >
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z" clip-rule="evenodd"/>
             </svg>
             Facebook
@@ -139,9 +137,9 @@
           
           <button 
             @click="shareToTwitter"
-            class="flex items-center px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors"
+            class="flex items-center justify-center px-3 md:px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors text-xs md:text-sm touch-target"
           >
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84"/>
             </svg>
             Twitter
@@ -149,34 +147,36 @@
           
           <button 
             @click="shareToWhatsApp"
-            class="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            class="flex items-center justify-center px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs md:text-sm touch-target"
           >
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 0C4.477 0 0 4.477 0 10c0 1.89.525 3.66 1.438 5.168L0 20l4.832-1.438C6.34 19.475 8.11 20 10 20c5.523 0 10-4.477 10-10S15.523 0 10 0zm5.293 14.293l-.707.707c-.391.391-.902.586-1.414.586-.512 0-1.023-.195-1.414-.586L10 13.243 8.242 15c-.391.391-.902.586-1.414.586-.512 0-1.023-.195-1.414-.586l-.707-.707L6.464 12.536 4.707 10.779c-.391-.391-.586-.902-.586-1.414 0-.512.195-1.023.586-1.414l.707-.707L6.172 8.001 7.929 6.243c.391-.391.902-.586 1.414-.586.512 0 1.023.195 1.414.586L12.515 7.001l1.758-1.758c.391-.391.902-.586 1.414-.586.512 0 1.023.195 1.414.586l.707.707-1.757 1.758 1.757 1.757z"/>
             </svg>
-            WhatsApp
+            <span class="hidden sm:inline">WhatsApp</span>
+            <span class="sm:hidden">WA</span>
           </button>
           
           <button 
             @click="copyLink"
-            class="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            class="flex items-center justify-center px-3 md:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-xs md:text-sm touch-target"
           >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
             </svg>
-            Salin Link
+            <span class="hidden sm:inline">Salin Link</span>
+            <span class="sm:hidden">Copy</span>
           </button>
         </div>
       </div>
 
       <!-- Tags Section (if hashtags found) -->
-      <div v-if="extractedTags.length > 0" class="mt-8 bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Tags</h3>
+      <div v-if="extractedTags.length > 0" class="mt-6 md:mt-8 bg-white rounded-lg shadow-lg p-4 md:p-6">
+        <h3 class="text-base md:text-lg font-semibold text-gray-900 mb-3 md:mb-4">Tags</h3>
         <div class="flex flex-wrap gap-2">
           <span 
             v-for="tag in extractedTags" 
             :key="tag"
-            class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
+            class="inline-block bg-blue-100 text-blue-800 text-xs md:text-sm px-2 md:px-3 py-1 rounded-full"
           >
             {{ tag }}
           </span>
@@ -185,15 +185,15 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else class="max-w-4xl mx-auto px-6 py-20 text-center">
-      <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div v-else class="max-w-4xl mx-auto px-4 md:px-6 py-16 md:py-20 text-center">
+      <svg class="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
       </svg>
-      <h3 class="text-xl font-medium text-gray-600 mb-2">Berita tidak ditemukan</h3>
-      <p class="text-gray-500 mb-6">Berita yang Anda cari mungkin telah dihapus atau tidak tersedia.</p>
+      <h3 class="text-lg md:text-xl font-medium text-gray-600 mb-2">Berita tidak ditemukan</h3>
+      <p class="text-gray-500 mb-4 md:mb-6 text-sm md:text-base">Berita yang Anda cari mungkin telah dihapus atau tidak tersedia.</p>
       <NuxtLink 
         to="/referensi"
-        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block"
+        class="px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block text-sm md:text-base touch-target"
       >
         Lihat Berita Lainnya
       </NuxtLink>
@@ -438,3 +438,77 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+.touch-target {
+  min-height: 44px;
+}
+
+/* Ensure proper prose styling on mobile */
+.prose {
+  line-height: 1.6;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.prose ul, .prose ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.prose img {
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .prose p {
+    margin-bottom: 0.75rem;
+  }
+  
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .prose ul, .prose ol {
+    padding-left: 1.25rem;
+  }
+}
+
+/* Ensure share buttons have adequate touch targets */
+@media (max-width: 640px) {
+  .grid.grid-cols-2 > button {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Better spacing for meta information on mobile */
+@media (max-width: 640px) {
+  .border-b {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+}
+</style>

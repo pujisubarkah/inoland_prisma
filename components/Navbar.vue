@@ -1,140 +1,149 @@
-<template>
-  <nav class="flex justify-between items-center p-4 bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 shadow-lg">
+<template>  <nav class="fixed top-0 left-0 right-0 flex justify-between items-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-800 via-blue-600 to-blue-700 shadow-md backdrop-blur-sm" style="z-index: 9999999;">
     <!-- Logo -->
-    <div class="flex items-center">
-      <img src="/lanri.png" alt="Logo" class="h-12 mr-3 p-2 sm:h-16 drop-shadow-lg" />
-      <span class="text-white font-extrabold text-xl sm:text-2xl tracking-wide drop-shadow" aria-label="Inolands">INOLAND</span>
-    </div>
-
-    <!-- Desktop Menu -->
-    <div class="hidden md:flex items-center gap-6">
-      <ul class="flex gap-6 list-none font-poppins font-bold text-lg text-white">
-        <li v-for="item in menu" :key="item.name" class="my-2 md:my-0">
+    <div class="flex items-center flex-shrink-0">
+      <img src="/lanri.png" alt="Logo LANRI" class="h-8 mr-2 sm:h-10 sm:mr-3 drop-shadow-lg filter brightness-110 contrast-125" style="filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)) drop-shadow(0 0 16px rgba(255,255,255,0.2))" />
+      <img src="/ino.png" alt="Logo INO" class="h-6 mr-2 sm:h-8 sm:mr-3 drop-shadow-md opacity-90" />
+      <span class="text-white font-bold text-base sm:text-lg md:text-xl tracking-wide drop-shadow-lg" style="text-shadow: 0 0 8px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.3)" aria-label="Inolands">INOLAND</span>
+    </div><!-- Desktop Menu -->
+    <div class="hidden lg:flex items-center gap-3 xl:gap-4">
+      <ul class="flex gap-3 xl:gap-4 list-none font-poppins text-white">
+        <li v-for="item in menu" :key="item.name" class="my-1 lg:my-0">
           <NuxtLink
             :to="item.path"
-            class="no-underline px-4 py-2 rounded transition font-semibold
-              hover:bg-white/80 hover:text-blue-700 hover:shadow-md
-              focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            :class="{ 'bg-white/90 text-blue-700 shadow font-bold': $route.path === item.path }"
+            class="no-underline px-3 py-2 rounded-lg transition-all duration-200 font-medium text-sm xl:text-base whitespace-nowrap
+              hover:bg-blue-500/30 hover:shadow-sm hover:backdrop-blur-sm
+              focus:outline-none focus:ring-2 focus:ring-blue-300/50"
+            :class="{ 
+              'bg-gradient-to-r from-blue-500/40 to-blue-400/30 text-blue-100 shadow-sm border border-blue-400/20 backdrop-blur-sm': $route.path === item.path,
+              'text-blue-50': $route.path !== item.path
+            }"
           >
             {{ item.name }}
           </NuxtLink>
         </li>
       </ul>
-    </div>
-
-    <!-- Right Side -->
-    <div class="flex items-center gap-4">
+    </div>    <!-- Right Side -->
+    <div class="flex items-center gap-2 sm:gap-3">
       <!-- Hamburger Menu -->
-      <button class="md:hidden text-white" @click="toggleMenu">
-        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button 
+        class="lg:hidden text-white p-2 rounded-md hover:bg-blue-500/30 transition-colors touch-manipulation" 
+        @click="toggleMenu"
+        aria-label="Toggle menu"
+      >
+        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
-      </button>
-
-      <!-- Mobile Menu -->
+      </button>      <!-- Mobile Menu -->
       <ul
         v-show="isMenuOpen"
-        class="absolute top-full left-0 w-full bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 shadow-lg rounded-b-lg p-4 md:hidden list-none font-poppins font-bold text-lg text-white z-30 transition-all duration-300"
+        class="fixed top-[52px] sm:top-[56px] left-0 right-0 bg-gradient-to-r from-blue-800/95 via-blue-600/95 to-blue-700/95 backdrop-blur-md shadow-lg border-t border-blue-500/20 p-3 lg:hidden list-none font-poppins text-white transition-all duration-300 max-h-screen overflow-y-auto" style="z-index: 9999998;"
       >
-        <li v-for="item in menu" :key="item.name" class="my-2 md:my-0">
+        <li v-for="item in menu" :key="item.name" class="my-1">
           <NuxtLink
             :to="item.path"
-            class="no-underline px-4 py-2 rounded block transition font-semibold hover:bg-white/80 hover:text-blue-700 hover:shadow-md"
+            class="no-underline px-4 py-3 rounded-lg block transition-all duration-200 font-medium hover:bg-blue-500/30 hover:shadow-sm hover:backdrop-blur-sm touch-manipulation min-h-[44px] flex items-center"
+            :class="{
+              'bg-gradient-to-r from-blue-500/40 to-blue-400/30 text-blue-100 shadow-sm border border-blue-400/20 backdrop-blur-sm': $route.path === item.path,
+              'text-blue-50': $route.path !== item.path
+            }"
             @click="toggleMenu"
           >
             {{ item.name }}
           </NuxtLink>
         </li>
-      </ul>
-
-      <!-- Profile Menu -->
+      </ul>      <!-- Profile Menu -->
       <div v-if="userProfile" class="relative">
         <button
-          class="flex items-center gap-2 px-3 py-2 rounded-full bg-gradient-to-r from-blue-700 to-cyan-400 shadow-lg border-2 border-white hover:scale-105 transition"
+          class="flex items-center gap-1 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg bg-blue-500/30 border border-blue-400/30 shadow-sm backdrop-blur-sm hover:bg-blue-400/40 hover:scale-105 transition-all duration-200 touch-manipulation"
           @click="toggleProfile"
         >
-          <UserCircleIcon class="w-9 h-9 text-blue-200 border-2 border-blue-300 rounded-full shadow" />
-          <span class="text-white font-semibold text-sm truncate max-w-[120px]">{{ userProfile.nama_lengkap }}</span>
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <UserCircleIcon class="w-6 h-6 sm:w-7 sm:h-7 text-blue-100 flex-shrink-0" />
+          <span class="text-blue-50 font-medium text-xs sm:text-sm truncate max-w-[80px] sm:max-w-[120px] hidden xs:block">{{ userProfile.nama_lengkap }}</span>
+          <svg class="w-3 h-3 sm:w-4 sm:h-4 text-blue-100 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
         <div
           v-if="isProfileOpen"
-          class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl py-2 z-40 border border-blue-200"
+          class="absolute right-0 mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-xl py-2 border border-gray-200" style="z-index: 9999997;"
         >
-          <div class="flex items-center gap-3 px-4 py-2">
-            <UserCircleIcon class="w-10 h-10 text-blue-300 border-2 border-blue-300 rounded-full shadow" />
-            <div>
-              <div class="font-bold text-blue-700 text-sm">{{ userProfile.nama_lengkap }}</div>
-              <div class="text-xs text-gray-500">{{ userProfile.instansi }}</div>
+          <div class="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2">
+            <UserCircleIcon class="w-8 h-8 sm:w-10 sm:h-10 text-blue-400 flex-shrink-0" />
+            <div class="min-w-0 flex-1">
+              <div class="font-semibold text-blue-700 text-xs sm:text-sm truncate">{{ userProfile.nama_lengkap }}</div>
+              <div class="text-xs text-gray-500 truncate">{{ userProfile.instansi }}</div>
             </div>
           </div>
-          <hr class="my-2 border-blue-100" />
+          <hr class="my-2 border-gray-100" />
           <NuxtLink
             v-if="userProfile.role_id === 1"
             to="/admin"
-            class="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50"
+            class="block px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex items-center"
           >Admin</NuxtLink>
           <NuxtLink
             v-if="userProfile.role_id === 2"
             to="/pengguna"
-            class="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50"
+            class="block px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex items-center"
           >Pengguna</NuxtLink>
-          <button @click="handleLogout" class="block w-full text-left px-4 py-2 text-sm text-blue-700 hover:bg-blue-50">Logout</button>
+          <button @click="handleLogout" class="block w-full text-left px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex items-center">Logout</button>
         </div>
-      </div>
-
-      <!-- Login Button -->
+      </div>      <!-- Login Button -->
       <button
         v-if="!userProfile"
         @click="isLoginModalOpen = true"
-        class="border-2 border-white bg-gradient-to-r from-cyan-400 to-blue-700 text-white py-2 px-4 rounded-lg cursor-pointer text-lg font-bold shadow hover:bg-white hover:text-blue-700 transition"
+        class="hidden xs:flex border border-blue-400/30 bg-blue-500/30 backdrop-blur-sm text-blue-50 py-1.5 px-3 sm:py-2 sm:px-4 rounded-lg cursor-pointer text-sm sm:text-base font-medium hover:bg-blue-400/40 hover:border-blue-300/40 transition-all duration-200 touch-manipulation whitespace-nowrap"
       >
         Masuk
       </button>
 
+      <!-- Mobile Login Button (Icon only) -->
+      <button
+        v-if="!userProfile"
+        @click="isLoginModalOpen = true"
+        class="xs:hidden border border-blue-400/30 bg-blue-500/30 backdrop-blur-sm text-blue-50 p-2 rounded-lg cursor-pointer hover:bg-blue-400/40 hover:border-blue-300/40 transition-all duration-200 touch-manipulation"
+        aria-label="Login"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+        </svg>
+      </button>
+
       <!-- Language Flags -->
-      <div class="flex gap-2">
-        <button @click="changeLanguage('en')" class="bg-transparent border-none cursor-pointer">
-          <img src="/uk_flag.png" alt="English" class="border border-gray-300 rounded-md shadow" width="30" height="20" />
+      <div class="flex gap-1">
+        <button @click="changeLanguage('en')" class="bg-transparent border-none cursor-pointer touch-manipulation p-1 rounded hover:bg-blue-500/30 transition-colors">
+          <img src="/uk_flag.png" alt="English" class="border border-blue-300/30 rounded-sm shadow w-5 h-3 sm:w-6 sm:h-4" />
         </button>
-        <button @click="changeLanguage('id')" class="bg-transparent border-none cursor-pointer">
-          <img src="/indonesia_flag.png" alt="Bahasa Indonesia" class="border border-gray-300 rounded-md shadow" width="30" height="20" />
+        <button @click="changeLanguage('id')" class="bg-transparent border-none cursor-pointer touch-manipulation p-1 rounded hover:bg-blue-500/30 transition-colors">
+          <img src="/indonesia_flag.png" alt="Bahasa Indonesia" class="border border-blue-300/30 rounded-sm shadow w-5 h-3 sm:w-6 sm:h-4" />
         </button>
       </div>
-    </div>
-
-    <!-- Login Modal -->
-    <div v-if="isLoginModalOpen" class="fixed inset-0 z-50 flex items-center justify-center">
+    </div>    <!-- Login Modal -->
+    <div v-if="isLoginModalOpen" class="fixed inset-0 flex items-center justify-center p-4" style="z-index: 99999999;">
       <!-- Overlay -->
       <div
         class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
         @click="isLoginModalOpen = false"
         aria-hidden="true"
-        style="z-index:51"
+        style="z-index: 99999998;"
       ></div>
 
       <!-- Modal content -->
       <div
-        class="relative bg-white rounded-xl shadow-2xl border-2 border-blue-300 max-w-lg w-full mx-4 p-0 overflow-hidden z-60 animate-fadeIn"
-        style="z-index:52"
+        class="relative bg-white rounded-xl shadow-2xl border-2 border-blue-300 max-w-lg w-full mx-4 p-0 overflow-hidden animate-fadeIn max-h-[90vh] overflow-y-auto"
+        style="z-index: 99999999;"
       >
-        <div class="flex justify-between items-start">
+        <div class="flex flex-col sm:flex-row justify-between items-start">
           <!-- Gambar ino di samping hanya untuk login -->
-          <div v-if="!showRegister" class="w-1/3 flex justify-center bg-white p-6">
-            <img src="/ino.png" alt="Logo" class="w-28 h-auto" />
+          <div v-if="!showRegister" class="hidden sm:block sm:w-1/3 flex justify-center bg-white p-4 lg:p-6">
+            <img src="/ino.png" alt="Logo" class="w-20 sm:w-24 lg:w-28 h-auto" />
           </div>
-          <div :class="showRegister ? 'w-full p-6' : 'w-2/3 p-6'">
-            <button @click="isLoginModalOpen = false" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-xl font-bold z-60">
+          <div :class="showRegister ? 'w-full p-4 sm:p-6' : 'w-full sm:w-2/3 p-4 sm:p-6'">            <button @click="isLoginModalOpen = false" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-red-500 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors touch-manipulation" style="z-index: 999999999;">
               &times;
             </button>
-            <!-- Gambar ino di atas form registrasi -->
-            <div v-if="showRegister" class="flex justify-center mb-4">
-              <img src="/ino.png" alt="Logo" class="w-20 h-auto" />
-            </div>
-            <form v-if="!showRegister" @submit.prevent="submitLogin" class="mt-4">
+            <!-- Gambar ino di atas form registrasi atau mobile login -->
+            <div v-if="showRegister || !showRegister" class="flex justify-center mb-4 sm:hidden">
+              <img src="/ino.png" alt="Logo" class="w-16 sm:w-20 h-auto" />
+            </div>            <form v-if="!showRegister" @submit.prevent="submitLogin" class="mt-4">
               <div class="mb-4">
                 <label for="email" class="block text-sm font-semibold text-blue-700 mb-1">Email</label>
                 <input
@@ -142,7 +151,7 @@
                   v-model="loginForm.email"
                   type="email"
                   required
-                  class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
                 />
               </div>
               <div class="mb-4">
@@ -152,12 +161,12 @@
                   v-model="loginForm.password"
                   type="password"
                   required
-                  class="w-full border border-blue-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
                 />
               </div>
               <button
                 type="submit"
-                class="w-full bg-blue-700 text-white font-bold py-2 rounded-lg hover:bg-blue-800 transition"
+                class="w-full bg-blue-700 text-white font-bold py-3 sm:py-2 rounded-lg hover:bg-blue-800 transition touch-manipulation"
               >
                 Masuk
               </button>
@@ -166,7 +175,7 @@
               </div>
               <div class="mt-4 text-sm text-center text-blue-700">
                 Belum punya akun?
-                <button type="button" class="underline font-semibold hover:text-blue-900" @click="showRegister = true">
+                <button type="button" class="underline font-semibold hover:text-blue-900 touch-manipulation p-1" @click="showRegister = true">
                   Daftar di sini
                 </button>
               </div>
@@ -174,7 +183,7 @@
 
             <!-- Registration Form -->
             <form v-else @submit.prevent="submitRegister" class="mt-4">
-              <div class="mb-4 flex items-center gap-4">
+              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <label for="reg-fullname" class="form-label">Nama Lengkap</label>
                 <input
                   id="reg-fullname"
@@ -184,7 +193,7 @@
                   class="form-input"
                 />
               </div>
-              <div class="mb-4 flex items-center gap-4">
+              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <label for="reg-username" class="form-label">Username</label>
                 <input
                   id="reg-username"
@@ -194,7 +203,7 @@
                   class="form-input"
                 />
               </div>
-              <div class="mb-4 flex items-center gap-4">
+              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <label for="reg-instansi" class="form-label">Instansi</label>
                 <input
                   id="reg-instansi"
@@ -204,7 +213,7 @@
                   class="form-input"
                 />
               </div>
-              <div class="mb-4 flex items-center gap-4">
+              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <label for="reg-email" class="form-label">Email</label>
                 <input
                   id="reg-email"
@@ -214,7 +223,7 @@
                   class="form-input"
                 />
               </div>
-              <div class="mb-4 flex items-center gap-4">
+              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <label for="reg-password" class="form-label">Password</label>
                 <input
                   id="reg-password"
@@ -224,9 +233,9 @@
                   class="form-input"
                 />
               </div>
-              <div class="mb-4 flex items-center gap-4">
+              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <label for="reg-confirm" class="form-label leading-tight">
-                  Konfirmasi<br>Password
+                  Konfirmasi<br class="hidden sm:block">Password
                 </label>
                 <input
                   id="reg-confirm"
@@ -238,13 +247,13 @@
               </div>
               <button
                 type="submit"
-                class="w-full bg-gradient-to-r from-cyan-400 to-blue-700 text-white font-bold py-2 rounded-lg shadow hover:bg-white hover:text-blue-700 transition"
+                class="w-full bg-gradient-to-r from-cyan-400 to-blue-700 text-white font-bold py-3 sm:py-2 rounded-lg shadow hover:bg-white hover:text-blue-700 transition touch-manipulation"
               >
                 Daftar
               </button>
               <div class="mt-4 text-sm text-center text-blue-700">
                 Sudah punya akun?
-                <button type="button" class="underline font-semibold hover:text-blue-900" @click="showRegister = false">
+                <button type="button" class="underline font-semibold hover:text-blue-900 touch-manipulation p-1" @click="showRegister = false">
                   Login di sini
                 </button>
               </div>
@@ -384,13 +393,22 @@ onMounted(() => {
 }
 
 .form-label {
-  min-width: 140px;
-  font-size: 1rem;
+  min-width: 0;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #2563eb;
   letter-spacing: 0.2px;
-  padding-right: 8px;
-  text-align: right;
+  padding-right: 0;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  .form-label {
+    min-width: 140px;
+    font-size: 1rem;
+    padding-right: 8px;
+    text-align: right;
+  }
 }
 
 .form-input {
@@ -402,6 +420,8 @@ onMounted(() => {
   background: linear-gradient(90deg, #f8fafc 80%, #e0f2fe 100%);
   transition: border 0.2s, box-shadow 0.2s;
   box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+  min-height: 44px;
+  touch-action: manipulation;
 }
 
 .form-input:focus {
@@ -411,21 +431,28 @@ onMounted(() => {
 }
 
 button[type="submit"] {
-  font-size: 1.08rem;
+  font-size: 1rem;
   letter-spacing: 0.5px;
+  min-height: 44px;
+  touch-action: manipulation;
 }
 
-@media (max-width: 600px) {
-  .mb-4.flex.items-center.gap-4 {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 2px;
+@media (min-width: 640px) {
+  button[type="submit"] {
+    font-size: 1.08rem;
+    min-height: auto;
   }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 639px) {
+  .mb-4.flex.flex-col.sm\\:flex-row.sm\\:items-center.gap-2.sm\\:gap-4 {
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
   .form-label {
-    text-align: left;
-    min-width: 0;
     margin-bottom: 2px;
-    padding-right: 0;
   }
 }
 </style>

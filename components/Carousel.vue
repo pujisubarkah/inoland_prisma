@@ -18,28 +18,16 @@
           v-for="(item, index) in news" 
           :key="item.id" 
           class="carousel-slide"
-        >
-          <img
+        >          <img
             :src="item.image_url"
             :alt="item.title"
-            class="w-full h-[400px] md:h-[600px] object-cover rounded-xl shadow-xl"
+            class="w-full h-[250px] sm:h-[350px] md:h-[400px] lg:h-[600px] object-cover rounded-xl shadow-xl"
             @error="handleImageError"
           />
-          <div class="absolute bottom-6 left-6 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg">
-            <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+          <div class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6 bg-black bg-opacity-60 text-white px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-lg backdrop-blur-sm">
+            <h3 class="text-sm sm:text-base md:text-lg font-semibold line-clamp-2">{{ item.title }}</h3>
           </div>
         </div>
-      </div>
-      
-      <!-- Navigation Dots -->
-      <div class="carousel-dots">
-        <button
-          v-for="(item, index) in news"
-          :key="index"
-          class="dot"
-          :class="{ active: currentIndex === index }"
-          @click="goToSlide(index)"
-        ></button>
       </div>
       
       <!-- Navigation Arrows (Desktop) -->
@@ -236,13 +224,25 @@ onUnmounted(() => {
 
 .carousel-slide img {
   width: 100%;
-  height: 400px;
+  height: 250px;
   object-fit: cover;
   border-radius: 1rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
+@media (min-width: 640px) {
+  .carousel-slide img {
+    height: 350px;
+  }
+}
+
 @media (min-width: 768px) {
+  .carousel-slide img {
+    height: 400px;
+  }
+}
+
+@media (min-width: 1024px) {
   .carousel-slide img {
     height: 600px;
   }
@@ -251,18 +251,32 @@ onUnmounted(() => {
 .carousel-dots {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding: 0 1rem;
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   border: none;
   background: rgba(75, 85, 99, 0.4);
   cursor: pointer;
   transition: all 0.3s ease;
+  touch-action: manipulation;
+}
+
+@media (min-width: 640px) {
+  .carousel-dots {
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  .dot {
+    width: 12px;
+    height: 12px;
+  }
 }
 
 .dot.active {
@@ -279,17 +293,26 @@ onUnmounted(() => {
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.9);
   color: #333;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
   display: none;
+  touch-action: manipulation;
+}
+
+@media (min-width: 640px) {
+  .carousel-arrow {
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -297,6 +320,9 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
   }
 }
 
@@ -311,17 +337,41 @@ onUnmounted(() => {
 }
 
 .carousel-arrow.prev {
-  left: 20px;
+  left: 10px;
 }
 
 .carousel-arrow.next {
-  right: 20px;
+  right: 10px;
+}
+
+@media (min-width: 640px) {
+  .carousel-arrow.prev {
+    left: 15px;
+  }
+  
+  .carousel-arrow.next {
+    right: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .carousel-arrow.prev {
+    left: 20px;
+  }
+  
+  .carousel-arrow.next {
+    right: 20px;
+  }
 }
 
 /* Mobile touch optimization */
 @media (max-width: 767px) {
   .carousel-wrapper {
     touch-action: pan-y pinch-zoom;
+  }
+  
+  .carousel-container {
+    padding: 0 0.5rem;
   }
 }
 </style>

@@ -1,20 +1,21 @@
 <!-- components/StatsGrid.vue -->
 <template>
-  <div class="max-w-6xl mx-auto px-6 py-10 grid gap-4 auto-rows-fr grid-cols-2 md:grid-cols-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 grid gap-3 sm:gap-4 auto-rows-fr grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
     <!-- Judul -->
-    <div class="p-6 rounded-xl shadow-lg bg-white text-gray-800 col-span-2 flex flex-col justify-start">
-      <h3 class="text-2xl font-extrabold">LABINOV dalam Angka</h3>
-      <div class="w-16 h-1 bg-blue-500 mt-2"></div>
+    <div class="p-4 sm:p-6 rounded-xl shadow-lg bg-white text-gray-800 col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col justify-start">
+      <h3 class="text-xl sm:text-2xl font-extrabold text-center sm:text-left">LABINOV dalam Angka</h3>
+      <div class="w-16 h-1 bg-blue-500 mt-2 mx-auto sm:mx-0"></div>
     </div>
 
     <!-- Statistik -->
-    <div v-for="(stat, index) in stats" :key="index" class="p-6 rounded-xl shadow-lg flex flex-col items-center text-center text-white"
+    <div v-for="(stat, index) in stats" :key="index" 
+         class="p-4 sm:p-6 rounded-xl shadow-lg flex flex-col items-center text-center text-white hover:scale-105 transition-all duration-300 cursor-pointer"
          :class="gradients[index % gradients.length]">
-      <p class="text-4xl font-bold">
+      <p class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2">
         <AnimatedCounter :value="stat.value" :suffix="stat.suffix" />
       </p>
-      <p class="text-sm uppercase mb-3">{{ stat.label }}</p>
-      <div class="text-3xl">
+      <p class="text-xs sm:text-sm uppercase mb-2 sm:mb-3 leading-tight">{{ stat.label }}</p>
+      <div class="text-2xl sm:text-3xl">
         <!-- Icon menggunakan emoji -->
         <span v-if="stat.iconType === 'lightbulb'">💡</span>
         <span v-else-if="stat.iconType === 'rocket'">🚀</span>

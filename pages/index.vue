@@ -17,88 +17,91 @@ import BeritaSection from '~/components/Berita_slider.vue'
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-white via-gray-100 to-cyan-100">    <!-- Animated Title Section -->
-    <section class="py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #1d4ed8 50%, #2563eb 75%, #3b82f6 100%);">
+    <section class="py-8 sm:py-12 relative overflow-hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #1d4ed8 50%, #2563eb 75%, #3b82f6 100%);">
       <!-- Background Pattern -->
       <div class="absolute inset-0 opacity-10">
         <div class="absolute top-0 left-0 w-full h-full bg-pattern"></div>
-      </div><div class="container mx-auto px-6 relative">
+      </div>
+
+      <div class="container mx-auto px-4 sm:px-6 relative">
         <!-- Main Title with Animation -->
-        <div class="text-center mb-12">
-          <div class="relative inline-block mb-6">            <!-- INOLAND Title with Mascot -->
-            <div class="flex items-center justify-center gap-6 mb-4">
-              <img src="/ino.png" alt="Inoland Mascot" class="h-20 sm:h-24 md:h-28 w-auto object-contain animate-bounce" />
-              <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-blue-200 tracking-tight">
+        <div class="text-center mb-8 sm:mb-12">
+          <div class="relative inline-block mb-4 sm:mb-6">
+            <!-- INOLAND Title with Mascot -->
+            <div class="flex items-center justify-center gap-3 sm:gap-6 mb-3 sm:mb-4">
+              <img src="/ino.png" alt="Inoland Mascot" class="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain animate-bounce" />
+              <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-blue-200 tracking-tight">
                 INOLAND
               </h1>
-              <img src="/ino.png" alt="Inoland Mascot" class="h-20 sm:h-24 md:h-28 w-auto object-contain animate-bounce animation-delay-300" />
+              <img src="/ino.png" alt="Inoland Mascot" class="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain animate-bounce animation-delay-300" />
             </div>
-              <!-- Scrolling Everyone Can Innovate -->
-            <div class="overflow-hidden w-full max-w-4xl mx-auto h-12 flex items-center bg-white/10 rounded-full backdrop-blur-sm border border-white/20 relative">
+            
+            <!-- Scrolling Everyone Can Innovate -->
+            <div class="overflow-hidden w-full max-w-sm sm:max-w-2xl md:max-w-4xl mx-auto h-10 sm:h-12 flex items-center bg-white/10 rounded-full backdrop-blur-sm border border-white/20 relative">
               <div class="marquee-container">
-                <span class="marquee-text text-2xl font-bold text-cyan-200">
+                <span class="marquee-text text-lg sm:text-xl md:text-2xl font-bold text-cyan-200">
                   Everyone Can Innovate • Everyone Can Innovate • Everyone Can Innovate • Everyone Can Innovate • 
                 </span>
               </div>
               <!-- Centered underline -->
-              <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-pulse"></div>
+              <div class="absolute -bottom-3 sm:-bottom-4 left-1/2 transform -translate-x-1/2 w-24 sm:w-32 h-0.5 sm:h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-pulse"></div>
             </div>
-            
           </div>
           
-          <p class="text-lg md:text-xl text-blue-100 font-light max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-600">
+          <p class="text-base sm:text-lg md:text-xl text-blue-100 font-light max-w-2xl sm:max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-600 px-4 sm:px-0">
             Laboratorium Inovasi untuk menciptakan perubahan nyata
           </p>
         </div>
 
         <!-- Three Feature Boxes - More Compact -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-6xl mx-auto px-2 sm:px-0">
           <!-- Box 1: Ide Berharga -->
-          <div class="group bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in-up animation-delay-800">
+          <div class="group bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 hover:bg-white/15 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in-up animation-delay-800 sm:col-span-2 md:col-span-1">
             <div class="text-center">
-              <div class="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform duration-300">
+              <div class="w-10 sm:w-12 h-10 sm:h-12 mx-auto mb-3 sm:mb-4 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center text-xl sm:text-2xl group-hover:rotate-12 transition-transform duration-300">
                 💡
               </div>
-              <h3 class="text-lg font-bold text-white mb-3 group-hover:text-cyan-200 transition-colors">
+              <h3 class="text-base sm:text-lg font-bold text-white mb-2 sm:mb-3 group-hover:text-cyan-200 transition-colors">
                 Ide Berharga
               </h3>
-              <p class="text-blue-100 leading-relaxed text-sm">
+              <p class="text-blue-100 leading-relaxed text-xs sm:text-sm">
                 Setiap ide berharga, dan <span class="font-semibold text-cyan-300">Inoland</span> adalah ruangnya untuk tumbuh dan berkembang.
               </p>
             </div>
           </div>
 
           <!-- Box 2: Laboratorium Inovasi -->
-          <div class="group bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in-up animation-delay-1000">
+          <div class="group bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 hover:bg-white/15 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in-up animation-delay-1000 sm:col-span-2 md:col-span-1">
             <div class="text-center">
-              <div class="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform duration-300">
+              <div class="w-10 sm:w-12 h-10 sm:h-12 mx-auto mb-3 sm:mb-4 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center text-xl sm:text-2xl group-hover:rotate-12 transition-transform duration-300">
                 🔬
               </div>
-              <h3 class="text-lg font-bold text-white mb-3 group-hover:text-purple-200 transition-colors">
+              <h3 class="text-base sm:text-lg font-bold text-white mb-2 sm:mb-3 group-hover:text-purple-200 transition-colors">
                 Laboratorium Inovasi
               </h3>
-              <p class="text-blue-100 leading-relaxed text-sm">
+              <p class="text-blue-100 leading-relaxed text-xs sm:text-sm">
                 Bergabunglah dalam ekosistem kolaboratif untuk instansi yang ingin menghadirkan perubahan nyata.
               </p>
             </div>
           </div>
 
           <!-- Box 3: Aksi Nyata -->
-          <div class="group bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in-up animation-delay-1200">
+          <div class="group bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 hover:bg-white/15 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in-up animation-delay-1200 sm:col-span-2 md:col-span-1">
             <div class="text-center">
-              <div class="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform duration-300">
+              <div class="w-10 sm:w-12 h-10 sm:h-12 mx-auto mb-3 sm:mb-4 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-xl sm:text-2xl group-hover:rotate-12 transition-transform duration-300">
                 🌱
               </div>
-              <h3 class="text-lg font-bold text-white mb-3 group-hover:text-green-200 transition-colors">
+              <h3 class="text-base sm:text-lg font-bold text-white mb-2 sm:mb-3 group-hover:text-green-200 transition-colors">
                 Aksi Nyata
               </h3>
-              <p class="text-blue-100 leading-relaxed text-sm">
+              <p class="text-blue-100 leading-relaxed text-xs sm:text-sm">
                 Mari bersama merawat ide dan mengubahnya menjadi aksi. Buka ruang untuk inovasi di instansi Anda.
               </p>
             </div>
           </div>
         </div>
       </div>
-    </section>    <!-- Berita Section -->
+    </section><!-- Berita Section -->
     <section class="py-12 bg-white">
       <div class="container mx-auto px-6">
         <BeritaSection />

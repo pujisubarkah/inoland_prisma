@@ -1,47 +1,73 @@
 <template>
-  <div class="p-4">
-    <h1 class="font-bold text-2xl text-center my-5 font-poppins">DIREKTORI INOVASI</h1>
-    <hr class="w-[100px] h-[2px] mx-auto mb-5 border-none bg-gradient-to-r from-blue-800 via-black to-blue-800" />    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      <NuxtLink
+  <div class="p-3 md:p-4">
+    <h1 class="font-bold text-xl md:text-2xl text-center my-4 md:my-5 font-poppins px-4">
+      DIREKTORI INOVASI
+    </h1>
+    <hr class="w-20 md:w-[100px] h-[2px] mx-auto mb-4 md:mb-5 border-none bg-gradient-to-r from-blue-800 via-black to-blue-800" />
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">      <NuxtLink
         v-for="item in currentItems"
         :key="item.id"
         :to="`/referensi/direktori/${item.id}`"
-        class="bg-white rounded-lg shadow hover:scale-[1.03] transition cursor-pointer block no-underline"
+        class="bg-white rounded-lg shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer block no-underline touch-target overflow-hidden"
       >
-        <img
-          :src="item.image"
-          :alt="item.title"
-          class="w-full h-[220px] object-cover rounded-t-lg"
-          @error="handleImageError"
-        />        <div class="p-4">
-          <h3 class="font-bold text-base mb-1">{{ item.title }}</h3>
-          <p class="text-blue-800 text-sm">{{ item.pemda }}</p>
+        <div class="relative">
+          <img
+            :src="item.image"
+            :alt="item.title"
+            class="w-full h-64 md:h-80 object-cover"
+            style="aspect-ratio: 3/4;"
+            @error="handleImageError"
+          />
+          <div v-if="item.year" class="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-md">
+            {{ item.year }}
+          </div>
+        </div>
+        
+        <div class="p-3 md:p-4 flex flex-col gap-2">
+          <h3 class="font-bold text-sm md:text-base leading-tight text-gray-800 min-h-[2.5rem] md:min-h-[3rem]">
+            {{ item.title }}
+          </h3>
+          <p class="text-blue-700 text-xs md:text-sm font-medium">
+            {{ item.pemda }}
+          </p>
         </div>
       </NuxtLink>
     </div>
 
-    <div v-if="totalPages > 1" class="mt-6 flex justify-center items-center gap-2">
+    <!-- Pagination with responsive design -->
+    <div v-if="totalPages > 1" class="mt-4 md:mt-6 flex justify-center items-center gap-1 md:gap-2 px-4">
       <button
         v-if="currentPage > 1"
         @click="changePage(currentPage - 1)"
-        class="px-3 py-1 rounded bg-gray-100 text-black shadow hover:bg-gray-200"
-      >Prev</button>
+        class="px-2 md:px-3 py-1.5 md:py-2 rounded bg-gray-100 text-black shadow hover:bg-gray-200 transition-colors text-xs md:text-sm font-medium touch-target"
+      >
+        <span class="hidden sm:inline">Prev</span>
+        <span class="sm:hidden">‹</span>
+      </button>
 
-      <button
-        v-for="page in visiblePages"
-        :key="page"
-        @click="changePage(page)"
-        :class="[
-          'px-3 py-1 rounded shadow',
-          currentPage === page ? 'bg-gray-700 text-white' : 'bg-gray-100 text-black hover:bg-gray-200'
-        ]"
-      >{{ page }}</button>
+      <div class="flex gap-1 md:gap-2 max-w-xs overflow-x-auto">
+        <button
+          v-for="page in visiblePages"
+          :key="page"
+          @click="changePage(page)"
+          :class="[
+            'px-2 md:px-3 py-1.5 md:py-2 rounded shadow text-xs md:text-sm font-medium transition-colors touch-target flex-shrink-0',
+            currentPage === page 
+              ? 'bg-gray-700 text-white' 
+              : 'bg-gray-100 text-black hover:bg-gray-200'
+          ]"
+        >{{ page }}</button>
+      </div>
 
       <button
         v-if="currentPage < totalPages"
         @click="changePage(currentPage + 1)"
-        class="px-3 py-1 rounded bg-gray-100 text-black shadow hover:bg-gray-200"
-      >Next</button>
+        class="px-2 md:px-3 py-1.5 md:py-2 rounded bg-gray-100 text-black shadow hover:bg-gray-200 transition-colors text-xs md:text-sm font-medium touch-target"
+      >
+        <span class="hidden sm:inline">Next</span>
+        <span class="sm:hidden">›</span>
+      </button>
     </div>
   </div>
 </template>
@@ -74,8 +100,6 @@ const fetchPdfList = async () => {
         kategori: item.pdf_kategori,
         created_at: item.created_at
       }))
-      // Urutkan berdasarkan year (descending)
-      .sort((a, b) => (b.year || 0) - (a.year || 0))
     }
   } catch (err) {
     console.error('Error fetching data:', err)
@@ -108,3 +132,56 @@ const handleImageError = (e) => {
   e.target.src = 'https://via.placeholder.com/220x220?text=No+Image'
 }
 </script>
+
+<style scoped>
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+.touch-target {
+  min-height: 44px;
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Custom scrollbar for pagination */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .grid {
+    gap: 0.75rem;
+  }
+  
+  /* Ensure touch targets are adequate */
+  button {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1024px) {
+  .grid {
+    gap: 1rem;
+  }
+}
+</style>

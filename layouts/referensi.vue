@@ -2,47 +2,50 @@
 <template>
   <div class="font-poppins min-h-screen flex flex-col">
     <!-- Navbar Component -->
-    <Navbar />
-
-    <!-- Main Content -->
-    <div class="flex flex-1 bg-gray-50">
+    <Navbar />    <!-- Main Content with top padding to account for fixed navbar -->
+    <div class="flex flex-1 bg-gray-50 pt-[52px] sm:pt-[56px]">
       <!-- Sidebar -->
       <div 
-        class="transition-all duration-300 overflow-hidden bg-gray-800 text-white p-3"
-        :class="{ 'w-64': isSidebarOpen, 'w-16': !isSidebarOpen }"
+        class="transition-all duration-300 bg-gray-800 text-white"
+        :class="{
+          'w-64': isSidebarOpen,
+          'w-16': !isSidebarOpen
+        }"
       >
-        <!-- Toggle Button -->
-        <button
-          @click="toggleSidebar"
-          class="bg-gray-700 hover:bg-gray-600 text-white border-none p-3 cursor-pointer rounded-md w-full mb-3 flex justify-center items-center transition-colors"
-        >
-          <svg 
-            class="w-5 h-5 transition-transform duration-300" 
-            :class="{ 'rotate-180': isSidebarOpen }"
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
+        <div class="p-3 h-full overflow-y-auto">
+          <!-- Toggle Button -->
+          <button
+            @click="toggleSidebar"
+            class="bg-gray-700 hover:bg-gray-600 text-white border-none p-3 cursor-pointer rounded-md w-full mb-3 flex justify-center items-center transition-colors touch-manipulation"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </button>
-
-        <!-- Menu Items -->
-        <ul class="list-none p-0">
-          <li 
-            v-for="(item, index) in menuItems" 
-            :key="index"
-            class="mb-3"
-          >            <NuxtLink
-              :to="item.route"
-              class="bg-gray-700 hover:bg-gray-600 text-white border-none p-3 cursor-pointer rounded-md w-full flex items-center transition-all duration-300 no-underline"
-              :class="{
-                'justify-center': !isSidebarOpen,
-                'justify-start': isSidebarOpen,
-                'bg-emerald-600 hover:bg-emerald-700': $route.path === item.route
-              }"
-              :title="!isSidebarOpen ? item.label : ''"
+            <svg 
+              class="w-5 h-5 transition-transform duration-300" 
+              :class="{ 'rotate-180': isSidebarOpen }"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
             >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+
+          <!-- Menu Items -->
+          <ul class="list-none p-0">
+            <li 
+              v-for="(item, index) in menuItems" 
+              :key="index"
+              class="mb-3"
+            >
+              <NuxtLink
+                :to="item.route"
+                class="bg-gray-700 hover:bg-gray-600 text-white border-none p-3 cursor-pointer rounded-md w-full flex items-center transition-all duration-300 no-underline touch-manipulation min-h-[44px]"
+                :class="{
+                  'justify-center': !isSidebarOpen,
+                  'justify-start': isSidebarOpen,
+                  'bg-emerald-600 hover:bg-emerald-700': $route.path === item.route
+                }"
+                :title="!isSidebarOpen ? item.label : ''"
+              >
               <!-- Icon -->
               <svg v-if="item.icon === NewsIcon" class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd"/>
@@ -63,9 +66,7 @@
               </svg>
               <svg v-else class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
-              </svg>
-              
-              <span 
+              </svg>              <span 
                 v-if="isSidebarOpen" 
                 class="ml-3 transition-all duration-300 whitespace-nowrap"
               >
@@ -74,18 +75,14 @@
             </NuxtLink>
           </li>
         </ul>
+        </div>
       </div>
 
       <!-- Main Content Area -->
-      <div class="flex-1 p-4 overflow-y-auto">
+      <div class="flex-1 overflow-y-auto p-4">
         <slot />
       </div>
-    </div>    <!-- Mobile Menu Overlay -->
-    <div 
-      v-if="isSidebarOpen && isMobile" 
-      @click="closeSidebar"
-      class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-    />
+    </div>
 
     <!-- Footer Component -->
     <Footer />
@@ -93,7 +90,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 // Icon Components
 const TableIcon = {
@@ -139,16 +136,13 @@ const TuxedovationIcon = {
 }
 
 // Reactive state
-const isSidebarOpen = ref(false)
+const isSidebarOpen = ref(true)
 const windowWidth = ref(0)
-
-// Computed
-const isMobile = computed(() => windowWidth.value < 768)
 
 // Menu items configuration
 const menuItems = [
   { 
-    label: 'Artikel', 
+    label: 'Artikel Inovasi', 
     icon: NewsIcon, 
     route: '/referensi/artikel'
   },
@@ -189,69 +183,41 @@ const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
 
-const closeSidebar = () => {
-  isSidebarOpen.value = false
-}
-
 const handleResize = () => {
   windowWidth.value = window.innerWidth
   
-  // Auto-close sidebar on mobile
-  if (isMobile.value && isSidebarOpen.value) {
+  // On mobile, start with collapsed sidebar for more space
+  if (windowWidth.value < 768 && isSidebarOpen.value) {
     isSidebarOpen.value = false
+  }
+  
+  // On desktop, expand sidebar by default
+  if (windowWidth.value >= 1024 && !isSidebarOpen.value) {
+    isSidebarOpen.value = true
   }
 }
 
 // Lifecycle
 onMounted(() => {
-  windowWidth.value = window.innerWidth
-  window.addEventListener('resize', handleResize)
-  
-  // Set default sidebar state based on screen size
-  isSidebarOpen.value = !isMobile.value
+  if (typeof window !== 'undefined') {
+    windowWidth.value = window.innerWidth
+    window.addEventListener('resize', handleResize)
+    
+    // Set initial sidebar state based on screen size
+    // Desktop: expanded, Mobile: collapsed for better UX
+    isSidebarOpen.value = windowWidth.value >= 768
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', handleResize)
+  }
 })
 </script>
 
 <style scoped>
 .font-poppins {
   font-family: 'Poppins', sans-serif;
-}
-
-/* Custom scrollbar for content area */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Smooth transitions */
-.transition-all {
-  transition: all 0.3s ease;
-}
-
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
-  .sidebar-mobile {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    z-index: 50;
-  }
 }
 </style>

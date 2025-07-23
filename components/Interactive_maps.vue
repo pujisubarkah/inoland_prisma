@@ -1,28 +1,25 @@
 <template>
-  <div class="app">
-    <!-- Header -->
-<header class="bg-white shadow-md p-4 mb-6">
-  <h1 class="text-2xl font-bold text-center">SEBARAN IDE INOVASI</h1>
-  <p class="text-center text-black mt-4 max-w-4xl mx-auto text-base leading-relaxed">
+  <div class="app">    <!-- Header -->
+<header class="bg-white shadow-md p-3 sm:p-4 mb-4 sm:mb-6">
+  <h1 class="text-xl sm:text-2xl font-bold text-center">SEBARAN IDE INOVASI</h1>
+  <p class="text-center text-black mt-3 sm:mt-4 max-w-4xl mx-auto text-sm sm:text-base leading-relaxed px-2">
     Sejak 2015, ribuan ide bermunculan dari berbagai penjuru instansi. 
     Peta ini bukan sekadar tampilan visual, tapi bukti nyata bahwa semangat inovasi di sektor publik terus hidup dan berkembang.  
     Ribuan ide telah terpetakan—dan setiap titiknya menyimpan kisah perubahan yang nyata.
   </p>
-  <p class="text-center text-black mt-2 max-w-4xl mx-auto text-base leading-relaxed">
+  <p class="text-center text-black mt-2 max-w-4xl mx-auto text-sm sm:text-base leading-relaxed px-2">
     Dari satu gagasan sederhana hingga solusi berdampak besar, setiap titik di peta ini menyimpan kisah tentang keberanian untuk 
     berubah, berkreasi, dan melayani lebih baik. Siapa tahu, titik berikutnya akan berasal dari instansimu, memberi warna baru 
     bagi ekosistem inovasi kita bersama.
   </p>
 
-  <hr class="w-1/4 h-1 bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 mx-auto my-4" />
+  <hr class="w-1/4 h-1 bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 mx-auto my-3 sm:my-4" />
 </header>
 
-
-
     <!-- Provinsi Map -->
-    <section class="mb-6">
+    <section class="mb-4 sm:mb-6 px-2 sm:px-0">
       <div class="relative overflow-hidden rounded-lg shadow-md">
-        <svg viewBox="0 0 981.98602 441.06508" width="100%" height="auto" preserveAspectRatio="xMidYMid meet">
+        <svg viewBox="0 0 981.98602 441.06508" width="100%" height="auto" preserveAspectRatio="xMidYMid meet" class="max-h-[300px] sm:max-h-[400px] md:max-h-none">
           <defs>
             <linearGradient id="grad-blue-high" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#2563eb" stop-opacity="1" />
@@ -46,56 +43,54 @@
             stroke-width="0.5"
             @click="loadKabupaten(provinsi.id_provinsi)"
             @mouseenter="handleMouseEnter($event, `${provinsi.nama}<br/>Jumlah Ide Inovasi: ${provinsi.jumlah_inovasi}`)"
-
             @mouseleave="handleMouseLeave"
+            class="cursor-pointer transition-opacity hover:opacity-80"
           >
             <title>{{ provinsi.nama }}</title>
           </path>
-          <!-- Tooltip Hover -->
-          <foreignObject v-if="hoveredArea.visible" :x="svgWidth - 230" :y="10" width="220" height="80">
-            <div class="bg-white border border-blue-400 rounded-lg p-2 shadow-lg text-sm font-semibold text-blue-700">
+          <!-- Tooltip Hover - Responsive positioning -->
+          <foreignObject v-if="hoveredArea.visible" :x="svgWidth > 600 ? svgWidth - 230 : 10" :y="10" width="220" height="80">
+            <div class="bg-white border border-blue-400 rounded-lg p-2 shadow-lg text-xs sm:text-sm font-semibold text-blue-700">
               <div v-html="hoveredArea.text"></div>
             </div>
           </foreignObject>
         </svg>
       </div>
-    </section>
-
-    <!-- Popup Kabupaten dengan Dialog shadcn -->
+    </section>    <!-- Popup Kabupaten dengan Dialog shadcn -->
     <Dialog v-model:open="dialogOpen">
       <template #content>
-        <div class="popup-box relative">
-          <button class="close-btn absolute top-2 right-2" @click="dialogOpen = false; selectedProvinsi = null; dialogKabkotIndeks = []; dialogKabkotName = ''">
+        <div class="popup-box relative max-h-[90vh] overflow-y-auto">
+          <button class="close-btn absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors" @click="dialogOpen = false; selectedProvinsi = null; dialogKabkotIndeks = []; dialogKabkotName = ''">
             ✖
           </button>
-          <h1 class="text-xl font-bold mb-2">Peta Kabupaten di Provinsi {{ selectedProvinceName }}</h1>
+          <h1 class="text-lg sm:text-xl font-bold mb-2 pr-10">Peta Kabupaten di Provinsi {{ selectedProvinceName }}</h1>
           <hr class="my-2" />
-          <!-- Table kiri, peta & chart kanan -->
-          <div class="flex flex-col md:flex-row gap-6 mb-6">
+          <!-- Table kiri, peta & chart kanan - Stack on mobile -->
+          <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6">
             <!-- Table Inovasi Kabupaten -->
-            <div class="w-full md:w-1/2">
-              <h2 class="font-bold mb-2 text-blue-700">
-                Daftar Ide Inovasi  {{ dialogKabkotName }}
+            <div class="w-full lg:w-1/2">
+              <h2 class="font-bold mb-2 text-blue-700 text-sm sm:text-base">
+                Daftar Ide Inovasi {{ dialogKabkotName }}
               </h2>
-              <div style="max-height:340px;overflow:auto;">
-                <div style="overflow-x:auto;">
-                  <Table class="inovasi-table w-full">
+              <div class="max-h-[250px] sm:max-h-[340px] overflow-auto">
+                <div class="overflow-x-auto">
+                  <Table class="inovasi-table w-full text-xs sm:text-sm">
                     <thead>
                       <tr>
-                        <th>Tahun</th>
-                        <th>Judul Inovasi</th>
-                        <th>Urusan</th>
-                        <th>Inovator</th>
-                        <th>Deskripsi</th>
+                        <th class="p-1 sm:p-2">Tahun</th>
+                        <th class="p-1 sm:p-2">Judul Inovasi</th>
+                        <th class="p-1 sm:p-2">Urusan</th>
+                        <th class="p-1 sm:p-2">Inovator</th>
+                        <th class="p-1 sm:p-2">Deskripsi</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="item in dialogKabkotInovasi" :key="item.id">
-                        <td>{{ item.tahun }}</td>
-                        <td>{{ item.judul_inovasi }}</td>
-                        <td>{{ item.urusan }}</td>
-                        <td>{{ item.inovator || '-' }}</td>
-                        <td>{{ item.deskripsi }}</td>
+                        <td class="p-1 sm:p-2">{{ item.tahun }}</td>
+                        <td class="p-1 sm:p-2">{{ item.judul_inovasi }}</td>
+                        <td class="p-1 sm:p-2">{{ item.urusan }}</td>
+                        <td class="p-1 sm:p-2">{{ item.inovator || '-' }}</td>
+                        <td class="p-1 sm:p-2">{{ item.deskripsi }}</td>
                       </tr>
                     </tbody>
                   </Table>
@@ -103,9 +98,9 @@
               </div>
             </div>
             <!-- Peta & Chart Kabupaten -->
-            <div class="w-full md:w-1/2 flex flex-col gap-4 items-center justify-center">
-              <div class="overflow-hidden rounded-lg shadow-md mb-2">
-                <svg viewBox="-100 0 1000 600" height="350" preserveAspectRatio="xMidYMid meet" class="map-kabupaten">
+            <div class="w-full lg:w-1/2 flex flex-col gap-3 sm:gap-4 items-center justify-center">
+              <div class="overflow-hidden rounded-lg shadow-md mb-2 w-full">
+                <svg viewBox="-100 0 1000 600" class="w-full h-[200px] sm:h-[250px] lg:h-[350px] map-kabupaten" preserveAspectRatio="xMidYMid meet">
                   <path
                     v-for="kab in kabupaten"
                     :key="kab.id_kabkot"
@@ -114,12 +109,13 @@
                     stroke="black"
                     stroke-width="1"
                     @click="showKabupatenChart(kab)"
+                    class="cursor-pointer transition-opacity hover:opacity-80"
                   />
                 </svg>
               </div>
-              <div v-if="dialogKabkotIndeks.length" class="bg-white rounded-lg shadow p-4 animate-fadeIn w-full">
-                <h2 class="font-bold mb-2 text-blue-700">Indeks {{ getIndexLabel(dialogSelectedIndex) }} {{ dialogKabkotName }}</h2>
-                <select v-model="dialogSelectedIndex" class="mb-4 p-2 border border-blue-300 rounded-lg w-full">
+              <div v-if="dialogKabkotIndeks.length" class="bg-white rounded-lg shadow p-3 sm:p-4 animate-fadeIn w-full">
+                <h2 class="font-bold mb-2 text-blue-700 text-sm sm:text-base">Indeks {{ getIndexLabel(dialogSelectedIndex) }} {{ dialogKabkotName }}</h2>
+                <select v-model="dialogSelectedIndex" class="mb-3 sm:mb-4 p-2 border border-blue-300 rounded-lg w-full text-sm">
                   <option value="indeks_skor">Indeks Inovasi Daerah</option>
                   <option value="ipp_skor">Indeks Pelayanan Publik</option>
                   <option value="idsd_skor">Indeks Daya Saing Daerah</option>
@@ -142,31 +138,34 @@
                   }"
                   :options="{
                     responsive: true,
-                    plugins: { legend: { display: false } }
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                      x: { ticks: { font: { size: 10 } } },
+                      y: { ticks: { font: { size: 10 } } }
+                    }
                   }"
-                  style="height:160px"
+                  class="h-[120px] sm:h-[160px]"
                 />
               </div>
             </div>
           </div>
         </div>
       </template>
-    </Dialog>
-
-    <!-- Legend -->
-    <div class="legend bg-white p-4 rounded-lg shadow-md mt-6">
-      <h3 class="font-bold mb-2">LEGENDA</h3>
-      <div class="flex flex-wrap gap-2">
+    </Dialog>    <!-- Legend -->
+    <div class="legend bg-white p-3 sm:p-4 rounded-lg shadow-md mt-4 sm:mt-6 mx-2 sm:mx-0">
+      <h3 class="font-bold mb-2 text-sm sm:text-base">LEGENDA</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-2">
         <div v-for="(color, label) in legendColors" :key="label" class="flex items-center">
-          <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: color }"></div>
-          <span class="ml-2">{{ label }}</span>
+          <div class="w-4 h-4 rounded-full flex-shrink-0" :style="{ backgroundColor: color }"></div>
+          <span class="ml-2 text-xs sm:text-sm">{{ label }}</span>
         </div>
       </div>
     </div>
 
     <!-- Indeks Inovasi Chart on Hover -->
-    <div v-if="hoveredIndeks.length" class="mt-4 bg-white rounded-lg shadow p-4">
-      <h2 class="font-bold mb-2">Indeks Inovasi {{ hoveredKabkotName }}</h2>
+    <div v-if="hoveredIndeks.length" class="mt-3 sm:mt-4 bg-white rounded-lg shadow p-3 sm:p-4 mx-2 sm:mx-0">
+      <h2 class="font-bold mb-2 text-sm sm:text-base">Indeks Inovasi {{ hoveredKabkotName }}</h2>
       <Line
         :data="{
           labels: hoveredIndeks.map(i => i.indeks_tahun),
@@ -184,9 +183,14 @@
         }"
         :options="{
           responsive: true,
-          plugins: { legend: { display: false } }
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 10 } } },
+            y: { ticks: { font: { size: 10 } } }
+          }
         }"
-        style="height:200px"
+        class="h-[150px] sm:h-[200px]"
       />
     </div>
   </div>
