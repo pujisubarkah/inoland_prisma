@@ -1,30 +1,84 @@
 <template>
-  <div class="map-container">
-    <!-- Dropdown Filter Tahun -->
-    <select v-model="selectedYear" class="year-select">
-      <option :value="null">Semua Tahun</option>
-      <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
-    </select>
+  <div class="map-container">    <!-- Filter Panel -->
+    <div class="filter-panel">
+      <div class="filter-container">
+        <label class="filter-label">Filter Tahun:</label>
+        <select v-model="selectedYear" class="year-select">
+          <option :value="null">Semua Tahun</option>
+          <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
+        </select>
+      </div>
+    </div>
 
-    <!-- Overlay Info -->
+    <!-- Info Box -->
     <div class="info-box">
+      <div class="info-header">
+        <h3>INOLAND</h3>
+        <span class="info-subtitle">Peta Inovasi Daerah</span>
+      </div>
       <p>
-        INOLAND adalah web informasi oleh <strong>Lembaga  Administrasi Negara</strong> yang juga merupakan sistem integrasi untuk penguatan kapasitas berinovasi, terdiri dari berbagai program advokasi pembelajaran inovasi.
+        Web informasi <strong>LAN</strong> untuk penguatan kapasitas berinovasi daerah.
       </p>
       <NuxtLink
         to="/cari"
-        class="inline-block mt-2 px-3 py-1 rounded bg-green-600 text-white text-sm font-semibold shadow hover:bg-green-700 transition"
+        class="info-link"
       >
-        Lihat Data Inovasi Lengkap &rarr;
-      </NuxtLink>
+        Lihat Data Lengkap →
+      </NuxtLink>    </div>
+
+    <!-- Zoom Controls -->
+    <div class="zoom-controls">
+      <button @click="zoomIn" class="zoom-btn zoom-in" title="Zoom In">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+      </button>
+      <button @click="zoomOut" class="zoom-btn zoom-out" title="Zoom Out">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+      </button>
+      <button @click="resetView" class="zoom-btn reset-view" title="Reset View">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+          <path d="M21 3v5h-5"></path>
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+          <path d="M3 21v-5h5"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <h4>Legenda Tahun</h4>
+      <div class="legend-items">
+        <div v-for="year in years.slice(0, 6)" :key="year" class="legend-item">
+          <div class="legend-color" :style="{ backgroundColor: getYearColor(year) }"></div>
+          <span>{{ year }}</span>
+        </div>
+        <div v-if="years.length > 6" class="legend-item">
+          <div class="legend-color" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd)"></div>
+          <span>Lainnya</span>
+        </div>
+      </div>
     </div>
 
     <!-- Popup untuk menampilkan informasi marker -->
     <div v-if="popupData" class="popup-fixed">
       <div class="popup-content">
         <button @click="closePopup" class="popup-close">&times;</button>
-        <h4>{{ popupData.name }}</h4>
-        <p><strong>Tahun:</strong> {{ popupData.year }}</p>
+        <div class="popup-header">
+          <div class="popup-icon" :style="{ backgroundColor: getYearColor(popupData.year) }">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/>
+            </svg>
+          </div>
+          <div>
+            <h4>{{ popupData.name }}</h4>
+            <span class="popup-year">Tahun {{ popupData.year }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -223,27 +277,62 @@ const filteredLocations = computed(() => {
   return locations.filter(loc => loc.year === selectedYear.value)
 })
 
-// Function untuk membuat style marker dengan icon lightbulb kuning
+// Color palette untuk setiap tahun
+const yearColors = {
+  2015: '#ff6b6b', 2016: '#4ecdc4', 2017: '#45b7d1', 2018: '#96ceb4',
+  2019: '#ffeaa7', 2020: '#dda0dd', 2021: '#ff9ff3', 2022: '#54a0ff',
+  2023: '#5f27cd', 2024: '#00d2d3'
+}
+
+// Function untuk mendapatkan warna berdasarkan tahun
+const getYearColor = (year) => {
+  return yearColors[year] || '#6c5ce7'
+}
+
+// Function untuk membuat style marker dengan warna berbeda per tahun
 const createMarkerStyle = (year) => {
+  const color = getYearColor(year)
+  const darkerColor = darkenColor(color, 20)
+  
   return new Style({
     image: new OlIcon({
       src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
-          <!-- Background circle -->
-          <circle cx="12" cy="12" r="11" fill="#FFD700" stroke="#FFA500" stroke-width="1"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="42" viewBox="0 0 36 42" fill="none">
+          <!-- Drop shadow -->
+          <ellipse cx="18" cy="38" rx="8" ry="3" fill="rgba(0,0,0,0.2)"/>
+          
+          <!-- Main pin -->
+          <path d="M18 2C11.373 2 6 7.373 6 14c0 8.25 12 24 12 24s12-15.75 12-24c0-6.627-5.373-12-12-12z" 
+                fill="${color}" stroke="${darkerColor}" stroke-width="1.5"/>
+          
+          <!-- Inner circle -->
+          <circle cx="18" cy="14" r="8" fill="white" opacity="0.9"/>
           
           <!-- Lightbulb icon -->
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zM9 21v-1h6v1c0 .55-.45 1-1 1h-4c-.55 0-1-.45-1-1z" 
-                fill="#333" />
-          
-          <!-- Year text -->
-          <text x="12" y="26" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">${year}</text>
+          <path d="M18 6C15.24 6 13 8.24 13 11c0 1.66 0.83 3.12 2.1 4V17c0 .55.45 1 1 1h3.8c.55 0 1-.45 1-1v-2c1.27-.88 2.1-2.34 2.1-4 0-2.76-2.24-5-5-5zm-1.5 13v1h3v-1c0-.55-.45-1-1-1h-1c-.55 0-1 .45-1 1z" 
+                fill="${darkerColor}"/>
+                
+          <!-- Year badge -->
+          <rect x="12" y="22" width="12" height="8" rx="4" fill="${darkerColor}"/>
+          <text x="18" y="27.5" text-anchor="middle" font-size="7" fill="white" font-weight="bold">${year}</text>
         </svg>
       `),
-      scale: 1,
+      scale: 0.8,
       anchor: [0.5, 1]
     })
   })
+}
+
+// Helper function untuk menggelapkan warna
+const darkenColor = (color, percent) => {
+  const num = parseInt(color.replace("#", ""), 16)
+  const amt = Math.round(2.55 * percent)
+  const R = (num >> 16) - amt
+  const G = (num >> 8 & 0x00FF) - amt
+  const B = (num & 0x0000FF) - amt
+  return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+    (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)
 }
 
 // Function untuk menutup popup
@@ -257,18 +346,31 @@ const showPopup = (data) => {
 }
 
 onMounted(() => {
-  // Inisialisasi peta OpenLayers
+  // Inisialisasi peta OpenLayers dengan kontrol yang dikustomisasi
   olMap = new Map({
     target: map.value,
     layers: [
       new TileLayer({
-        source: new OSM()
+        source: new OSM({
+          attributions: '© OpenStreetMap contributors'
+        })
       })
     ],
     view: new View({
       center: fromLonLat([117.5, -2.5]), // Center Indonesia
-      zoom: 5
-    })
+      zoom: 5,
+      minZoom: 4,
+      maxZoom: 12
+    }),
+    // Disable default controls
+    controls: []
+  })
+
+  // Disable mouse wheel zoom
+  olMap.getInteractions().forEach(interaction => {
+    if (interaction.constructor.name === 'MouseWheelZoom') {
+      interaction.setActive(false)
+    }
   })
 
   // Inisialisasi vector layer untuk markers
@@ -304,6 +406,34 @@ onMounted(() => {
 
   updateMarkers()
 })
+
+// Zoom control functions
+const zoomIn = () => {
+  const view = olMap.getView()
+  const currentZoom = view.getZoom()
+  view.animate({
+    zoom: Math.min(currentZoom + 1, 12),
+    duration: 300
+  })
+}
+
+const zoomOut = () => {
+  const view = olMap.getView()
+  const currentZoom = view.getZoom()
+  view.animate({
+    zoom: Math.max(currentZoom - 1, 4),
+    duration: 300
+  })
+}
+
+const resetView = () => {
+  const view = olMap.getView()
+  view.animate({
+    center: fromLonLat([117.5, -2.5]),
+    zoom: 5,
+    duration: 600
+  })
+}
 
 // Function untuk update markers
 const updateMarkers = () => {
@@ -341,84 +471,426 @@ watch(filteredLocations, () => {
   position: relative;
   height: 600px;
   width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.filter-panel {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 1000;
+}
+
+.filter-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.filter-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .year-select {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  padding: 8px 12px;
+  width: 100%;
+  padding: 6px 10px;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 2px solid #e2e8f0;
   background: white;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2d3748;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.year-select:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.year-select:hover {
+  border-color: #cbd5e0;
+}
+
+.zoom-controls {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  gap: 2px;
+}
+
+.zoom-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: white;
+  color: #4a5568;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.zoom-btn:hover {
+  background: #f7fafc;
+  color: #2d3748;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.zoom-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .info-box {
   position: absolute;
-  top: 50px;
-  right: 10px;
+  top: 15px;
+  right: 15px;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 14px 16px;
+  border-radius: 10px;
+  max-width: 240px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-header {
+  margin-bottom: 10px;
+}
+
+.info-header h3 {
+  margin: 0 0 3px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3748;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.info-subtitle {
+  font-size: 11px;
+  color: #718096;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-box p {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #4a5568;
+}
+
+.info-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 10px;
-  border-radius: 5px;
-  max-width: 300px;
-  font-size: 14px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+.info-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.legend {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 12px 14px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 160px;
+}
+
+.legend h4 {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2d3748;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .popup-fixed {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 15px;
+  right: 15px;
   z-index: 1001;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  min-width: 250px;
-  max-width: 300px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(15px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 280px;
+  max-width: 320px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .popup-content {
-  padding: 15px;
+  padding: 20px;
   position: relative;
 }
 
 .popup-close {
   position: absolute;
-  top: 8px;
-  right: 10px;
-  background: none;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.1);
   border: none;
-  font-size: 18px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  color: #999;
-  transition: color 0.2s;
+  color: #718096;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .popup-close:hover {
-  color: #666;
+  background: rgba(0, 0, 0, 0.2);
+  color: #2d3748;
+  transform: scale(1.1);
 }
 
-.popup-fixed h4 {
-  margin: 0 20px 10px 0;
-  color: #333;
+.popup-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-right: 30px;
+}
+
+.popup-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.popup-header h4 {
+  margin: 0 0 4px 0;
+  color: #2d3748;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
   line-height: 1.3;
 }
 
-.popup-fixed p {
-  margin: 5px 0 0 0;
-  color: #666;
-  font-size: 14px;
+.popup-year {
+  font-size: 12px;
+  color: #718096;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .map {
   width: 100%;
   height: 100%;
+  border-radius: 12px;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .filter-container,
+  .zoom-controls,
+  .info-box,
+  .legend,
+  .popup-fixed {
+    background: rgba(26, 32, 44, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .filter-label,
+  .info-header h3,
+  .legend h4,
+  .popup-header h4 {
+    color: #e2e8f0;
+  }
+  
+  .info-box p,
+  .legend-item,
+  .popup-year {
+    color: #a0aec0;
+  }
+  
+  .year-select,
+  .zoom-btn {
+    background: #2d3748;
+    color: #e2e8f0;
+    border-color: #4a5568;
+  }
+  
+  .zoom-btn:hover {
+    background: #4a5568;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .info-box {
+    max-width: 200px;
+    padding: 12px 14px;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .info-header h3 {
+    font-size: 16px;
+  }
+  
+  .info-box p {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+  
+  .info-link {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+  
+  .legend {
+    min-width: 140px;
+    padding: 10px 12px;
+    bottom: 10px;
+    left: 10px;
+  }
+  
+  .legend h4 {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  
+  .legend-item {
+    font-size: 10px;
+    gap: 6px;
+  }
+  
+  .legend-color {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .popup-fixed {
+    min-width: 220px;
+    max-width: 260px;
+    bottom: 75px;
+    right: 10px;
+  }
+  
+  .filter-panel {
+    top: 10px;
+    left: 10px;
+  }
+  
+  .filter-container {
+    padding: 8px 12px;
+  }
+  
+  .filter-label {
+    font-size: 10px;
+  }
+  
+  .year-select {
+    min-width: 110px;
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+  
+  .zoom-controls {
+    bottom: 10px;
+    right: 10px;
+    padding: 4px;
+  }
+  
+  .zoom-btn {
+    width: 28px;
+    height: 28px;
+  }
 }
 </style>
