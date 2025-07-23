@@ -13,6 +13,11 @@ export default defineNuxtConfig({
     'vue-slick-carousel/dist/vue-slick-carousel-theme.css',
     './assets/css/main.css'
   ],
+  runtimeConfig: {
+    public: {
+      googleAnalyticsId: 'G-VC72L85980'
+    }
+  },
   app: {
     head: {
       link: [
