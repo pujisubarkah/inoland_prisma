@@ -3,6 +3,15 @@ definePageMeta({
   layout: "default"
 })
 
+// Set page title
+useHead({
+  title: 'INOLAND - Everyone Can Innovate',
+  meta: [
+    { name: 'description', 
+    content: 'Setiap ide berharga, dan INOLAND adalah ruangnya untuk tumbuh. Bergabunglah dalam Laboratorium Inovasi — ekosistem kolaboratif untuk instansi yang ingin menghadirkan perubahan nyata.' }
+  ]
+})
+
 import BeritaSection from '~/components/Berita_slider.vue'
 </script>
 
@@ -20,7 +29,7 @@ import BeritaSection from '~/components/Berita_slider.vue'
         </div>
        <div class="hero-text-box px-4 py-3 rounded-xl shadow-lg max-w-4xl w-full">
   <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 mb-3 text-center">
-    💡 Setiap ide berharga, dan <span class="font-semibold text-cyan-200">Inolands</span> adalah ruangnya untuk tumbuh.
+    💡 Setiap ide berharga, dan <span class="font-semibold text-cyan-200">Inoland</span> adalah ruangnya untuk tumbuh.
   </p>
   <p class="hero-text text-white text-lg md:text-xl font-medium opacity-95 text-center">
     Bergabunglah dalam <span class="font-semibold text-cyan-200">Laboratorium Inovasi</span> —  

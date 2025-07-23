@@ -235,7 +235,7 @@ const extractedTags = computed(() => {
 
 // Meta
 useHead({
-  title: computed(() => newsDetail.value ? `${newsDetail.value.title} - Berita Inovasi` : 'Berita Tidak Ditemukan'),
+  title: computed(() => newsDetail.value ? `${newsDetail.value.title} - Berita Inovasi | INOLAND` : 'Berita Tidak Ditemukan | INOLAND'),
   meta: [
     {
       name: 'description',
@@ -250,7 +250,7 @@ useHead({
         return 'Detail berita inovasi terbaru.'
       })
     },
-    { property: 'og:title', content: computed(() => newsDetail.value?.title || 'Berita Inovasi') },
+    { property: 'og:title', content: computed(() => newsDetail.value?.title || 'Berita Inovasi | INOLAND') },
     { property: 'og:description', content: computed(() => {
       if (newsDetail.value?.deskripsi) {
         return newsDetail.value.deskripsi

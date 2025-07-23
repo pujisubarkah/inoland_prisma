@@ -277,7 +277,7 @@ useHead({
         return 'Detail inovasi daerah terbaru.'
       })
     },
-    { property: 'og:title', content: computed(() => inovasiDetail.value?.nama_inovasi || 'Inovasi Daerah') },
+    { property: 'og:title', content: computed(() => inovasiDetail.value?.nama_inovasi || 'Daftar Inovasi | INOLAND') },
     { property: 'og:description', content: computed(() => {
       if (inovasiDetail.value?.deskripsi) {
         return inovasiDetail.value.deskripsi

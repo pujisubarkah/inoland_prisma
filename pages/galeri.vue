@@ -28,6 +28,13 @@
 </template>
 
 <script setup lang="ts">
+useHead({
+  title: 'Galeri Video | INOLAND',
+  meta: [
+    { name: 'description', content: 'Kumpulan video inspiratif tentang inovasi daerah, laboratorium inovasi, pemberdayaan desa, dan ekosistem kolaboratif di platform Inolands.' }
+  ]
+})
+
 const videoItems = [
   {
     url: 'https://youtu.be/03qOlYmn5Gs?feature=shared',

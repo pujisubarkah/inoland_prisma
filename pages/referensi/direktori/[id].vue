@@ -89,11 +89,11 @@ const error = ref(null)
 
 // Meta
 useHead(() => ({
-  title: inovasiDetail.value ? `${inovasiDetail.value.pdf_judul} | INOLAND` : 'Detail Dokumen | INOLAND',
+  title: inovasiDetail.value ? `${inovasiDetail.value.pdf_judul} | INOLAND` : 'Detail Direktori | INOLAND',
   meta: [
     {
       name: 'description',
-      content: inovasiDetail.value ? `${inovasiDetail.value.pdf_judul} - ${inovasiDetail.value.pdf_publisher}` : 'Detail dokumen inovasi daerah'
+      content: inovasiDetail.value ? `${inovasiDetail.value.pdf_judul} - ${inovasiDetail.value.pdf_publisher}` : 'Detail Direktori | INOLAND'
     }
   ]
 }))

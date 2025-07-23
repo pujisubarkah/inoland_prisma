@@ -3,7 +3,7 @@
     <!-- Logo -->
     <div class="flex items-center">
       <img src="/lanri.png" alt="Logo" class="h-12 mr-3 p-2 sm:h-16 drop-shadow-lg" />
-      <span class="text-white font-extrabold text-xl sm:text-2xl tracking-wide drop-shadow" aria-label="Inolands">INOLANDS</span>
+      <span class="text-white font-extrabold text-xl sm:text-2xl tracking-wide drop-shadow" aria-label="Inolands">INOLAND</span>
     </div>
 
     <!-- Desktop Menu -->
