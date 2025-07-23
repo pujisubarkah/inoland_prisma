@@ -38,14 +38,13 @@
             <svg class="w-6 h-6 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-          </button>
-
-          <div class="flex gap-1 p-2 h-80 md:h-96">
+          </button>          <div class="flex gap-1 p-2 h-80 md:h-96">
             <div
               v-for="(item, idx) in visibleItems"
               :key="item.id"
               class="flex-1 rounded-xl overflow-hidden shadow-lg group cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-xl"
               :class="idx === 2 ? 'ring-2 ring-blue-400 ring-opacity-50' : ''"
+              @click="navigateToBerita(item.id)"
             >
               <div class="relative w-full h-48 md:h-56 overflow-hidden">
                 <img 
@@ -57,6 +56,15 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 <div class="absolute top-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
                   Terbaru
+                </div>
+                <!-- Click indicator -->
+                <div class="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors duration-300 flex items-center justify-center">
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                  </div>
                 </div>
               </div>
               <div class="p-4 bg-white">
@@ -167,6 +175,13 @@ const nextSlide = () => {
 const prevSlide = () => {
   if (newsItems.value.length > 0) {
     currentIndex.value = currentIndex.value === 0 ? newsItems.value.length - 1 : currentIndex.value - 1
+  }
+}
+
+// Navigate to news detail page
+const navigateToBerita = (id) => {
+  if (id) {
+    navigateTo(`/referensi/berita/${id}`)
   }
 }
 
