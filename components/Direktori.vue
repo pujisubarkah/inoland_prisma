@@ -1,6 +1,6 @@
 <template>
   <div class="p-3 md:p-4">
-    <h1 class="font-bold text-xl md:text-2xl text-center my-4 md:my-5 font-poppins px-4">
+    <h1 class="font-bold text-2xl md:text-3xl text-center my-4 md:my-5 font-poppins px-4">
       DIREKTORI INOVASI
     </h1>
     <hr class="w-20 md:w-[100px] h-[2px] mx-auto mb-4 md:mb-5 border-none bg-gradient-to-r from-blue-800 via-black to-blue-800" />

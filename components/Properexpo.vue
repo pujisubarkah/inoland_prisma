@@ -1,9 +1,9 @@
 <template>
-  <div class="p-3 sm:p-5">
-    <h1 class="font-bold text-xl sm:text-2xl lg:text-3xl text-center my-3 sm:my-5 font-['Poppins'] leading-tight">
+  <div class="p-3 md:p-4">
+    <h1 class="font-bold text-2xl md:text-3xl text-center my-4 md:my-5 font-poppins px-4">
       PROYEK PERUBAHAN
     </h1>
-    <hr class="w-16 sm:w-20 lg:w-25 h-0.5 bg-gradient-to-r from-blue-800 via-black to-blue-800 border-none mx-auto mb-4 sm:mb-5" />
+    <hr class="w-20 md:w-[100px] h-[2px] mx-auto mb-4 md:mb-5 border-none bg-gradient-to-r from-blue-800 via-black to-blue-800" />
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-4 sm:mb-5">
       <div 

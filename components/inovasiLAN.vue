@@ -1,10 +1,10 @@
 <!-- components/inovasiLAN.vue -->
 <template>
-  <div class="app px-3 md:px-4">
-    <h1 class="font-poppins font-bold text-xl md:text-3xl text-center my-4 md:my-5">
+  <div class="app px-3 md:px-4 p-3 md:p-4">
+    <h1 class="font-bold text-2xl md:text-3xl text-center my-4 md:my-5 font-poppins px-4">
       LIST INOVASI
     </h1>
-    <hr class="w-20 md:w-24 h-0.5 bg-gradient-to-r from-blue-700 via-black to-blue-700 mx-auto mb-4 md:mb-5 border-none" />
+    <hr class="w-20 md:w-[100px] h-[2px] mx-auto mb-4 md:mb-5 border-none bg-gradient-to-r from-blue-800 via-black to-blue-800" />
     
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-16 md:py-20">
