@@ -1,75 +1,79 @@
 <!-- components/Berita.vue -->
 <template>
-  <div class="w-full px-0 py-6 bg-gradient-to-b from-gray-50 to-white">
-    <header class="mb-2 text-center">
-      <h1 class="text-3xl font-bold font-poppins text-blue-700 drop-shadow">
-        🌟 Jangan Lewatkan Berita Inovasi Terbaru, Sobat Kreatif!
-      </h1>
-      <p class="text-gray-500 mt-1 text-base">{{ currentDate }}</p>
-    </header>
-
-    <div v-if="loading" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+  <div class="w-full px-0 py-8 bg-gradient-to-b from-blue-50/30 to-white">
+    <div v-if="loading" class="flex justify-center items-center py-16">
+      <div class="relative">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-400 animate-ping"></div>
+      </div>
     </div>
 
-    <div v-else-if="error" class="text-center py-12">
-      <p class="text-blue-600 mb-4">{{ error }}</p>
+    <div v-else-if="error" class="text-center py-16 bg-red-50 rounded-xl mx-4">
+      <div class="text-red-500 text-6xl mb-4">⚠️</div>
+      <p class="text-red-700 mb-6 text-lg font-medium">{{ error }}</p>
       <button 
         @click="fetchBerita"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
       >
-        Coba Lagi
+        🔄 Coba Lagi
       </button>
-    </div>
-
-    <div v-else>
-      <section v-if="newsItems.length > 0" class="mb-2">
-        <div class="relative w-full h-56 md:h-64 lg:h-72 rounded-xl overflow-hidden flex gap-2 justify-center items-center bg-white shadow-md">
-          <div
-            v-for="(item, idx) in visibleItems"
-            :key="item.id"
-            class="w-1/7 h-full rounded-lg overflow-hidden shadow group cursor-pointer flex flex-col justify-end bg-gradient-to-t from-green-50 via-white to-white hover:scale-105 transition-transform duration-300"
+    </div>    <div v-else>
+      <section v-if="newsItems.length > 0" class="mb-8">
+        <div class="relative w-full rounded-2xl overflow-hidden bg-white shadow-2xl border border-gray-100">
+          <!-- Left Arrow Button -->
+          <button
+            @click="prevSlide"
+            class="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl rounded-full flex items-center justify-center text-gray-600 hover:text-blue-600 transition-all duration-300 group"
           >
-            <div class="relative w-full h-32 md:h-40 lg:h-48 flex-shrink-0">
-              <img 
-                :src="item.image" 
-                :alt="item.title" 
-                class="w-full h-full object-cover rounded-lg border border-green-100 group-hover:border-green-400 transition-all duration-300"
-                @error="handleImageError"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-            </div>
-            <div class="p-2 flex-1 flex flex-col justify-end items-center">
-              <h2 class="text-blue-700 text-xs font-semibold text-center mt-1 line-clamp-2 group-hover:text-blue-900 transition-colors">
-                {{ item.title }}
-              </h2>
-              <div class="text-gray-400 text-xs text-center mt-1">
-                {{ formatDate(item.date) }}
+            <svg class="w-6 h-6 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+
+          <!-- Right Arrow Button -->
+          <button
+            @click="nextSlide"
+            class="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/90 hover:bg-white shadow-lg hover:shadow-xl rounded-full flex items-center justify-center text-gray-600 hover:text-blue-600 transition-all duration-300 group"
+          >
+            <svg class="w-6 h-6 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+
+          <div class="flex gap-1 p-2 h-80 md:h-96">
+            <div
+              v-for="(item, idx) in visibleItems"
+              :key="item.id"
+              class="flex-1 rounded-xl overflow-hidden shadow-lg group cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-xl"
+              :class="idx === 2 ? 'ring-2 ring-blue-400 ring-opacity-50' : ''"
+            >
+              <div class="relative w-full h-48 md:h-56 overflow-hidden">
+                <img 
+                  :src="item.image" 
+                  :alt="item.title" 
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  @error="handleImageError"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                <div class="absolute top-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                  Terbaru
+                </div>
+              </div>
+              <div class="p-4 bg-white">
+                <h2 class="text-gray-800 text-sm md:text-base font-semibold leading-tight line-clamp-3 group-hover:text-blue-700 transition-colors duration-300 mb-2">
+                  {{ item.title }}
+                </h2>
+                <div class="flex items-center text-gray-500 text-xs">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                  </svg>
+                  {{ formatDate(item.date) }}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      <div class="my-4">
-        <Slider
-          v-model="currentIndex"
-          :min="0"
-          :max="newsItems.length - 1"
-          step="1"
-          class="w-full"
-          thumb-label="Berita"
-        />
-        <div class="flex justify-center mt-2 gap-2">
-          <button
-            v-for="(item, idx) in newsItems"
-            :key="idx"
-            class="dot"
-            :class="{ active: currentIndex === idx }"
-            @click="currentIndex = idx"
-          ></button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -103,14 +107,15 @@ const fetchBerita = async () => {
       dataArray = response
     } else if (response && Array.isArray(response.data)) {
       dataArray = response.data
-    }
-    if (Array.isArray(dataArray) && dataArray.length > 0) {
-      newsItems.value = dataArray.map((item, idx) => ({
-        id: item.id || idx,
-        title: item.title || 'Tanpa Judul',
-        image: item.imageUrl || item.image_url || '',
-        date: item.date || item.createdAt || item.created_at || new Date().toISOString(),
-      }))
+    }    if (Array.isArray(dataArray) && dataArray.length > 0) {
+      newsItems.value = dataArray
+        .map((item, idx) => ({
+          id: item.id || idx,
+          title: item.title || 'Tanpa Judul',
+          image: item.imageUrl || item.image_url || '',
+          date: item.date || item.createdAt || item.created_at || new Date().toISOString(),
+        }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
       currentIndex.value = 0
     } else {
       newsItems.value = []
@@ -152,14 +157,27 @@ const visibleItems = computed(() => {
   return items
 })
 
-// Autoplay logic
+// Navigation functions
+const nextSlide = () => {
+  if (newsItems.value.length > 0) {
+    currentIndex.value = (currentIndex.value + 1) % newsItems.value.length
+  }
+}
+
+const prevSlide = () => {
+  if (newsItems.value.length > 0) {
+    currentIndex.value = currentIndex.value === 0 ? newsItems.value.length - 1 : currentIndex.value - 1
+  }
+}
+
+// Autoplay logic - slower transition
 onMounted(() => {
   fetchBerita()
   intervalId = setInterval(() => {
     if (newsItems.value.length > 0) {
       currentIndex.value = (currentIndex.value + 1) % newsItems.value.length
     }
-  }, 4000)
+  }, 8000) // Changed from 4000ms to 8000ms (8 seconds)
 })
 
 onUnmounted(() => {
@@ -171,23 +189,17 @@ onUnmounted(() => {
 .font-poppins {
   font-family: 'Poppins', sans-serif;
 }
-.w-1\/7 {
-  width: 14.2857143%;
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(59,130,246,0.4); /* biru-500 */
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.dot.active {
-  background: #2563eb; /* biru-600 */
-  transform: scale(1.2);
-}
-.dot:hover {
-  background: #3b82f6; /* biru-500 */
+
+.bg-clip-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 </style>
