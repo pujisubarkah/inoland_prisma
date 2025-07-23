@@ -155,7 +155,7 @@ const menuItems = [
   { 
     label: 'List Inovasi', 
     icon: TableIcon, 
-    route: '/referensi/inovasilan'
+    route: '/referensi/inovasi'
   },
   { 
     label: 'Berita Inovasi', 
