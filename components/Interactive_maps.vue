@@ -112,8 +112,7 @@
                     class="cursor-pointer transition-opacity hover:opacity-80"
                   />
                 </svg>
-              </div>
-              <div v-if="dialogKabkotIndeks.length" class="bg-white rounded-lg shadow p-3 sm:p-4 animate-fadeIn w-full">
+              </div>              <div v-if="dialogKabkotIndeks.length" class="bg-white rounded-lg shadow p-3 sm:p-4 w-full">
                 <h2 class="font-bold mb-2 text-blue-700 text-sm sm:text-base">Indeks {{ getIndexLabel(dialogSelectedIndex) }} {{ dialogKabkotName }}</h2>
                 <select v-model="dialogSelectedIndex" class="mb-3 sm:mb-4 p-2 border border-blue-300 rounded-lg w-full text-sm">
                   <option value="indeks_skor">Indeks Inovasi Daerah</option>
@@ -121,32 +120,54 @@
                   <option value="idsd_skor">Indeks Daya Saing Daerah</option>
                   <option value="rb_level">Indeks Reformasi Birokrasi</option>
                 </select>
-                <Line
-                  :data="{
-                    labels: dialogKabkotIndeks.slice().sort((a, b) => a.indeks_tahun - b.indeks_tahun).map(i => i.indeks_tahun),
-                    datasets: [
-                      {
-                        label: getIndexLabel(dialogSelectedIndex),
-                        data: dialogKabkotIndeks.slice().sort((a, b) => a.indeks_tahun - b.indeks_tahun).map(i => i[dialogSelectedIndex]),
-                        borderColor: dialogChartColor,
-                        backgroundColor: dialogChartColor + '20',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
+                <div class="chart-container-stable">
+                  <Line
+                    :data="{
+                      labels: dialogKabkotIndeks.slice().sort((a, b) => a.indeks_tahun - b.indeks_tahun).map(i => i.indeks_tahun),
+                      datasets: [
+                        {
+                          label: getIndexLabel(dialogSelectedIndex),
+                          data: dialogKabkotIndeks.slice().sort((a, b) => a.indeks_tahun - b.indeks_tahun).map(i => i[dialogSelectedIndex]),
+                          borderColor: dialogChartColor,
+                          backgroundColor: dialogChartColor + '20',
+                          borderWidth: 3,
+                          fill: true,
+                          tension: 0.4
+                        }
+                      ]
+                    }"
+                    :options="{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      animation: false,
+                      plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                          enabled: true,
+                          intersect: false,
+                          mode: 'index',
+                          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                          titleColor: '#ffffff',
+                          bodyColor: '#ffffff'
+                        }
+                      },
+                      scales: {
+                        x: { 
+                          ticks: { font: { size: 10 } },
+                          grid: { display: true, color: 'rgba(0, 0, 0, 0.1)' }
+                        },
+                        y: { 
+                          ticks: { font: { size: 10 } },
+                          grid: { display: true, color: 'rgba(0, 0, 0, 0.1)' }
+                        }
+                      },
+                      interaction: {
+                        intersect: false,
+                        mode: 'index'
                       }
-                    ]
-                  }"
-                  :options="{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                      x: { ticks: { font: { size: 10 } } },
-                      y: { ticks: { font: { size: 10 } } }
-                    }
-                  }"
-                  class="h-[120px] sm:h-[160px]"
-                />
+                    }"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -161,37 +182,57 @@
           <span class="ml-2 text-xs sm:text-sm">{{ label }}</span>
         </div>
       </div>
-    </div>
-
-    <!-- Indeks Inovasi Chart on Hover -->
+    </div>    <!-- Indeks Inovasi Chart on Hover -->
     <div v-if="hoveredIndeks.length" class="mt-3 sm:mt-4 bg-white rounded-lg shadow p-3 sm:p-4 mx-2 sm:mx-0">
       <h2 class="font-bold mb-2 text-sm sm:text-base">Indeks Inovasi {{ hoveredKabkotName }}</h2>
-      <Line
-        :data="{
-          labels: hoveredIndeks.map(i => i.indeks_tahun),
-          datasets: [
-            {
-              label: 'Indeks Inovasi',
-              data: hoveredIndeks.map(i => i.indeks_skor),
-              borderColor: '#3B82F6',
-              backgroundColor: '#3B82F620',
-              borderWidth: 3,
-              fill: true,
-              tension: 0.4
+      <div class="chart-container-stable">
+        <Line
+          :data="{
+            labels: hoveredIndeks.map(i => i.indeks_tahun),
+            datasets: [
+              {
+                label: 'Indeks Inovasi',
+                data: hoveredIndeks.map(i => i.indeks_skor),
+                borderColor: '#3B82F6',
+                backgroundColor: '#3B82F620',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+              }
+            ]
+          }"
+          :options="{
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: { 
+              legend: { display: false },
+              tooltip: {
+                enabled: true,
+                intersect: false,
+                mode: 'index',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff'
+              }
+            },
+            scales: {
+              x: { 
+                ticks: { font: { size: 10 } },
+                grid: { display: true, color: 'rgba(0, 0, 0, 0.1)' }
+              },
+              y: { 
+                ticks: { font: { size: 10 } },
+                grid: { display: true, color: 'rgba(0, 0, 0, 0.1)' }
+              }
+            },
+            interaction: {
+              intersect: false,
+              mode: 'index'
             }
-          ]
-        }"
-        :options="{
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { font: { size: 10 } } },
-            y: { ticks: { font: { size: 10 } } }
-          }
-        }"
-        class="h-[150px] sm:h-[200px]"
-      />
+          }"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -865,5 +906,48 @@ foreignObject > div {
 }
 .animate-fadeIn {
   animation: fadeIn 0.4s;
+}
+
+/* Stable chart container */
+.chart-container-stable {
+  width: 100%;
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+}
+
+@media (min-width: 640px) {
+  .chart-container-stable {
+    height: 160px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .chart-container-stable {
+    height: 200px;
+  }
+}
+
+/* Prevent chart from moving or resizing unexpectedly */
+.chart-container-stable canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: auto;
+}
+
+/* Stabilize hover chart container */
+.mt-3.sm\\:mt-4.bg-white.rounded-lg.shadow.p-3.sm\\:p-4.mx-2.sm\\:mx-0 {
+  min-height: 200px;
+  transition: none;
+}
+
+@media (min-width: 640px) {
+  .mt-3.sm\\:mt-4.bg-white.rounded-lg.shadow.p-3.sm\\:p-4.mx-2.sm\\:mx-0 {
+    min-height: 240px;
+  }
 }
 </style>
