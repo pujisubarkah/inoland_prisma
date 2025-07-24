@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-10">
     <div class="container mx-auto px-4">
-      <h1 class="text-3xl font-bold text-center mb-8 text-blue-700">Galeri Video Inolands</h1>
+      <h1 class="text-3xl font-bold text-center mb-8 text-blue-700">Galeri Video Inoland</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         <div
           v-for="(video, idx) in videoItems"
@@ -37,6 +37,11 @@ useHead({
 
 const videoItems = [
   {
+    url: 'https://www.youtube.com/watch?v=6fl4hpmh7P8',
+    title: 'Laboratorium Inovasi LAN',
+    description: 'Laboratorium Inovasi merupakan salah satu terobosan Lembaga Administrasi Negara (LAN) dalam mendorong Reformasi Birokrasi di tingkat daerah. '
+  },
+  {
     url: 'https://youtu.be/03qOlYmn5Gs?feature=shared',
     title: 'Materi Deliver-Monitoring Laboratorium Inovasi',
     description: 'Pelajari strategi monitoring inovasi di Laboratorium Inovasi untuk memastikan keberlanjutan perubahan di daerah.'
@@ -44,7 +49,7 @@ const videoItems = [
   {
     url: 'https://youtu.be/i78KlbJHhi8?feature=shared',
     title: 'Inolands',
-    description: 'Kenali platform Inolands sebagai wadah kolaborasi dan inspirasi inovasi daerah di seluruh Indonesia.'
+    description: 'Kenali platform Inoland sebagai wadah kolaborasi dan inspirasi inovasi daerah di seluruh Indonesia.'
   },
   {
     url: 'https://youtu.be/nmaGu0zSINg?feature=shared',
