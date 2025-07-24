@@ -12,11 +12,12 @@ watch(() => props.open, (val) => {
 })
 </script>
 
-<template>
-  <Teleport to="body">
-    <div v-if="open" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50">
-      <div class="bg-white rounded-lg shadow-lg relative min-w-[300px] max-w-[90vw] max-h-[90vh] overflow-auto">
-        <slot name="content"></slot>
+<template>  <Teleport to="body">
+    <div v-if="open" class="fixed inset-0 z-[99999999] flex items-center justify-center bg-black/50 p-4">
+      <div class="bg-white rounded-xl shadow-xl relative min-w-[300px] max-w-[95vw] max-h-[95vh] border-2 border-blue-400 flex flex-col">
+        <div class="overflow-auto flex-1">
+          <slot name="content"></slot>
+        </div>
       </div>
     </div>
   </Teleport>

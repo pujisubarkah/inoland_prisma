@@ -1424,47 +1424,51 @@ svg path {
   cursor: pointer;
 }
 
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
 .popup-box {
   position: relative;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px) saturate(180%);
-  box-shadow: 0 12px 32px rgba(60,130,246,0.18), 0 2px 8px rgba(0,0,0,0.10);
-  border-radius: 22px;
-  padding: 40px 32px 32px 32px;
-  max-width: 100vw;
-  width: 100vw;
-  max-height: 92vh;
+  background: white;
+  padding: 24px;
+  max-width: 100%;
+  width: 100%;
+  min-height: 400px;
+  max-height: 85vh;
   overflow-y: auto;
-  animation: popupFadeIn 0.35s cubic-bezier(.4,2,.3,1);
-  border: 2px solid #3b82f6;
-  transition: box-shadow 0.2s, border 0.2s;
-  /* Hide scrollbar for webkit browsers */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  overflow-x: hidden;
+  /* Remove conflicting styles since Dialog component handles the outer styling */
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+  animation: none;
+  /* Custom scrollbar styling */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #cbd5e1 #f1f5f9; /* Firefox */
 }
 
 .popup-box::-webkit-scrollbar {
-  display: none; /* WebKit browsers (Chrome, Safari, Edge) */
+  width: 6px;
+}
+
+.popup-box::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.popup-box::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.popup-box::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 @media (min-width: 768px) {
   .popup-box {
     max-width: 1200px;
     width: 1200px;
-    padding: 48px 40px 36px 40px;
+    padding: 32px;
+    max-height: 85vh;
   }
 }
 
@@ -1475,8 +1479,8 @@ svg path {
 
 .close-btn {
   position: absolute;
-  top: 22px;
-  right: 22px;
+  top: 12px;
+  right: 12px;
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;

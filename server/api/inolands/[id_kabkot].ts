@@ -3,6 +3,9 @@ import { inolands } from '../../database/schema/inolands';
 import { sdgs } from '../../database/schema/sdgs';
 import { master_provinsi } from '../../database/schema/master_provinsi';
 import { master_kabupaten } from '../../database/schema/master_kabupaten';
+import { instansi } from '../../database/schema/instansi';
+import { instansi_kategori } from '../../database/schema/instansi_kategori';
+import { inolands_inovator } from '../../database/schema/inolands_inovator';
 import { eq } from 'drizzle-orm';
 import { setResponseStatus } from 'h3';
 
@@ -18,8 +21,7 @@ export default defineEventHandler(async (event) => {
     };
   }  try {
     console.log('🔍 Fetching inovasi for kabkot ID:', kabkotId);
-    
-    const data = await db
+      const data = await db
       .select({
         // Data utama dari inolands
         id: inolands.id,
@@ -32,7 +34,10 @@ export default defineEventHandler(async (event) => {
         inovator: inolands.inovator,
         id_provinsi: inolands.id_provinsi,
         id_kabkot: inolands.id_kabkot,
-        id_sdgs: inolands.sdgs, // Correct field name from schema        // Referensi SDGs
+        id_sdgs: inolands.sdgs, // Correct field name from schema
+        agency_id_panrb: inolands.agency_id_panrb,
+        inovator_id: inolands.inovator_id,
+        // Referensi SDGs
         sdgs_id: sdgs.id,
         sdgs_tujuan_ke: sdgs.tujuan_ke,
         sdgs_nama: sdgs.sdgs, // Use 'sdgs' field which contains the name
@@ -41,11 +46,25 @@ export default defineEventHandler(async (event) => {
         nama_provinsi: master_provinsi.nama_provinsi,
         // Referensi Kabupaten/Kota
         nama_kabkot: master_kabupaten.nama_kabkot,
+        // Referensi Instansi
+        instansi_id: instansi.id,
+        instansi_agency_id: instansi.agency_id,
+        instansi_agency_name: instansi.agency_name,
+        instansi_category_id: instansi.agency_category_id,
+        instansi_kat_instansi: instansi_kategori.kat_instansi,
+        // Referensi Inovator Detail
+        inovator_detail_id: inolands_inovator.id,
+        inovator_detail_nama: inolands_inovator.inovator,
+        inovator_detail_alamat: inolands_inovator.alamat,
+        inovator_detail_longlat: inolands_inovator.longlat,
       })
       .from(inolands)
       .leftJoin(sdgs, eq(inolands.sdgs, sdgs.id))
       .leftJoin(master_provinsi, eq(inolands.id_provinsi, master_provinsi.id_provinsi))
       .leftJoin(master_kabupaten, eq(inolands.id_kabkot, master_kabupaten.id_kabkot))
+      .leftJoin(instansi, eq(inolands.agency_id_panrb, instansi.agency_id))
+      .leftJoin(instansi_kategori, eq(instansi.agency_category_id, instansi_kategori.id))
+      .leftJoin(inolands_inovator, eq(inolands.inovator_id, inolands_inovator.id))
       .where(eq(inolands.id_kabkot, kabkotId));
 
     console.log('📊 Found', data.length, 'innovations for kabkot ID:', kabkotId);return {

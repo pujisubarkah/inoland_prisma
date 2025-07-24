@@ -36,7 +36,7 @@
         <div class="flex flex-col md:flex-row gap-4">          <div class="flex-1">
             <input 
               type="text" 
-              placeholder="Cari judul inovasi, deskripsi, pemda, atau inovator..." 
+              placeholder="Cari judul inovasi, deskripsi, instansi, kategori instansi, inovator, atau alamat..." 
               v-model="searchTerm"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -123,11 +123,10 @@
                     <span>Tahun</span>
                     <i :class="getSortIcon('tahun')" class="sort-icon"></i>
                   </div>
-                </th>
-                <th @click="handleSort('kld')" class="sortable w-1/6">
+                </th>                <th @click="handleSort('instansi')" class="sortable w-1/6">
                   <div class="header-content">
-                    <span>Pemda</span>
-                    <i :class="getSortIcon('kld')" class="sort-icon"></i>
+                    <span>Instansi</span>
+                    <i :class="getSortIcon('instansi')" class="sort-icon"></i>
                   </div>
                 </th>
                 <th @click="handleSort('inovator')" class="sortable w-1/6">
@@ -159,15 +158,46 @@
                   <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
                     {{ inovasi.tahun }}
                   </span>
-                </td>
-                <td class="text-gray-700" data-label="Pemda">
+                </td>                <td class="text-gray-700" data-label="Instansi">
                   <div class="max-w-32">
-                    {{ inovasi.kld }}
+                    <div class="font-medium text-gray-900">
+                      {{ inovasi.instansi?.agency_name || inovasi.kld || 'N/A' }}
+                    </div>
+                    <div v-if="inovasi.instansi?.kat_instansi" class="text-xs text-gray-500 mt-1">
+                      {{ inovasi.instansi.kat_instansi }}
+                    </div>
                   </div>
-                </td>
-                <td class="text-gray-700" data-label="Inovator">
+                </td>                <td class="text-gray-700" data-label="Inovator">
                   <div class="max-w-32">
-                    {{ inovasi.inovator }}
+                    <div class="font-medium text-gray-900 mb-1 flex items-center gap-1">
+                      <span>{{ inovasi.inovator_detail?.inovator || inovasi.inovator || 'N/A' }}</span>
+                      <button 
+                        @click="showAddressInfo(inovasi, $event)"
+                        class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"
+                        title="Lihat alamat"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    <!-- Google Maps Link -->
+                    <div v-if="inovasi.inovator_detail?.longlat" class="mt-0.5">
+                      <a 
+                        :href="getGoogleMapsUrl(inovasi.inovator_detail.longlat)"
+                        target="_blank"
+                        class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors font-medium maps-link"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0">
+                          <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM10 5.47l4 1.4v11.66l-4-1.4V5.47zm-5 .99l3-1.01v11.7l-3 1.01V6.46zm14 11.08l-3 1.01V6.86l3-1.01v11.69z"/>
+                        </svg>
+                        <span>Lihat Lokasi</span>
+                      </a>
+                    </div>
+                    <div v-else class="mt-0.5">
+                      <span class="text-xs text-gray-400 italic">Maps belum tersedia</span>
+                    </div>
                   </div>
                 </td>
                 <td class="text-gray-600 text-sm" data-label="Deskripsi">
@@ -270,17 +300,23 @@
               >
                 Next
                 <i class="fas fa-chevron-right"></i>
-              </button>
-            </div>
+              </button>            </div>
           </div>
         </div>
       </div>
+    </div>      <!-- Address Info Tooltip -->
+    <div v-if="showAddressPopup" class="address-tooltip" :data-position="tooltipSide" :style="tooltipPosition" @click.stop="closeAddressPopup">
+      <div class="address-tooltip-content">
+        <div class="text-xs font-medium text-gray-200 mb-1">Alamat:</div>
+        <div class="text-xs text-gray-100 leading-relaxed">{{ selectedInovatorAddress }}</div>
+      </div>
+      <div class="address-tooltip-arrow"></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 
 interface Inovasi {
   id: number
@@ -292,9 +328,22 @@ interface Inovasi {
     image: string
   }
   tahun: number
-  kld: string
-  inovator: string
+  kld: string // Keep this for backward compatibility but will use instansi.agency_name
+  inovator: string // Keep this for backward compatibility but will use inovator_detail.inovator
   deskripsi: string
+  instansi?: {
+    id: number
+    agency_id: string
+    agency_name: string
+    agency_category_id: number
+    kat_instansi: string
+  }
+  inovator_detail?: {
+    id: number
+    inovator: string
+    alamat: string
+    longlat: string
+  }
   showFullDescription?: boolean  // Add this for tracking expanded state
 }
 
@@ -346,6 +395,11 @@ const sortDirection = ref<'asc' | 'desc'>('desc')
 const expandedDescriptions = ref<Set<number>>(new Set())
 const selectedExportFormat = ref<'xlsx' | 'csv' | 'pdf'>('xlsx')
 const isDownloading = ref(false)
+const showAddressPopup = ref(false)
+const selectedInovatorAddress = ref<string>('')
+const selectedInovatorName = ref<string>('')
+const tooltipPosition = ref({top: '0px', left: '0px'})
+const tooltipSide = ref<'right' | 'left'>('right')
 
 // Load Data Function
 const loadInovasi = async () => {
@@ -393,14 +447,18 @@ const availableSDGS = computed(() => {
 
 const filteredInovasi = computed(() => {
   let filtered = inovasiData.value
-
   // Text search filter
   if (searchTerm.value) {
     const term = searchTerm.value.toLowerCase()
     filtered = filtered.filter((inovasi) => {
-      return (        inovasi.judul_inovasi?.toLowerCase().includes(term) ||
+      return (
+        inovasi.judul_inovasi?.toLowerCase().includes(term) ||
         inovasi.kld?.toLowerCase().includes(term) ||
+        inovasi.instansi?.agency_name?.toLowerCase().includes(term) ||
+        inovasi.instansi?.kat_instansi?.toLowerCase().includes(term) ||
         inovasi.inovator?.toLowerCase().includes(term) ||
+        inovasi.inovator_detail?.inovator?.toLowerCase().includes(term) ||
+        inovasi.inovator_detail?.alamat?.toLowerCase().includes(term) ||
         inovasi.deskripsi?.toLowerCase().includes(term) ||
         inovasi.sdgs?.nama?.toLowerCase().includes(term)
       )
@@ -511,20 +569,76 @@ const changeItemsPerPage = (newItemsPerPage: number) => {
   expandedDescriptions.value.clear()  // Reset expanded descriptions
 }
 
+// Google Maps URL generator
+const getGoogleMapsUrl = (longlat: string): string => {
+  // Assuming longlat is in format "longitude,latitude" or "latitude,longitude"
+  // You might need to adjust this based on your actual data format
+  const coords = longlat.split(',').map(coord => coord.trim())
+  if (coords.length === 2) {
+    // Google Maps expects latitude,longitude format
+    return `https://maps.google.com/maps?q=${coords[0]},${coords[1]}&z=15`
+  }
+  return `https://maps.google.com/maps?q=${longlat}`
+}
+
+// Show address info tooltip
+const showAddressInfo = (inovasi: Inovasi, event: MouseEvent) => {
+  event.stopPropagation() // Prevent event bubbling
+  selectedInovatorAddress.value = inovasi.inovator_detail?.alamat || 'Alamat belum tersedia'
+  
+  // Get the button element (parent of SVG) to ensure consistent positioning
+  const target = event.target as HTMLElement
+  const button = target.closest('button') || target
+  const rect = button.getBoundingClientRect()
+  
+  // Calculate tooltip position using viewport coordinates (fixed positioning)
+  // This ensures the tooltip stays aligned with the SVG icon even when scrolling
+  const tooltipTop = rect.top + (rect.height / 2) - 20 // Center vertically with icon
+  const tooltipLeft = rect.right + 8 // Position to the right of the button with small gap
+  
+  // Check if tooltip would go off-screen and adjust if necessary
+  const tooltipWidth = 200 // max-width from CSS
+  const viewportWidth = window.innerWidth
+  
+  let adjustedLeft = tooltipLeft
+  if (tooltipLeft + tooltipWidth > viewportWidth) {
+    // Position to the left of the icon instead
+    adjustedLeft = rect.left - tooltipWidth - 8
+    tooltipSide.value = 'left'
+  } else {
+    tooltipSide.value = 'right'
+  }
+  
+  tooltipPosition.value = {
+    top: tooltipTop + 'px',
+    left: adjustedLeft + 'px'
+  }
+  
+  showAddressPopup.value = true
+}
+
+// Close address tooltip
+const closeAddressPopup = () => {
+  showAddressPopup.value = false
+  selectedInovatorAddress.value = ''
+}
+
 // Download functionality
 const downloadData = async () => {
   if (isDownloading.value) return
   
   try {
     isDownloading.value = true
-    
-    // Prepare data for export (use filteredInovasi to include current filters)
+      // Prepare data for export (use filteredInovasi to include current filters)
     const dataToExport = filteredInovasi.value.map(item => ({
       'Judul Inovasi': item.judul_inovasi || '',
       'SDGS': item.sdgs?.nama || '',
       'Tahun': item.tahun || '',
-      'Pemda': item.kld || '',
-      'Inovator': item.inovator || '',
+      'Instansi': item.instansi?.agency_name || item.kld || '',
+      'Kategori Instansi': item.instansi?.kat_instansi || '',
+      'Inovator': item.inovator_detail?.inovator || item.inovator || '',
+      'Alamat Inovator': item.inovator_detail?.alamat || 'Alamat belum tersedia',
+      'Koordinat': item.inovator_detail?.longlat || 'Koordinat belum tersedia',
       'Deskripsi': item.deskripsi || 'Tidak ada deskripsi'
     }))
 
@@ -640,14 +754,36 @@ const downloadPDF = async (data: any[]) => {
     },
     margin: { top: 45, right: 14, bottom: 20, left: 14 },
   })
-  
-  doc.save(`daftar_inovasi_${new Date().toISOString().split('T')[0]}.pdf`)
+    doc.save(`daftar_inovasi_${new Date().toISOString().split('T')[0]}.pdf`)
 }
 
 // Watchers
 watch([searchTerm, selectedYear, selectedSDGS], () => {
   currentPage.value = 1 // Reset to first page when filtering
   expandedDescriptions.value.clear() // Reset expanded descriptions when filtering
+})
+
+// Add escape key listener for popup
+const handleEscapeKey = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && showAddressPopup.value) {
+    closeAddressPopup()
+  }
+}
+
+// Add click outside listener for tooltip
+const handleClickOutside = () => {
+  if (showAddressPopup.value) {
+    closeAddressPopup()
+  }
+}
+
+onMounted(() => {
+  loadInovasi()
+  document.addEventListener('keydown', handleEscapeKey)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscapeKey)
 })
 
 watch(currentPage, () => {
@@ -662,6 +798,13 @@ watch(itemsPerPage, () => {
 // Lifecycle
 onMounted(() => {
   loadInovasi()
+  document.addEventListener('keydown', handleEscapeKey)
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscapeKey)
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -1032,9 +1175,91 @@ onMounted(() => {
     width: 110px;
     font-size: 12px;
   }
-  
-  .modern-table tbody td:last-child {
+    .modern-table tbody td:last-child {
     border-bottom: none;
   }
+}
+
+/* Address Tooltip Styles */
+.address-tooltip {
+  position: fixed;
+  background: #1f2937;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  z-index: 1000;
+  max-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.address-tooltip-content {
+  line-height: 1.4;
+}
+
+.address-tooltip-arrow {
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 5px solid #1f2937;
+}
+
+/* Arrow positioning for right-side tooltip */
+.address-tooltip[data-position="right"] .address-tooltip-arrow {
+  left: -4px;
+  border-right: 5px solid #1f2937;
+  border-left: none;
+}
+
+/* Arrow positioning for left-side tooltip */
+.address-tooltip[data-position="left"] .address-tooltip-arrow {
+  left: auto;
+  right: -4px;
+  border-left: 5px solid #1f2937;
+  border-right: none;
+}
+
+/* Animation for tooltip */
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.address-tooltip {
+  animation: tooltipFadeIn 0.2s ease-out;
+}
+
+/* Maps Link Styles */
+.maps-link {
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 2px 4px;
+  transition: all 0.2s ease;
+}
+
+.maps-link:hover {
+  background-color: rgba(37, 99, 235, 0.1);
+  transform: translateX(2px);
+}
+
+.maps-link svg {
+  transition: transform 0.2s ease;
+}
+
+.maps-link:hover svg {
+  transform: scale(1.1);
 }
 </style>
