@@ -118,10 +118,10 @@
         </button>
       </div>
     </div>    <!-- Login Modal -->
-    <div v-if="isLoginModalOpen" class="fixed inset-0 flex items-center justify-center p-4" style="z-index: 99999999;">
+    <div v-if="isLoginModalOpen" class="fixed inset-0 flex items-center justify-center min-h-screen pt-[56px] p-4" style="z-index: 99999999;">
       <!-- Overlay -->
       <div
-        class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+        class="fixed left-0 right-0 bottom-0 top-[56px] bg-black/70 backdrop-blur-sm transition-opacity"
         @click="isLoginModalOpen = false"
         aria-hidden="true"
         style="z-index: 99999998;"
