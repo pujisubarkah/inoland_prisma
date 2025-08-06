@@ -39,6 +39,9 @@ export default defineNuxtConfig({
     },
     define: {
       global: 'globalThis'
+    },
+    ssr: {
+      noExternal: ['axios', 'form-data']
     }
   },
   shadcn: {
@@ -51,9 +54,16 @@ export default defineNuxtConfig({
      * @default "./components/ui"
      */
     componentDir: './components/ui'
-  },
-  nitro: {
+  },  nitro: {
     // Ignore .prisma folder during build
-    ignore: ['.prisma']
+    ignore: ['.prisma'],
+    // Add polyfills for Node.js globals
+    esbuild: {
+      options: {
+        define: {
+          global: 'globalThis'
+        }
+      }
+    }
   }
 })

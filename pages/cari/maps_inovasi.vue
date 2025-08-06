@@ -78,12 +78,44 @@
                 </div>
               </div>
             </template>
-          </Dialog>
-
-          <!-- Provinsi Map -->
-          <section class="mb-6">
-            <div class="relative overflow-hidden rounded-lg shadow-md">
-              <svg viewBox="0 0 981.98602 441.06508" width="100%" height="auto" preserveAspectRatio="xMidYMid meet">
+          </Dialog>          <!-- Provinsi Map -->
+          <ClientOnly>
+            <section class="mb-6">
+            <!-- Loading State -->
+            <div v-if="isMapLoading || provinsis.length === 0" class="relative overflow-hidden rounded-lg shadow-md bg-gray-100 animate-pulse">
+              <div class="w-full h-96 flex items-center justify-center">
+                <div class="text-center">
+                  <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <p class="text-gray-600 text-sm">Memuat peta provinsi...</p>
+                  <p class="text-gray-500 text-xs mt-2">{{ debugInfo.totalProvinsi }} provinsi dimuat</p>
+                </div>
+              </div>            </div>
+            
+            <!-- Error/No Data State -->
+            <div v-else-if="!isMapLoading && provinsis.length === 0" class="relative overflow-hidden rounded-lg shadow-md bg-red-50 border border-red-200">
+              <div class="w-full h-96 flex items-center justify-center">
+                <div class="text-center">
+                  <svg class="h-16 w-16 text-red-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 class="text-lg font-medium text-red-800 mb-2">Gagal Memuat Peta</h3>
+                  <p class="text-red-600 text-sm mb-4">Data provinsi tidak dapat dimuat</p>
+                  <button 
+                    @click="retryLoadData"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Coba Lagi
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Map Content -->
+            <div v-else class="relative overflow-hidden rounded-lg shadow-md">
+              <svg viewBox="0 0 981.98602 441.06508" class="w-full h-auto" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <linearGradient id="grad-blue-high" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="#2563eb" stop-opacity="1" />
@@ -115,11 +147,11 @@
                 <foreignObject v-if="hoveredArea.visible" :x="svgWidth - 230" :y="10" width="220" height="80">
                   <div class="bg-white border border-blue-400 rounded-lg p-2 shadow-lg text-sm font-semibold text-blue-700">
                     <div v-html="hoveredArea.text"></div>
-                  </div>
-                </foreignObject>
+                  </div>                </foreignObject>
               </svg>
             </div>
           </section>
+          </ClientOnly>
 
           <!-- Popup Kabupaten dengan Dialog shadcn -->
           <Dialog v-model:open="dialogOpen">
@@ -475,15 +507,14 @@
               }"
               style="height:250px"
             />
-          </div>
-        </div>
+          </div>        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -496,7 +527,6 @@ import {
   Filler
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
-import axios from 'axios'
 import Dialog from '@/components/ui/dialog/Dialog.vue'
 import Table from '@/components/ui/table/Table.vue'
 
@@ -625,6 +655,7 @@ const dialogKabkotInovasi = ref<Inovasi[]>([])
 const hasShownWelcomeModal = ref(false)
 const kabupatenTooltip = ref({ visible: false, nama: '', jumlah: 0, x: 0, y: 0 })
 const isDownloading = ref(false)
+const isMapLoading = ref(true)
 
 // Dialog chart color based on selected index
 const dialogChartColor = computed(() => {
@@ -658,6 +689,18 @@ const legendColors = ref({
   'Rendah (>0)': '#6baed6',
   'Tidak ada data': '#fff'
 })
+
+// Debug computed property
+const debugInfo = computed(() => ({
+  totalProvinsi: provinsis.value.length,
+  validSvgPaths: provinsis.value.filter(p => p.svg_path && p.svg_path.trim().length > 0).length,
+  isLoading: isMapLoading.value
+}))
+
+// Watch for debugging
+watch(debugInfo, (newInfo) => {
+  console.log('🔍 Debug info updated:', newInfo)
+}, { deep: true })
 
 // Computed: Paginated inovasi for current page
 const currentInovasi = computed(() => {
@@ -915,7 +958,23 @@ function handlePageChange(page: number) {
 
 // Utility to clean SVG path
 function cleanSvgPath(path: string | undefined): string {
-  return path ? path.replace(/"/g, '') : ''
+  if (!path) {
+    console.warn('⚠️ Empty SVG path detected')
+    return ''
+  }
+  
+  try {
+    // Clean quotes and basic validation
+    const cleaned = path.replace(/"/g, '').trim()
+    if (!cleaned.startsWith('M') && !cleaned.startsWith('m')) {
+      console.warn('⚠️ Invalid SVG path (missing moveTo command):', cleaned.substring(0, 50))
+      return ''
+    }
+    return cleaned
+  } catch (error) {
+    console.error('❌ Error cleaning SVG path:', error)
+    return ''
+  }
 }
 
 // Choropleth color function
@@ -930,8 +989,12 @@ function getChoroplethColor(jumlah_inovasi: number): string {
 
 // Load initial data
 onMounted(async () => {
+  console.log('🎯 Maps component mounted, loading data...')
   try {
+    isMapLoading.value = true
     const { data } = await useFetch('/api/provinsi')
+    console.log('📊 API response received:', data.value)
+    
     provinsis.value = Array.isArray(data.value)
       ? data.value.map((item: any) => ({
           id_provinsi: item.id ?? item.id_provinsi ?? 0,
@@ -941,18 +1004,50 @@ onMounted(async () => {
         }))
       : []
       
-    // Show welcome modal on first visit
-    const hasVisited = localStorage.getItem('maps_inovasi_visited')
-    if (!hasVisited) {
-      setTimeout(() => {
-        showInfoModal.value = true
-        localStorage.setItem('maps_inovasi_visited', 'true')
-      }, 500)
+    console.log('✅ Processed provinces:', provinsis.value.length)
+      
+    // Show welcome modal on first visit (client-side only)
+    if (typeof window !== 'undefined') {
+      const hasVisited = localStorage.getItem('maps_inovasi_visited')
+      if (!hasVisited) {
+        setTimeout(() => {
+          showInfoModal.value = true
+          localStorage.setItem('maps_inovasi_visited', 'true')
+        }, 500)
+      }
     }
+    
+    isMapLoading.value = false
   } catch (error) {
-    console.error('Error fetching provinces:', error)
+    console.error('❌ Error fetching provinces:', error)
+    isMapLoading.value = false
   }
 })
+
+// Retry function
+const retryLoadData = async () => {
+  console.log('🔄 Retrying data load...')
+  isMapLoading.value = true
+  try {
+    const { data } = await useFetch('/api/provinsi', { server: false })
+    console.log('🔄 Retry API response:', data.value)
+    
+    provinsis.value = Array.isArray(data.value)
+      ? data.value.map((item: any) => ({
+          id_provinsi: item.id ?? item.id_provinsi ?? 0,
+          nama: item.nama_provinsi ?? item.nama ?? '',
+          svg_path: item.svg_path ?? '',
+          jumlah_inovasi: item.jumlah_inovasi ?? 0
+        }))
+      : []
+      
+    console.log('✅ Retry processed provinces:', provinsis.value.length)
+    isMapLoading.value = false
+  } catch (error) {
+    console.error('❌ Retry failed:', error)
+    isMapLoading.value = false
+  }
+}
 
 const fetchProvinsiData = async () => {
   const ids = provinsis.value.map(p => p.id_provinsi).filter(Boolean).join(',')
@@ -964,10 +1059,15 @@ const fetchProvinsiData = async () => {
   }))
 }
 
-fetchProvinsiData()
+// Only fetch data on client side
+if (process.client) {
+  fetchProvinsiData()
+}
 
 const loadKabupaten = async (id_provinsi: number) => {
   try {
+    // Dynamic import of axios for client-side only
+    const { default: axios } = await import('axios')
     const res = await axios.get(`/api/inovasiPerKabkot/${id_provinsi}`)
     kabupaten.value = Array.isArray(res.data)
       ? res.data.map((item: any) => ({
