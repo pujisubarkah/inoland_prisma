@@ -29,11 +29,17 @@ export default defineNuxtConfig({
         }
       ]
     }
-  },
-  vite: {
+  },  vite: {
     plugins: [
       tailwindcss(),
     ],
+    optimizeDeps: {
+      include: ['xlsx'],
+      exclude: ['xlsx/dist/cpexcel.js']
+    },
+    define: {
+      global: 'globalThis'
+    }
   },
   shadcn: {
     /**

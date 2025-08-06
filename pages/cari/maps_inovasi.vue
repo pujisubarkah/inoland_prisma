@@ -179,14 +179,13 @@
                           Kabupaten/Kota
                         </div>
                       </div>
-                    </div>
-
-                    <!-- Download Buttons -->
+                    </div>                    <!-- Download Buttons -->
                     <div v-if="dialogKabkotInovasi.length > 0" class="mb-4">
                       <div class="text-sm text-gray-600 mb-2">
                         📊 Tersedia {{ dialogKabkotInovasi.length }} data untuk diunduh
                       </div>
-                      <div class="flex flex-wrap gap-2">
+                      <ClientOnly>
+                        <div class="flex flex-wrap gap-2">
                         <button 
                           @click="downloadExcel"
                           :disabled="isDownloading || dialogKabkotInovasi.length === 0"
@@ -226,10 +225,10 @@
                           </svg>
                           <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-                          </svg>
-                          PDF
+                          </svg>                          PDF
                         </button>
-                      </div>
+                        </div>
+                      </ClientOnly>
                     </div>
                     
                     <!-- Pagination Controls -->
@@ -500,7 +499,6 @@ import { Line } from 'vue-chartjs'
 import axios from 'axios'
 import Dialog from '@/components/ui/dialog/Dialog.vue'
 import Table from '@/components/ui/table/Table.vue'
-import * as XLSX from 'xlsx'
 
 // Define page meta
 useHead({
@@ -1184,12 +1182,42 @@ async function showKabupatenChart(kab: Kabupaten) {
   }
 }
 
+// Helper function to check if we're on client side
+const isClientSide = () => typeof window !== 'undefined' && (typeof process === 'undefined' || process.client !== false)
+
+// Safe XLSX import function
+const safeXLSXImport = async () => {
+  if (!isClientSide()) {
+    throw new Error('XLSX can only be used on client side')
+  }
+  
+  try {
+    // Use dynamic import with a fallback
+    const XLSX = await import('xlsx')
+    return XLSX
+  } catch (error) {
+    console.error('Failed to import XLSX:', error)
+    // If XLSX fails to load, throw a more user-friendly error
+    throw new Error('Excel functionality is not available. Please try CSV format instead.')
+  }
+}
+
 // Download Functions
 async function downloadExcel() {
   if (isDownloading.value || dialogKabkotInovasi.value.length === 0) return
   
+  // Only run on client side
+  if (!isClientSide()) {
+    alert('Download Excel hanya tersedia pada browser')
+    return
+  }
+  
   try {
     isDownloading.value = true
+    const XLSX = await safeXLSXImport()
+    
+    // Skip cpexcel setup to avoid module not found errors
+    // This means we'll only support .xlsx format, not .xls
     
     const data = dialogKabkotInovasi.value.map((item, index) => ({
       'No': index + 1,
@@ -1207,10 +1235,44 @@ async function downloadExcel() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Inovasi')
     
     const fileName = `Daftar_Inovasi_${selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value}_${new Date().toISOString().split('T')[0]}.xlsx`.replace(/[^a-zA-Z0-9_.-]/g, '_')
-    XLSX.writeFile(workbook, fileName)
-  } catch (error) {
+    XLSX.writeFile(workbook, fileName)  } catch (error) {
     console.error('Error downloading Excel:', error)
-    alert('Terjadi kesalahan saat mengunduh file Excel')
+      // Check if it's specifically a cpexcel.js error
+    const errorMessage = (error instanceof Error ? error.message : String(error))
+    if (errorMessage.includes('cpexcel.js') || errorMessage.includes('Cannot find module')) {
+      console.warn('XLSX cpexcel.js module not found, using pure JS parser')
+    } else {
+      // For other errors, show user-friendly message and return early
+      alert(`Error downloading Excel file: ${errorMessage}`)
+      isDownloading.value = false
+      return
+    }
+    
+    // Try fallback without cpexcel
+    try {
+      const XLSX = await safeXLSXImport()
+      // Skip cpexcel setup
+      const data = dialogKabkotInovasi.value.map((item, index) => ({
+        'No': index + 1,
+        'Tahun': item.tahun,
+        'Judul Inovasi': item.judul_inovasi,
+        'SDGS': item.sdgs?.nama || '-',
+        'Inovator': item.inovator || '-',
+        'Deskripsi': item.deskripsi || 'Tidak ada deskripsi',
+        'Provinsi': item.wilayah?.nama_provinsi || '',
+        'Kabupaten/Kota': item.wilayah?.nama_kabkot || ''
+      }))
+
+      const worksheet = XLSX.utils.json_to_sheet(data)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Inovasi')
+      
+      const fileName = `Daftar_Inovasi_${selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value}_${new Date().toISOString().split('T')[0]}.xlsx`.replace(/[^a-zA-Z0-9_.-]/g, '_')
+      XLSX.writeFile(workbook, fileName)
+    } catch (fallbackError) {
+      console.error('Fallback Excel download failed:', fallbackError)
+      alert('Terjadi kesalahan saat mengunduh file Excel. Silakan coba format lain.')
+    }
   } finally {
     isDownloading.value = false
   }
@@ -1219,8 +1281,17 @@ async function downloadExcel() {
 async function downloadCSV() {
   if (isDownloading.value || dialogKabkotInovasi.value.length === 0) return
   
+  // Only run on client side
+  if (!isClientSide()) {
+    alert('Download CSV hanya tersedia pada browser')
+    return
+  }
+  
   try {
     isDownloading.value = true
+    
+    // Use safe XLSX import
+    const XLSX = await safeXLSXImport()
     
     const data = dialogKabkotInovasi.value.map((item, index) => ({
       'No': index + 1,
@@ -1248,7 +1319,36 @@ async function downloadCSV() {
     URL.revokeObjectURL(url)
   } catch (error) {
     console.error('Error downloading CSV:', error)
-    alert('Terjadi kesalahan saat mengunduh file CSV')
+    // Try manual CSV generation as fallback
+    try {
+      const data = dialogKabkotInovasi.value.map((item, index) => [
+        index + 1,
+        item.tahun || '',
+        `"${(item.judul_inovasi || '').replace(/"/g, '""')}"`,
+        `"${(item.sdgs?.nama || '-').replace(/"/g, '""')}"`,
+        `"${(item.inovator || '-').replace(/"/g, '""')}"`,
+        `"${(item.deskripsi || 'Tidak ada deskripsi').replace(/"/g, '""')}"`,
+        `"${(item.wilayah?.nama_provinsi || '').replace(/"/g, '""')}"`,
+        `"${(item.wilayah?.nama_kabkot || '').replace(/"/g, '""')}"`
+      ])
+      
+      const headers = ['No', 'Tahun', 'Judul Inovasi', 'SDGS', 'Inovator', 'Deskripsi', 'Provinsi', 'Kabupaten/Kota']
+      const csvContent = [headers.join(','), ...data.map(row => row.join(','))].join('\n')
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', `Daftar_Inovasi_${selectedKabkot.value ? dialogKabkotName.value : selectedProvinceName.value}_${new Date().toISOString().split('T')[0]}.csv`.replace(/[^a-zA-Z0-9_.-]/g, '_'))
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch (fallbackError) {
+      console.error('Fallback CSV download failed:', fallbackError)
+      alert('Terjadi kesalahan saat mengunduh file CSV')
+    }
   } finally {
     isDownloading.value = false
   }
@@ -1256,6 +1356,12 @@ async function downloadCSV() {
 
 async function downloadPDF() {
   if (isDownloading.value || dialogKabkotInovasi.value.length === 0) return
+  
+  // Only run on client side
+  if (!isClientSide()) {
+    alert('Download PDF hanya tersedia pada browser')
+    return
+  }
   
   try {
     isDownloading.value = true
@@ -1279,6 +1385,9 @@ async function downloadPDF() {
 }
 
 async function generateMainPDF() {
+  // Only run on client side
+  if (!isClientSide()) return
+  
   // Import jsPDF with proper module syntax
   const jsPDF = (await import('jspdf')).default
   await import('jspdf-autotable')
@@ -1353,10 +1462,12 @@ async function generateMainPDF() {
 }
 
 async function generateFallbackPDF() {
+  // Only run on client side
+  if (!isClientSide()) return
+  
   // Simple PDF without autoTable
   const jsPDF = (await import('jspdf')).default
-  
-  const doc = new jsPDF({
+    const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
