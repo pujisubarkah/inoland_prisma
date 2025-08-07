@@ -80,19 +80,20 @@
             </template>
           </Dialog>          <!-- Provinsi Map -->
           <ClientOnly>
-            <section class="mb-6">
-            <!-- Loading State -->
-            <div v-if="isMapLoading || provinsis.length === 0" class="relative overflow-hidden rounded-lg shadow-md bg-gray-100 animate-pulse">
+            <section class="mb-6">            <!-- Loading State -->
+            <div v-if="isMapLoading" class="relative overflow-hidden rounded-lg shadow-md bg-gray-100 animate-pulse">
               <div class="w-full h-96 flex items-center justify-center">
                 <div class="text-center">
                   <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <p class="text-gray-600 text-sm">Memuat peta provinsi...</p>
+                  </svg>                  <p class="text-gray-600 text-sm">Memuat peta provinsi...</p>
                   <p class="text-gray-500 text-xs mt-2">{{ debugInfo.totalProvinsi }} provinsi dimuat</p>
+                  <p class="text-gray-400 text-xs mt-1">Valid SVG: {{ debugInfo.validSvgPaths }}</p>
+                  <p class="text-gray-400 text-xs mt-1">Status: {{ isMapLoading ? 'Loading...' : 'Ready' }}</p>
                 </div>
-              </div>            </div>
+              </div>
+            </div>
             
             <!-- Error/No Data State -->
             <div v-else-if="!isMapLoading && provinsis.length === 0" class="relative overflow-hidden rounded-lg shadow-md bg-red-50 border border-red-200">
@@ -103,6 +104,7 @@
                   </svg>
                   <h3 class="text-lg font-medium text-red-800 mb-2">Gagal Memuat Peta</h3>
                   <p class="text-red-600 text-sm mb-4">Data provinsi tidak dapat dimuat</p>
+                  <p class="text-red-500 text-xs mb-4">Debug: {{ debugInfo.totalProvinsi }} provinsi, Loading: {{ debugInfo.isLoading }}</p>
                   <button 
                     @click="retryLoadData"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -114,7 +116,7 @@
             </div>
             
             <!-- Map Content -->
-            <div v-else class="relative overflow-hidden rounded-lg shadow-md">
+            <div v-else-if="!isMapLoading && provinsis.length > 0" class="relative overflow-hidden rounded-lg shadow-md">
               <svg viewBox="0 0 981.98602 441.06508" class="w-full h-auto" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <linearGradient id="grad-blue-high" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -514,7 +516,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -700,6 +702,15 @@ const debugInfo = computed(() => ({
 // Watch for debugging
 watch(debugInfo, (newInfo) => {
   console.log('🔍 Debug info updated:', newInfo)
+}, { deep: true })
+
+// Watch provinces data to ensure loading state is correct
+watch(provinsis, (newProvinsis) => {
+  console.log('📊 Provinces data changed:', newProvinsis.length, 'items')
+  if (newProvinsis.length > 0) {
+    console.log('✅ Provinces loaded successfully')
+    isMapLoading.value = false
+  }
 }, { deep: true })
 
 // Computed: Paginated inovasi for current page
@@ -956,7 +967,7 @@ function handlePageChange(page: number) {
   }
 }
 
-// Utility to clean SVG path
+// Utility to clean SVG path with better validation
 function cleanSvgPath(path: string | undefined): string {
   if (!path) {
     console.warn('⚠️ Empty SVG path detected')
@@ -966,14 +977,49 @@ function cleanSvgPath(path: string | undefined): string {
   try {
     // Clean quotes and basic validation
     const cleaned = path.replace(/"/g, '').trim()
+    
+    // Validate SVG path format
     if (!cleaned.startsWith('M') && !cleaned.startsWith('m')) {
       console.warn('⚠️ Invalid SVG path (missing moveTo command):', cleaned.substring(0, 50))
       return ''
     }
+    
+    // Check for basic SVG path commands
+    const hasValidCommands = /[MmLlHhVvCcSsQqTtAaZz]/.test(cleaned)
+    if (!hasValidCommands) {
+      console.warn('⚠️ Invalid SVG path (no valid commands):', cleaned.substring(0, 50))
+      return ''
+    }
+    
     return cleaned
   } catch (error) {
     console.error('❌ Error cleaning SVG path:', error)
     return ''
+  }
+}
+
+// Validate province data integrity
+function validateProvinceData(provinceList: Provinsi[]): void {
+  console.log('🔍 Validating province data...')
+  
+  const validCount = provinceList.filter(p => p.svg_path && p.nama).length
+  const invalidCount = provinceList.length - validCount
+  
+  console.log(`📊 Province validation results:`)
+  console.log(`   ✅ Valid: ${validCount}`)
+  console.log(`   ❌ Invalid: ${invalidCount}`)
+  
+  if (invalidCount > 0) {
+    console.warn('⚠️ Some provinces have missing data:')
+    provinceList.forEach((p, index) => {
+      if (!p.svg_path || !p.nama) {
+        console.warn(`   Province ${index + 1}:`, {
+          id: p.id_provinsi,
+          name: p.nama || 'MISSING NAME',
+          hasSvgPath: !!p.svg_path
+        })
+      }
+    })
   }
 }
 
@@ -987,81 +1033,111 @@ function getChoroplethColor(jumlah_inovasi: number): string {
   return '#ffffff'; // white for 0
 }
 
+// Main data loading function
+const loadProvinsiData = async () => {
+  console.log('🎯 Loading provinsi data...')
+  isMapLoading.value = true
+  
+  try {
+    let response
+    
+    try {
+      // Primary method: $fetch
+      response = await $fetch('/api/provinsi', {
+        server: false,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+      console.log('📊 $fetch success:', response)
+    } catch (fetchError) {
+      console.warn('⚠️ $fetch failed, trying useFetch...', fetchError)
+      
+      // Fallback method: useFetch
+      const { data, error } = await useFetch('/api/provinsi', { 
+        server: false,
+        default: () => []
+      })
+      
+      if (error.value) {
+        throw new Error(`useFetch error: ${error.value}`)
+      }
+      
+      response = data.value
+      console.log('📊 useFetch success:', response)
+    }
+      // The response should be an array directly
+    if (Array.isArray(response) && response.length > 0) {
+      provinsis.value = response.map((item: any) => ({
+        id_provinsi: Number(item.id ?? item.id_provinsi ?? 0),
+        nama: item.nama_provinsi ?? item.nama ?? '',
+        svg_path: item.svg_path ?? '',
+        jumlah_inovasi: Number(item.jumlah_inovasi ?? 0)
+      })).filter(p => p.nama && p.svg_path && p.id_provinsi > 0) // Filter out invalid entries
+      
+      // Validate the processed data
+      validateProvinceData(provinsis.value)
+      
+      console.log('✅ Successfully processed provinces:', provinsis.value.length)
+      console.log('📋 First province sample:', provinsis.value[0])
+      
+      if (provinsis.value.length === 0) {
+        throw new Error('No valid province data after filtering')
+      }
+    } else {
+      console.error('❌ Invalid response format:', typeof response, Array.isArray(response), response)
+      throw new Error(`API returned invalid data format: ${typeof response}`)
+    }
+    
+  } catch (error) {
+    console.error('❌ Error fetching provinces:', error)
+    provinsis.value = []
+    
+    // Show user-friendly error in console
+    console.error('🔍 Debug info:', {
+      error: String(error),
+      isClient: process.client,
+      hasWindow: typeof window !== 'undefined',
+      url: window?.location?.href,
+      timestamp: new Date().toISOString()
+    })
+  } finally {
+    isMapLoading.value = false
+  }
+}
+
 // Load initial data
 onMounted(async () => {
-  console.log('🎯 Maps component mounted, loading data...')
-  try {
-    isMapLoading.value = true
-    const { data } = await useFetch('/api/provinsi')
-    console.log('📊 API response received:', data.value)
+  console.log('🎯 Maps component mounted...')
+  
+  // Only load data on client side
+  if (process.client) {
+    // Add a small delay to ensure DOM is ready
+    await nextTick()
+    setTimeout(async () => {
+      await loadProvinsiData()
+    }, 100)
     
-    provinsis.value = Array.isArray(data.value)
-      ? data.value.map((item: any) => ({
-          id_provinsi: item.id ?? item.id_provinsi ?? 0,
-          nama: item.nama_provinsi ?? item.nama ?? '',
-          svg_path: item.svg_path ?? '',
-          jumlah_inovasi: item.jumlah_inovasi ?? 0
-        }))
-      : []
-      
-    console.log('✅ Processed provinces:', provinsis.value.length)
-      
-    // Show welcome modal on first visit (client-side only)
+    // Show welcome modal on first visit
     if (typeof window !== 'undefined') {
       const hasVisited = localStorage.getItem('maps_inovasi_visited')
       if (!hasVisited) {
         setTimeout(() => {
           showInfoModal.value = true
           localStorage.setItem('maps_inovasi_visited', 'true')
-        }, 500)
+        }, 1000)
+      } else {
+        showInfoModal.value = false
       }
     }
-    
-    isMapLoading.value = false
-  } catch (error) {
-    console.error('❌ Error fetching provinces:', error)
-    isMapLoading.value = false
   }
 })
 
 // Retry function
 const retryLoadData = async () => {
   console.log('🔄 Retrying data load...')
-  isMapLoading.value = true
-  try {
-    const { data } = await useFetch('/api/provinsi', { server: false })
-    console.log('🔄 Retry API response:', data.value)
-    
-    provinsis.value = Array.isArray(data.value)
-      ? data.value.map((item: any) => ({
-          id_provinsi: item.id ?? item.id_provinsi ?? 0,
-          nama: item.nama_provinsi ?? item.nama ?? '',
-          svg_path: item.svg_path ?? '',
-          jumlah_inovasi: item.jumlah_inovasi ?? 0
-        }))
-      : []
-      
-    console.log('✅ Retry processed provinces:', provinsis.value.length)
-    isMapLoading.value = false
-  } catch (error) {
-    console.error('❌ Retry failed:', error)
-    isMapLoading.value = false
-  }
-}
-
-const fetchProvinsiData = async () => {
-  const ids = provinsis.value.map(p => p.id_provinsi).filter(Boolean).join(',')
-  const { data } = await useFetch(`/api/provinsi`, { query: { ids } })
-  const provData = (data.value && Array.isArray((data.value as any).data)) ? (data.value as any).data as Provinsi[] : []
-  provinsis.value = provinsis.value.map(p => ({
-    ...p,
-    jumlah_inovasi: provData.find(dp => dp.id_provinsi === p.id_provinsi)?.jumlah_inovasi || 0
-  }))
-}
-
-// Only fetch data on client side
-if (process.client) {
-  fetchProvinsiData()
+  await loadProvinsiData()
 }
 
 const loadKabupaten = async (id_provinsi: number) => {
