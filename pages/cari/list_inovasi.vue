@@ -131,7 +131,7 @@
                 </th>
                 <th @click="handleSort('inovator')" class="sortable w-1/6">
                   <div class="header-content">
-                    <span>Inovator</span>
+                    <span>Inovator/Unit Kerja</span>
                     <i :class="getSortIcon('inovator')" class="sort-icon"></i>
                   </div>
                 </th>
@@ -170,7 +170,8 @@
                 </td>                <td class="text-gray-700" data-label="Inovator">
                   <div class="max-w-32">
                     <div class="font-medium text-gray-900 mb-1 flex items-center gap-1">
-                      <span>{{ inovasi.inovator_detail?.inovator || inovasi.inovator || 'N/A' }}</span>
+                      <span>{{ inovasi.inovator || 'N/A' }}</span>
+                      <span class="text-xs text-gray-500">({{ inovasi.inovator_detail?.inovator || 'N/A' }})</span>
                       <button 
                         @click="showAddressInfo(inovasi, $event)"
                         class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"
@@ -636,7 +637,8 @@ const downloadData = async () => {
       'Tahun': item.tahun || '',
       'Instansi': item.instansi?.agency_name || item.kld || '',
       'Kategori Instansi': item.instansi?.kat_instansi || '',
-      'Inovator': item.inovator_detail?.inovator || item.inovator || '',
+      'Nama Inovator': item.inovator || '',
+      'Unit Inovator': item.inovator_detail?.inovator || '',
       'Alamat Inovator': item.inovator_detail?.alamat || 'Alamat belum tersedia',
       'Koordinat': item.inovator_detail?.longlat || 'Koordinat belum tersedia',
       'Deskripsi': item.deskripsi || 'Tidak ada deskripsi'

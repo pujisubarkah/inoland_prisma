@@ -310,6 +310,7 @@
                               <th>Judul Inovasi</th>
                               <th>SDGS</th>
                               <th>Inovator</th>
+                              <th>Unit/Instansi</th>
                               <th>Deskripsi</th>
                             </tr>
                           </thead>
@@ -320,6 +321,7 @@
                               <td>{{ item.judul_inovasi }}</td>
                               <td>{{ item.sdgs?.nama || '-' }}</td>
                               <td>{{ item.inovator || '-' }}</td>
+                              <td>{{ item.inovator_detail?.inovator || '-' }} / {{ item.instansi?.agency_name || '-' }}</td>
                               <td>{{ item.deskripsi || 'Tidak ada deskripsi' }}</td>
                             </tr>                            <tr v-if="currentInovasi.length === 0">
                               <td colspan="6" class="text-center text-gray-500 py-4">
@@ -604,6 +606,17 @@ interface Inovasi {
   deskripsi: string
   id_kabkot: number
   urusan?: string
+  inovator_detail?: {
+    id_inovator: number
+    inovator: string
+  }
+  instansi: {
+    id: number
+    agency_id: number
+    agency_name: string
+    agency_category_id: number
+    kat_instansi: string
+  }
   wilayah: {
     id_provinsi: number
     nama_provinsi: string
@@ -1401,6 +1414,8 @@ async function downloadExcel() {
       'Judul Inovasi': item.judul_inovasi,
       'SDGS': item.sdgs?.nama || '-',
       'Inovator': item.inovator || '-',
+      'Unit Kerja': item.inovator_detail?.inovator || '-',
+      'Instansi': item.instansi?.agency_name || '-',
       'Deskripsi': item.deskripsi || 'Tidak ada deskripsi',
       'Provinsi': item.wilayah?.nama_provinsi || '',
       'Kabupaten/Kota': item.wilayah?.nama_kabkot || ''
@@ -1434,6 +1449,8 @@ async function downloadExcel() {
         'Judul Inovasi': item.judul_inovasi,
         'SDGS': item.sdgs?.nama || '-',
         'Inovator': item.inovator || '-',
+        'Unit Kerja': item.inovator_detail?.inovator || '-',
+        'Instansi': item.instansi?.agency_name || '-',
         'Deskripsi': item.deskripsi || 'Tidak ada deskripsi',
         'Provinsi': item.wilayah?.nama_provinsi || '',
         'Kabupaten/Kota': item.wilayah?.nama_kabkot || ''
@@ -1475,6 +1492,8 @@ async function downloadCSV() {
       'Judul Inovasi': item.judul_inovasi,
       'SDGS': item.sdgs?.nama || '-',
       'Inovator': item.inovator || '-',
+      'Unit Kerja': item.inovator_detail?.inovator || '-',
+      'Instansi': item.instansi?.agency_name || '-',
       'Deskripsi': item.deskripsi || 'Tidak ada deskripsi',
       'Provinsi': item.wilayah?.nama_provinsi || '',
       'Kabupaten/Kota': item.wilayah?.nama_kabkot || ''
@@ -1503,6 +1522,8 @@ async function downloadCSV() {
         `"${(item.judul_inovasi || '').replace(/"/g, '""')}"`,
         `"${(item.sdgs?.nama || '-').replace(/"/g, '""')}"`,
         `"${(item.inovator || '-').replace(/"/g, '""')}"`,
+        `"${(item.inovator_detail?.inovator || '-').replace(/"/g, '""')}"`,
+        `"${(item.instansi?.agency_name || '-').replace(/"/g, '""')}"`,
         `"${(item.deskripsi || 'Tidak ada deskripsi').replace(/"/g, '""')}"`,
         `"${(item.wilayah?.nama_provinsi || '').replace(/"/g, '""')}"`,
         `"${(item.wilayah?.nama_kabkot || '').replace(/"/g, '""')}"`
@@ -1598,12 +1619,14 @@ async function generateMainPDF() {
     (item.judul_inovasi || '-').toString().slice(0, 60) + ((item.judul_inovasi || '').length > 60 ? '...' : ''),
     (item.sdgs?.nama || '-').toString(),
     (item.inovator || '-').toString().slice(0, 25) + ((item.inovator || '').length > 25 ? '...' : ''),
+    (item.inovator_detail?.inovator || '-').toString().slice(0, 25) + ((item.inovator_detail?.inovator || '').length > 25 ? '...' : ''),
+    (item.instansi?.agency_name || '-').toString().slice(0, 25) + ((item.instansi?.agency_name || '').length > 25 ? '...' : ''),
     (item.deskripsi || 'Tidak ada deskripsi').toString().slice(0, 80) + ((item.deskripsi || '').length > 80 ? '...' : '')
   ])
   
   // Add table using autoTable
   ;(doc as any).autoTable({
-    head: [['No', 'Tahun', 'Judul Inovasi', 'SDGS', 'Inovator', 'Deskripsi']],
+    head: [['No', 'Tahun', 'Judul Inovasi', 'SDGS', 'Inovator', 'Unit Kerja', 'Instansi', 'Deskripsi']],
     body: tableData,
     startY: 50,
     styles: {
@@ -1622,7 +1645,9 @@ async function generateMainPDF() {
       2: { cellWidth: 70 },
       3: { cellWidth: 35 },
       4: { cellWidth: 35 },
-      5: { cellWidth: 70 }
+      5: { cellWidth: 35 },
+      6: { cellWidth: 35 },
+      7: { cellWidth: 70 }
     },
     margin: { top: 50, right: 15, bottom: 20, left: 15 },
     showHead: 'everyPage'

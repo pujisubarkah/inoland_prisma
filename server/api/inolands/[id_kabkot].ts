@@ -6,92 +6,76 @@ import { master_kabupaten } from '../../database/schema/master_kabupaten';
 import { instansi } from '../../database/schema/instansi';
 import { instansi_kategori } from '../../database/schema/instansi_kategori';
 import { inolands_inovator } from '../../database/schema/inolands_inovator';
-import { eq } from 'drizzle-orm';
-import { setResponseStatus } from 'h3';
+import { getMethod, readBody, getQuery } from 'h3';
+import { eq, desc } from 'drizzle-orm';
 
 export default defineEventHandler(async (event) => {
   const { id_kabkot } = event.context.params!;
   const kabkotId = parseInt(id_kabkot);
 
   if (isNaN(kabkotId)) {
-    setResponseStatus(event, 400);
     return {
       success: false,
       message: 'ID kabkot tidak valid',
     };
-  }  try {
+  }
+
+  try {
     console.log('🔍 Fetching inovasi for kabkot ID:', kabkotId);
-      const data = await db
+    
+    const data = await db
       .select({
-        // Data utama dari inolands
         id: inolands.id,
-        created_at: inolands.created_at,
         judul_inovasi: inolands.judul_inovasi,
-        kld: inolands.kld,
-        urusan: inolands.urusan,
-        deskripsi: inolands.deskripsi,
         tahun: inolands.tahun,
         inovator: inolands.inovator,
-        id_provinsi: inolands.id_provinsi,
+        kld: inolands.kld,
+        deskripsi: inolands.deskripsi,
         id_kabkot: inolands.id_kabkot,
-        id_sdgs: inolands.sdgs, // Correct field name from schema
+        id_sdgs: inolands.sdgs,
         agency_id_panrb: inolands.agency_id_panrb,
         inovator_id: inolands.inovator_id,
-        // Referensi SDGs
-        sdgs_id: sdgs.id,
-        sdgs_tujuan_ke: sdgs.tujuan_ke,
-        sdgs_nama: sdgs.sdgs, // Use 'sdgs' field which contains the name
-        sdgs_image: sdgs.image,
-        // Referensi Provinsi
-        nama_provinsi: master_provinsi.nama_provinsi,
-        // Referensi Kabupaten/Kota
-        nama_kabkot: master_kabupaten.nama_kabkot,
-        // Referensi Instansi
-        instansi_id: instansi.id,
-        instansi_agency_id: instansi.agency_id,
-        instansi_agency_name: instansi.agency_name,
-        instansi_category_id: instansi.agency_category_id,
-        instansi_kat_instansi: instansi_kategori.kat_instansi,
-        // Referensi Inovator Detail
-        inovator_detail_id: inolands_inovator.id,
-        inovator_detail_nama: inolands_inovator.inovator,
-        inovator_detail_alamat: inolands_inovator.alamat,
-        inovator_detail_longlat: inolands_inovator.longlat,
+        wilayah: {
+          id_provinsi: master_provinsi.id_provinsi,
+          nama_provinsi: master_provinsi.nama_provinsi,
+          id_kabkot: master_kabupaten.id_kabkot,
+          nama_kabkot: master_kabupaten.nama_kabkot
+        },
+        sdgs: {
+          id: sdgs.id,
+          tujuan_ke: sdgs.tujuan_ke,
+          nama: sdgs.sdgs, // Use 'sdgs' field which contains the name
+          image: sdgs.image
+        },
+        instansi: {
+          id: instansi.id,
+          agency_id: instansi.agency_id,
+          agency_name: instansi.agency_name,
+          agency_category_id: instansi.agency_category_id,
+          kat_instansi: instansi_kategori.kat_instansi,
+        },
+        inovator_detail: {
+          id: inolands_inovator.id,
+          inovator: inolands_inovator.inovator,
+          alamat: inolands_inovator.alamat,
+          longlat: inolands_inovator.longlat,
+        }
       })
       .from(inolands)
-      .leftJoin(sdgs, eq(inolands.sdgs, sdgs.id))
-      .leftJoin(master_provinsi, eq(inolands.id_provinsi, master_provinsi.id_provinsi))
       .leftJoin(master_kabupaten, eq(inolands.id_kabkot, master_kabupaten.id_kabkot))
+      .leftJoin(master_provinsi, eq(master_kabupaten.id_provinsi, master_provinsi.id_provinsi))
+      .leftJoin(sdgs, eq(inolands.sdgs, sdgs.id))
       .leftJoin(instansi, eq(inolands.agency_id_panrb, instansi.agency_id))
       .leftJoin(instansi_kategori, eq(instansi.agency_category_id, instansi_kategori.id))
       .leftJoin(inolands_inovator, eq(inolands.inovator_id, inolands_inovator.id))
-      .where(eq(inolands.id_kabkot, kabkotId));
+      .where(eq(inolands.id_kabkot, kabkotId))
+      .orderBy(desc(inolands.tahun));
 
-    console.log('📊 Found', data.length, 'innovations for kabkot ID:', kabkotId);return {
+    console.log('📊 Found', data.length, 'innovations for kabkot ID:', kabkotId);
+
+    return {
       success: true,
-      data: data.map(item => ({
-        id: item.id,
-        created_at: item.created_at,
-        judul_inovasi: item.judul_inovasi,
-        kld: item.kld,
-        urusan: item.urusan,
-        deskripsi: item.deskripsi,
-        tahun: item.tahun,
-        inovator: item.inovator,
-        // Referensi lokasi
-        wilayah: {
-          id_provinsi: item.id_provinsi,
-          nama_provinsi: item.nama_provinsi,
-          id_kabkot: item.id_kabkot,
-          nama_kabkot: item.nama_kabkot,
-        },        // Referensi SDGs
-        sdgs: item.sdgs_id ? {
-          id: item.sdgs_id,
-          tujuan_ke: item.sdgs_tujuan_ke,
-          nama: item.sdgs_nama,
-          image: item.sdgs_image,
-        } : null,
-      })),
+      data,
       meta: {
         total: data.length,
         filtered_by_kabkot: kabkotId,
@@ -103,12 +87,8 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: false,
-      message: 'Internal Server Error',
-      errorDetails:
-        process.env.NODE_ENV === 'development' && error instanceof Error
-          ? error.message
-          : undefined,
-      timestamp: new Date().toISOString(),
+      message: 'Failed to fetch innovations',
+      data: []
     };
   }
 });
