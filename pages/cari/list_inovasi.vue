@@ -131,8 +131,14 @@
                 </th>
                 <th @click="handleSort('inovator')" class="sortable w-1/6">
                   <div class="header-content">
-                    <span>Inovator/Unit Kerja</span>
+                    <span>Inovator</span>
                     <i :class="getSortIcon('inovator')" class="sort-icon"></i>
+                  </div>
+                </th>
+                <th @click="handleSort('inovator_detail')" class="sortable w-1/6">
+                  <div class="header-content">
+                    <span>Unit Kerja</span>
+                    <i :class="getSortIcon('inovator_detail')" class="sort-icon"></i>
                   </div>
                 </th>
                 <th @click="handleSort('deskripsi')" class="sortable w-1/3">
@@ -167,11 +173,18 @@
                       {{ inovasi.instansi.kat_instansi }}
                     </div>
                   </div>
-                </td>                <td class="text-gray-700" data-label="Inovator">
+                </td>
+                <td class="text-gray-700" data-label="Inovator">
+                  <div class="max-w-32">
+                    <div class="font-medium text-gray-900">
+                      {{ inovasi.inovator || inovasi.kld || 'N/A' }}
+                    </div>
+                  </div>
+                </td>
+                <td class="text-gray-700" data-label="Unit Kerja">
                   <div class="max-w-32">
                     <div class="font-medium text-gray-900 mb-1 flex items-center gap-1">
-                      <span>{{ inovasi.inovator || 'N/A' }}</span>
-                      <span class="text-xs text-gray-500">({{ inovasi.inovator_detail?.inovator || 'N/A' }})</span>
+                      <span>{{ inovasi.inovator_detail?.inovator || 'N/A' }}</span>
                       <button 
                         @click="showAddressInfo(inovasi, $event)"
                         class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"
