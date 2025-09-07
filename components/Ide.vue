@@ -20,10 +20,11 @@
 
     <form @submit.prevent="handleSubmit">
       <div class="mt-6">
-        <ContactInformation
+        <InputField
           v-if="activeStep === 0"
           :formData="formData"
-          @update:formData="updateFormData"
+          :handleChange="updateFormData"
+          :autoFill="true"
         />
         <InnovationIdeaForm
           v-if="activeStep === 1"
@@ -53,7 +54,7 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { Button } from '@/components/ui/button';
-import ContactInformation from './ContactInformation.vue';
+import InputField from './InputField.vue';
 import InnovationIdeaForm from './InnovationIdeaForm.vue';
 import InnovationResponseForm from './InnovationResponseForm.vue';
 
@@ -75,8 +76,15 @@ const formData = reactive({
   keterangan: '',
 });
 
-function updateFormData(newData) {
-  Object.assign(formData, newData);
+function updateFormData(event) {
+  if (event && event.target) {
+    // Handle event dari InputField
+    const { name, value } = event.target;
+    formData[name] = value;
+  } else {
+    // Handle object langsung (untuk backward compatibility)
+    Object.assign(formData, event);
+  }
 }
 
 function handleNext() {

@@ -85,6 +85,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
 
 const props = defineProps({
   isOpen: {
@@ -146,6 +147,21 @@ async function handleSubmit() {
     })
 
     if (res && res.user) {
+      // Simpan user ke Pinia
+      const userStore = useUserStore()
+      console.log('Login response user:', res.user)
+      console.log('Setting user_id to Pinia:', res.user.id)
+      userStore.setUser({
+        user_id: res.user.id,
+        nama_lengkap: res.user.nama_lengkap,
+        email: res.user.email,
+        role_id: res.user.role_id,
+        instansi: res.user.instansi || ''
+      })
+      
+      // Verify user data was saved to Pinia
+      console.log('Pinia user_id after setUser:', userStore.user_id)
+
       if (res.user.role_id === '1') {
         navigateTo('/dashboard')
       } else {

@@ -3,7 +3,7 @@
     <h1 class="text-center text-3xl font-bold mb-5">FORM RENCANA AKSI INOVASI</h1>
     <form @submit.prevent="handleSubmit">
       <div class="flex flex-col gap-4 mb-5">
-        <InputField label="Nama OPD" v-model="formData.opdName" />
+        <InputField :formData="formData" :handleChange="handleInputChange" :autoFill="true" />
    
       </div>
 
@@ -106,10 +106,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 const showModal = ref(false)
 
 const formData = reactive({
-  opdName: '',
+  namaOPD: '',
   contactPerson: '',
-  phone: '',
+  telp: '',
   email: '',
+  // Legacy fields untuk backward compatibility
+  opdName: '',
+  phone: '',
   innovationTitle: '',
   activities: {
     preparation: [],
@@ -135,6 +138,20 @@ function handleSubmit() {
     return
   }
   console.log(formData)
+}
+
+function handleInputChange(event) {
+  const { name, value } = event.target;
+  if (name === 'namaOPD') {
+    formData.opdName = value;
+  } else if (name === 'contactPerson') {
+    formData.contactPerson = value;
+  } else if (name === 'telp') {
+    formData.phone = value;
+  } else if (name === 'email') {
+    formData.email = value;
+  }
+  console.log('Input changed:', name, value);
 }
 
 function toggleTimeline(phase, index, month) {

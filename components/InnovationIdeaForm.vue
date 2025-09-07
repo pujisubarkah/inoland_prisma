@@ -107,14 +107,17 @@
     <!-- Tombol Kirim & Download -->
     <div class="flex flex-col md:flex-row justify-end mt-8 gap-4">
       <Button class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold shadow hover:bg-green-700 transition"
-              @click="onNext">
-        Kirim & Lanjut
+              @click="submitIdea" :disabled="loading">
+        <span v-if="loading">Mengirim...</span>
+        <span v-else>Kirim & Lanjut</span>
       </Button>
       <Button class="bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow hover:bg-blue-800 transition"
               @click="generatePDF">
         Download PDF
       </Button>
     </div>
+    <div v-if="error" class="mt-4 text-red-600 font-semibold">{{ error }}</div>
+    <div v-if="success" class="mt-4 text-green-600 font-semibold">Ide inovasi berhasil dikirim!</div>
   </div>
 </template>
 
@@ -143,6 +146,10 @@ const labels = {
 
 const bgColor = computed(() => local.formData.status === 'Draft' ? 'bg-red-200' : 'bg-white')
 
+const loading = ref(false)
+const error = ref('')
+const success = ref(false)
+
 const generatePDF = () => {
   if (!formRef.value) return
   html2canvas(formRef.value, { scale: 2 }).then(canvas => {
@@ -155,8 +162,47 @@ const generatePDF = () => {
   })
 }
 
+async function submitIdea() {
+  loading.value = true
+  error.value = ''
+  success.value = false
+  try {
+    const res = await fetch('/api/ide_inovasi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(local.formData),
+    })
+    if (!res.ok) throw new Error('Gagal mengirim ide inovasi')
+    success.value = true
+    emit('update:formData', local.formData)
+    props.nextStep()
+  } catch (e) {
+    error.value = e.message || 'Terjadi kesalahan'
+  } finally {
+    loading.value = false
+  }
+}
+
 const onNext = () => {
   emit('update:formData', local.formData)
   props.nextStep()
 }
 </script>
+
+<style>
+.loader {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>

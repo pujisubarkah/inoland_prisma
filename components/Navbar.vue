@@ -41,7 +41,7 @@
         <li v-for="item in menu" :key="item.name" class="my-1">
           <NuxtLink
             :to="item.path"
-            class="no-underline px-4 py-3 rounded-lg block transition-all duration-200 font-medium hover:bg-blue-500/30 hover:shadow-sm hover:backdrop-blur-sm touch-manipulation min-h-[44px] flex items-center"
+            class="no-underline px-4 py-3 rounded-lg transition-all duration-200 font-medium hover:bg-blue-500/30 hover:shadow-sm hover:backdrop-blur-sm touch-manipulation min-h-[44px] flex items-center"
             :class="{
               'bg-gradient-to-r from-blue-500/40 to-blue-400/30 text-blue-100 shadow-sm border border-blue-400/20 backdrop-blur-sm': $route.path === item.path,
               'text-blue-50': $route.path !== item.path
@@ -78,14 +78,29 @@
           <NuxtLink
             v-if="userProfile.role_id === 1"
             to="/admin"
-            class="block px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex items-center"
-          >Admin</NuxtLink>
+            class="px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex flex-col items-start relative"
+          >
+            <span>Admin</span>
+            <span v-if="adminNotifCount > 0" class="mt-1 inline-block bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 animate-pulse" style="min-width:20px;">{{ adminNotifCount }}</span>
+          </NuxtLink>
+          <NuxtLink
+            v-if="userProfile.role_id === 4"
+            :to="'/' + (userProfile.username || userProfile.instansi || 'admin_instansi')"
+            class="px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex flex-col items-start relative"
+          >
+            <span>Admin Instansi</span>
+            <span v-if="adminNotifCount > 0" class="mt-1 inline-block bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 animate-pulse" style="min-width:20px;">{{ adminNotifCount }}</span>
+          </NuxtLink>
           <NuxtLink
             v-if="userProfile.role_id === 2"
             to="/pengguna"
-            class="block px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex items-center"
-          >Pengguna</NuxtLink>
-          <button @click="handleLogout" class="block w-full text-left px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex items-center">Logout</button>
+            class="px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex flex-col items-start"
+          >
+            <span>Pengguna
+              <span v-if="userNotifCount > 0" class="ml-2 inline-block bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 animate-pulse align-middle" style="min-width:20px;">{{ userNotifCount }}</span>
+            </span>
+          </NuxtLink>
+          <button @click="handleLogout" class="w-full text-left px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex items-center">Logout</button>
         </div>
       </div>      <!-- Login Button -->
       <button
@@ -134,7 +149,7 @@
       >
         <div class="flex flex-col sm:flex-row justify-between items-start">
           <!-- Gambar ino di samping hanya untuk login -->
-          <div v-if="!showRegister" class="hidden sm:block sm:w-1/3 flex justify-center bg-white p-4 lg:p-6">
+          <div v-if="!showRegister" class="hidden sm:block sm:w-1/3 justify-center bg-white p-4 lg:p-6">
             <img src="/ino.png" alt="Logo" class="w-20 sm:w-24 lg:w-28 h-auto" />
           </div>
           <div :class="showRegister ? 'w-full p-4 sm:p-6' : 'w-full sm:w-2/3 p-4 sm:p-6'">            <button @click="isLoginModalOpen = false" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-red-500 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors touch-manipulation" style="z-index: 999999999;">
@@ -268,7 +283,7 @@
 <script setup>
 import { UserCircleIcon } from '@heroicons/vue/24/solid'
 import { toast } from 'vue-sonner'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const isMenuOpen = ref(false)
 const isProfileOpen = ref(false)
@@ -276,6 +291,9 @@ const userProfile = ref(null)
 const isLoginModalOpen = ref(false)
 const showRegister = ref(false)
 const loginError = ref('')
+
+const adminNotifCount = ref(0)
+const userNotifCount = ref(0)
 
 const loginForm = ref({
   email: '',
@@ -367,10 +385,12 @@ async function handleLogout() {
   try {
     userProfile.value = null
     localStorage.removeItem('userProfile')
+    toast.success('Berhasil logout!')
     // Redirect ke beranda
     window.location.href = '/'
   } catch (error) {
     console.error('Logout error:', error)
+    toast.error('Logout gagal!')
   }
 }
 
@@ -378,6 +398,22 @@ onMounted(() => {
   const stored = localStorage.getItem('userProfile')
   if (stored) {
     userProfile.value = JSON.parse(stored)
+    if (userProfile.value && userProfile.value.role_id === 1) {
+      fetch('/api/notifications?role=admin')
+        .then(res => res.json())
+        .then(data => {
+          adminNotifCount.value = Array.isArray(data) ? data.length : 0
+        })
+        .catch(() => { adminNotifCount.value = 0 })
+    }
+    if (userProfile.value && userProfile.value.role_id === 2) {
+      fetch('/api/notifications?role=user&id=' + userProfile.value.id)
+        .then(res => res.json())
+        .then(data => {
+          userNotifCount.value = Array.isArray(data) ? data.length : 0
+        })
+        .catch(() => { userNotifCount.value = 0 })
+    }
   }
 })
 </script>

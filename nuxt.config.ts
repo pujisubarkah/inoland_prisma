@@ -6,7 +6,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@nuxtjs/tailwindcss',
-    'shadcn-nuxt'
+    'shadcn-nuxt',
+    '@pinia/nuxt',
   ],
   css: [
     'vue-slick-carousel/dist/vue-slick-carousel.css',
@@ -31,7 +32,7 @@ export default defineNuxtConfig({
     }
   },  vite: {
     plugins: [
-      tailwindcss(),
+      // tailwindcss(), // Remove this line, Tailwind is handled by '@nuxtjs/tailwindcss' module
     ],
     optimizeDeps: {
       include: ['xlsx'],

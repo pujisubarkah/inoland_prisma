@@ -55,16 +55,35 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useUserStore } from '~/stores/user'
 
 const props = defineProps({
   formData: Object,
   handleChange: Function,
+  autoFill: {
+    type: Boolean,
+    default: false
+  }
 })
 
+const userStore = useUserStore()
 const localFormData = ref({ ...props.formData })
+
+// Watch untuk auto-fill ketika user_id berubah
+watch(
+  () => userStore.user_id,
+  (newUserId) => {
+    if (props.autoFill && newUserId) {
+      console.log('User ID changed to:', newUserId, '- triggering auto-fill')
+      setTimeout(() => {
+        autoFillUserData()
+      }, 100)
+    }
+  }
+)
 
 watch(
   () => props.formData,
@@ -81,4 +100,67 @@ const emitHandleChange = (field, value) => {
     },
   })
 }
+
+// Auto-fill data dari user_instansi jika enabled
+const autoFillUserData = async () => {
+  if (!props.autoFill) return;
+  
+  try {
+    // Ambil user ID langsung dari Pinia store (bukan localStorage)
+    const userId = userStore.user_id;
+    
+    if (!userId) {
+      console.log('No user ID found in Pinia store for auto-fill');
+      return;
+    }
+    
+    console.log('Auto-filling data for user ID:', userId);
+    
+    // Fetch data dari API
+    const response = await $fetch(`/api/user_instansi/me?user_id=${userId}`);
+    console.log('Auto-fill response:', response);
+    
+    if (response && !response.error) {
+      // Update local form data
+      localFormData.value = {
+        ...localFormData.value,
+        namaOPD: response.nama_opd || '',
+        contactPerson: response.contact_person || '',
+        telp: response.telp || '',
+        email: response.email || ''
+      };
+      
+      // Emit changes untuk update parent component
+      emitHandleChange('namaOPD', localFormData.value.namaOPD);
+      emitHandleChange('contactPerson', localFormData.value.contactPerson);
+      emitHandleChange('telp', localFormData.value.telp);
+      emitHandleChange('email', localFormData.value.email);
+      
+      console.log('Auto-fill completed:', localFormData.value);
+    }
+  } catch (error) {
+    console.error('Error auto-filling user data:', error);
+  }
+}
+
+onMounted(() => {
+  if (props.autoFill) {
+    // Pastikan Pinia store ter-load dulu
+    if (!userStore.user_id && process.client) {
+      userStore._autoLoadFromLocalStorage();
+    }
+    
+    // Delay sedikit untuk memastikan Pinia store sudah ready
+    setTimeout(() => {
+      autoFillUserData();
+    }, 300);
+    
+    // Listen untuk trigger manual auto-fill
+    if (process.client) {
+      window.addEventListener('triggerAutoFill', () => {
+        autoFillUserData();
+      });
+    }
+  }
+})
 </script>
