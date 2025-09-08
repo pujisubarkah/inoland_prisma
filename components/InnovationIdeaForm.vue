@@ -57,20 +57,27 @@
       </div>
     </div>
 
-    <!-- Grid 4 kolom -->
-    <div class="border border-white/40 rounded-xl mt-6 bg-white/80 shadow-lg grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div v-for="field in ['stakeholderInovasi','sumberDayaInovasi','penerimaManfaat','kebaruan']" :key="field">
-        <div class="bg-blue-600 p-3 text-center text-white font-bold rounded-t-xl">
+    <!-- Grid 4 kolom sejajar, card Kebaruan sama tinggi dan heading biru konsisten -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-6">
+      <div
+        v-for="field in ['stakeholderInovasi','sumberDayaInovasi','penerimaManfaat','kebaruan']"
+        :key="field"
+        class="border border-blue-200 rounded-xl bg-white/90 shadow-md flex flex-col h-full"
+      >
+        <div class="bg-blue-600 p-4 text-center text-white font-bold rounded-t-xl break-words whitespace-normal">
           {{ labels[field] }}
         </div>
-        <Label :for="field" class="block mt-3 text-blue-700 font-semibold px-6">{{ labels[field] }}</Label>
-        <Textarea
-          :id="field"
-          v-model="local.formData[field]"
-          rows="4"
-          :class="['w-full mt-2 rounded-b-xl px-6 py-3 bg-white/90 border border-blue-300 text-blue-700 font-medium focus:outline-none focus:ring-2 focus:ring-cyan-400', bgColor]"
-          :placeholder="'Tuliskan ' + labels[field]"
-        />
+        <div class="px-6 pb-6 pt-2 flex-1 flex flex-col justify-between">
+          <Label :for="field" class="block text-blue-700 font-semibold mb-2 break-words whitespace-normal">{{ labels[field] }}</Label>
+          <Textarea
+            :id="field"
+            v-model="local.formData[field]"
+            rows="4"
+            :class="['w-full rounded-xl px-4 py-3 bg-white border border-blue-300 text-blue-700 font-medium focus:outline-none focus:ring-2 focus:ring-cyan-400', bgColor]"
+            :placeholder="'Tuliskan ' + labels[field]"
+            style="min-height: 100px;"
+          />
+        </div>
       </div>
     </div>
 
@@ -118,6 +125,18 @@
     </div>
     <div v-if="error" class="mt-4 text-red-600 font-semibold">{{ error }}</div>
     <div v-if="success" class="mt-4 text-green-600 font-semibold">Ide inovasi berhasil dikirim!</div>
+    
+    <!-- Toast Notification -->
+    <div 
+      v-if="showToast" 
+      class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 transition-all duration-300"
+      :class="{ 'opacity-0 translate-x-full': !showToast }"
+    >
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <span class="font-medium">Ide inovasi berhasil dikirim!</span>
+    </div>
   </div>
 </template>
 
@@ -127,6 +146,9 @@ import html2canvas from 'html2canvas'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
 
 const props = defineProps({
   formData: Object,
@@ -149,6 +171,7 @@ const bgColor = computed(() => local.formData.status === 'Draft' ? 'bg-red-200' 
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
+const showToast = ref(false)
 
 const generatePDF = () => {
   if (!formRef.value) return
@@ -167,17 +190,41 @@ async function submitIdea() {
   error.value = ''
   success.value = false
   try {
+    // Convert camelCase ke snake_case untuk database
+    const dataToSend = {
+      latar_belakang: local.formData.latarBelakang,
+      ide_inovasi: local.formData.ideInovasi,
+      stakeholder_inovasi: local.formData.stakeholderInovasi,
+      sumber_daya: local.formData.sumberDayaInovasi,
+      penerima_manfaat: local.formData.penerimaManfaat,
+      kebaruan: local.formData.kebaruan,
+      deskripsi_singkat: local.formData.deskripsiSingkat,
+      keterangan: local.formData.keterangan,
+      created_by: userStore.getUserId || 68, // Ambil dari Pinia store
+    }
+    
     const res = await fetch('/api/ide_inovasi', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-user-id': String(userStore.getUserId || 68), // Kirim via header juga
       },
-      body: JSON.stringify(local.formData),
+      body: JSON.stringify(dataToSend),
     })
-    if (!res.ok) throw new Error('Gagal mengirim ide inovasi')
+    
+    const result = await res.json()
+    if (!res.ok) throw new Error(result.error || 'Gagal mengirim ide inovasi')
+    
     success.value = true
+    showToast.value = true
+    
+    // Auto hide toast after 3 seconds
+    setTimeout(() => {
+      showToast.value = false
+    }, 3000)
+    
     emit('update:formData', local.formData)
-    props.nextStep()
+    if (props.nextStep) props.nextStep()
   } catch (e) {
     error.value = e.message || 'Terjadi kesalahan'
   } finally {

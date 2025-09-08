@@ -1,19 +1,19 @@
 // server/api/innovation-ideas.ts
 import { db } from '@/server/database';
-import { innovationIdeas } from '@/server/database/schema/ide_inovasi';
+import { ide_inovasi } from '@/server/database/schema/ide_inovasi';
 
 export default defineEventHandler(async (event) => {
   const method = event.req.method;
 
   if (method === 'GET') {
     // Ambil semua data ide inovasi
-    return await db.select().from(innovationIdeas);
+    return await db.select().from(ide_inovasi);
   }
 
   if (method === 'POST') {
     // Tambah data ide inovasi
     const body = await readBody(event);
-    const result = await db.insert(innovationIdeas).values(body).returning();
+    const result = await db.insert(ide_inovasi).values(body).returning();
     return result[0];
   }
 

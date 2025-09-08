@@ -55,10 +55,9 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useUserStore } from '~/stores/user'
 
 const props = defineProps({
   formData: Object,
@@ -69,21 +68,7 @@ const props = defineProps({
   }
 })
 
-const userStore = useUserStore()
 const localFormData = ref({ ...props.formData })
-
-// Watch untuk auto-fill ketika user_id berubah
-watch(
-  () => userStore.user_id,
-  (newUserId) => {
-    if (props.autoFill && newUserId) {
-      console.log('User ID changed to:', newUserId, '- triggering auto-fill')
-      setTimeout(() => {
-        autoFillUserData()
-      }, 100)
-    }
-  }
-)
 
 watch(
   () => props.formData,
@@ -106,11 +91,18 @@ const autoFillUserData = async () => {
   if (!props.autoFill) return;
   
   try {
-    // Ambil user ID langsung dari Pinia store (bukan localStorage)
-    const userId = userStore.user_id;
+    // Ambil user ID dari localStorage
+    let userId = null;
+    if (process.client) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        userId = userData?.id;
+      }
+    }
     
     if (!userId) {
-      console.log('No user ID found in Pinia store for auto-fill');
+      console.log('No user ID found in localStorage for auto-fill');
       return;
     }
     
@@ -145,22 +137,7 @@ const autoFillUserData = async () => {
 
 onMounted(() => {
   if (props.autoFill) {
-    // Pastikan Pinia store ter-load dulu
-    if (!userStore.user_id && process.client) {
-      userStore._autoLoadFromLocalStorage();
-    }
-    
-    // Delay sedikit untuk memastikan Pinia store sudah ready
-    setTimeout(() => {
-      autoFillUserData();
-    }, 300);
-    
-    // Listen untuk trigger manual auto-fill
-    if (process.client) {
-      window.addEventListener('triggerAutoFill', () => {
-        autoFillUserData();
-      });
-    }
+    autoFillUserData();
   }
 })
 </script>

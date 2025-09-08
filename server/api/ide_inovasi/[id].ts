@@ -1,5 +1,5 @@
 import { db } from '@/server/database';
-import { innovationIdeas } from '@/server/database/schema/ide_inovasi';
+import { ide_inovasi } from '@/server/database/schema/ide_inovasi';
 import { eq } from 'drizzle-orm';
 
 export default defineEventHandler(async (event) => {
@@ -9,8 +9,7 @@ export default defineEventHandler(async (event) => {
   if (!id) return { error: 'ID is required' };
 
   if (method === 'GET') {
-    // Ambil data ide inovasi berdasarkan ID
-    const data = await db.select().from(innovationIdeas).where(eq(innovationIdeas.id, Number(id)));
+    const data = await db.select().from(ide_inovasi).where(eq(ide_inovasi.id, Number(id)));
     return data[0] || null;
   }
 

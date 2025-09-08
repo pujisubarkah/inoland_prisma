@@ -21,7 +21,6 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     _autoLoadFromLocalStorage() {
-      console.log('_autoLoadFromLocalStorage called - _loaded:', this._loaded, 'process.client:', process.client)
       if (this._loaded || !process.client) return
       
       try {
@@ -36,14 +35,11 @@ export const useUserStore = defineStore('user', {
           this.role_id = userData?.role_id || null
           this.instansi = userData?.instansi || ''
           console.log('Store loaded with user_id:', this.user_id)
-        } else {
-          console.log('No user data found in localStorage')
         }
       } catch (error) {
         console.error('Error auto-loading from localStorage:', error)
       } finally {
         this._loaded = true
-        console.log('_autoLoadFromLocalStorage completed - _loaded set to true')
       }
     },
     setUser(user: { user_id: number, nama_lengkap: string, email: string, role_id: number, instansi: string }) {

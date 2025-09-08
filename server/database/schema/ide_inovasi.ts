@@ -1,19 +1,16 @@
-import { pgTable, serial, varchar, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
 
-export const innovationIdeas = pgTable("innovation_ideas", {
+export const ide_inovasi = pgTable("ide_inovasi", {
   id: serial("id").primaryKey(),
-  namaOpd: varchar("nama_opd", { length: 255 }).notNull(),
-  contactPerson: varchar("contact_person", { length: 255 }),
-  telp: varchar("telp", { length: 50 }),
-  email: varchar("email", { length: 255 }),
-  latarBelakang: text("latar_belakang"),
-  ideInovasi: text("ide_inovasi"),
-  stakeholderInovasi: text("stakeholder_inovasi"),
-  sumberDaya: text("sumber_daya"),
-  penerimaManfaat: text("penerima_manfaat"),
-  deskripsiSingkat: text("deskripsi_singkat"),
+  latar_belakang: text("latar_belakang"),
+  ide_inovasi: text("ide_inovasi"),
+  stakeholder_inovasi: text("stakeholder_inovasi"),
+  sumber_daya: text("sumber_daya"),
+  penerima_manfaat: text("penerima_manfaat"),
+  kebaruan: text("kebaruan"),
+  deskripsi_singkat: text("deskripsi_singkat"),
   keterangan: text("keterangan"),
-  roleId: varchar("role_id", { length: 50 }).default("user"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+  created_by: integer("created_by"),
 });

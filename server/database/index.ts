@@ -12,6 +12,7 @@ import { instansi } from './schema/instansi'
 import { instansi_kategori } from './schema/instansi_kategori'
 import { indeks_inovasi } from './schema/indeks_inovasi'
 import { sdgs } from './schema/sdgs'
+import { ide_inovasi } from './schema/ide_inovasi'
 
 // Export koneksi tanpa await
 export const client = new Client({
