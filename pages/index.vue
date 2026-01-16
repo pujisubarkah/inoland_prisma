@@ -101,10 +101,10 @@ import BeritaSection from '~/components/Berita_slider.vue'
           </div>
         </div>
       </div>
-    </section><!-- Berita Section -->
+    </section><!-- video Section -->
     <section class="py-12 bg-white">
       <div class="container mx-auto px-6">
-        <BeritaSection />
+        <VideoBeranda />
       </div>
     </section>
 
@@ -141,10 +141,10 @@ import BeritaSection from '~/components/Berita_slider.vue'
       </div>
     </section>
 
-    <!-- Video Section -->
+    <!-- Berita Section -->
     <section class="py-16 bg-gray-100">
       <div class="container mx-auto px-6">
-        <VideoBeranda />
+        <BeritaSection />
       </div>
     </section>
 
@@ -154,6 +154,8 @@ import BeritaSection from '~/components/Berita_slider.vue'
         <StatsGrid />
       </div>
     </section>
+
+ 
 
  
 

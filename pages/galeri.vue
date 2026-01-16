@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-10">
     <div class="container mx-auto px-4">
-      <h1 class="text-3xl font-bold text-center mb-8 text-blue-700">Galeri Video Inoland</h1>
+      <h1 class="text-3xl font-bold text-center mb-8 text-blue-700">Dokumentasi & Media</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         <div
           v-for="(video, idx) in videoItems"
@@ -29,9 +29,9 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'Galeri Video | INOLAND',
+  title: 'Dokumentasi & Media | INOLAND',
   meta: [
-    { name: 'description', content: 'Kumpulan video inspiratif tentang inovasi daerah, laboratorium inovasi, pemberdayaan desa, dan ekosistem kolaboratif di platform Inolands.' }
+    { name: 'description', content: 'Kumpulan dokumentasi dan media tentang inovasi daerah, laboratorium inovasi, pemberdayaan desa, dan ekosistem kolaboratif di platform Inolands.' }
   ]
 })
 

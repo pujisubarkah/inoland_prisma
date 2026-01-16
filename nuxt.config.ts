@@ -8,7 +8,22 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
     '@pinia/nuxt',
+    '@nuxtjs/i18n',
   ],
+  i18n: {
+    locales: [
+      { code: 'id', iso: 'id-ID', name: 'Bahasa Indonesia', file: 'id.json' },
+      { code: 'en', iso: 'en-US', name: 'English', file: 'en.json' }
+    ],
+    langDir: 'locales',
+    defaultLocale: 'id',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
+    }
+  },
   css: [
     'vue-slick-carousel/dist/vue-slick-carousel.css',
     'vue-slick-carousel/dist/vue-slick-carousel-theme.css',
@@ -30,10 +45,9 @@ export default defineNuxtConfig({
         }
       ]
     }
-  },  vite: {
-    plugins: [
-      // tailwindcss(), // Remove this line, Tailwind is handled by '@nuxtjs/tailwindcss' module
-    ],
+  },
+  vite: {
+    plugins: [],
     optimizeDeps: {
       include: ['xlsx'],
       exclude: ['xlsx/dist/cpexcel.js']
@@ -46,19 +60,11 @@ export default defineNuxtConfig({
     }
   },
   shadcn: {
-    /**
-     * Prefix for all the imported component
-     */
     prefix: '',
-    /**
-     * Directory that the component lives in.
-     * @default "./components/ui"
-     */
     componentDir: './components/ui'
-  },  nitro: {
-    // Ignore .prisma folder during build
+  },
+  nitro: {
     ignore: ['.prisma'],
-    // Add polyfills for Node.js globals
     esbuild: {
       options: {
         define: {

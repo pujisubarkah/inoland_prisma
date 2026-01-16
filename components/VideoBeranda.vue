@@ -1,49 +1,128 @@
 <template>
-  <div class="flex flex-col lg:flex-row w-full items-center text-white p-4 sm:p-6 lg:p-10 rounded-xl shadow-lg relative overflow-hidden"
-       style="background: linear-gradient(90deg, #0a3570 0%, #154c8c 30%, #2563eb 60%, #1976d2 85%, #42a5f5 100%);">
-    <!-- Video YouTube -->
-    <div class="relative w-full lg:w-1/2 mb-6 lg:mb-0">
-      <iframe
-        class="w-full h-48 sm:h-56 md:h-64 lg:h-80 rounded-lg shadow-md"
-        src="https://www.youtube.com/embed/SeE5cBzl26Q"
-        title="YouTube Video"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-      ></iframe>
+  <section class="bg-white rounded-xl shadow-lg p-6 lg:p-8">
 
-      <!-- Tulisan samping (vertical text) - Hidden on mobile -->
-      <div class="hidden lg:block absolute left-[-140px] top-1/2 -translate-y-1/2 rotate-90 text-xs lg:text-sm tracking-wider text-gray-200">
-        KOLABORASI UNTUK PERUBAHAN
-      </div>
-    </div>
-
-    <!-- Deskripsi -->
-    <div class="w-full lg:w-1/2 lg:ml-6 xl:ml-10">
-      <!-- Garis dekoratif -->
-      <div class="flex items-center justify-center lg:justify-start space-x-2 mb-4">
-        <div class="w-8 sm:w-10 h-1 bg-white"></div>
-        <div class="w-3 sm:w-4 h-1 bg-white"></div>
-      </div>
-
-      <h3 class="text-xl sm:text-2xl font-bold leading-tight text-center lg:text-left mb-4">
-        Kreativitas dan Kolaborasi Bersatu di INOLAND untuk Menciptakan Inovasi yang Berarti.
-      </h3>
-      <p class="text-gray-200 text-sm sm:text-base leading-relaxed text-center lg:text-left">
-        "Inovasi dapat dicapai oleh siapa saja melalui kreativitas dan kolaborasi, 
-        di mana beragam ide saling dibagikan untuk menciptakan dampak yang berarti. 
-        INOLAND, sebagai platform informasi dari Pusat Inovasi Administrasi Negara, 
-        berfungsi sebagai sistem integrasi untuk memperkuat kapasitas inovasi melalui 
-        berbagai program advokasi pembelajaran yang inspiratif."
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-blue-800">
+        Ekosistem Inovasi INOLAND
+      </h2>
+      <p class="text-gray-600 text-sm mt-2">
+        Inspirasi, wawasan, dan agenda penguatan inovasi pemerintahan.
       </p>
     </div>
-  </div>
+
+    <!-- GRID UTAMA -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- KOLOM KIRI: VIDEO -->
+      <div
+        class="text-white p-4 rounded-xl shadow-md"
+        style="background: linear-gradient(90deg, #0a3570, #2563eb);"
+      >
+        <iframe
+          class="w-full h-48 md:h-56 rounded-lg mb-4"
+          src="https://www.youtube.com/embed/SeE5cBzl26Q"
+          title="INOLAND Video"
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
+
+        <h3 class="font-bold text-lg mb-2">
+          Kolaborasi untuk Perubahan
+        </h3>
+        <p class="text-sm text-blue-100">
+          INOLAND sebagai ekosistem kolaboratif untuk mendorong inovasi pemerintahan
+          yang berdampak bagi daerah.
+        </p>
+      </div>
+
+      <!-- KOLOM KANAN: ARTIKEL + AGENDA -->
+      <div class="space-y-6">
+
+        <!-- ARTIKEL -->
+        <div class="border rounded-xl p-4 hover:shadow-md transition">
+          <h3 class="text-xl font-bold text-blue-800 mb-4">
+            Artikel Terbaru
+          </h3>
+
+          <ul class="space-y-3 text-sm">
+            <li v-for="article in articles.slice(0, 3)" :key="article.id">
+              <NuxtLink to="/referensi/artikel"
+                class="font-semibold text-gray-800 hover:text-blue-700">
+                {{ article.title }}
+              </NuxtLink>
+              <div class="text-xs text-gray-500 mt-1">
+                {{ formatDate(article.date) }}
+              </div>
+            </li>
+          </ul>
+
+          <!-- Empty State -->
+          <div v-if="articles.length === 0" class="text-center py-4">
+            <p class="text-gray-500 text-sm">Belum ada artikel</p>
+          </div>
+
+          <div class="mt-4">
+            <NuxtLink to="/referensi/artikel"
+              class="text-sm font-semibold text-blue-700 hover:underline">
+              Lihat Semua Artikel →
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- AGENDA RINGKAS -->
+        <div class="border rounded-xl p-4 bg-blue-50">
+          <h4 class="font-bold text-blue-800 mb-3 text-sm">
+            Agenda INOLAND 2026 (Terdekat)
+          </h4>
+
+          <ul class="space-y-2 text-sm">
+            <li>
+              <span class="text-blue-600 font-semibold">12 Mar</span>
+              <span class="ml-2 text-gray-800">
+                Webinar Inovasi Pelayanan Publik
+              </span>
+            </li>
+            <li>
+              <span class="text-blue-600 font-semibold">7 Mei</span>
+              <span class="ml-2 text-gray-800">
+                Forum Inovasi Pemerintah Daerah
+              </span>
+            </li>
+          </ul>
+
+          <div class="mt-3">
+            <NuxtLink to="/agenda"
+              class="text-xs font-semibold text-blue-700 hover:underline">
+              Lihat Agenda Lengkap →
+            </NuxtLink>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup>
-// No script needed for this component
-</script>
+import { ref, onMounted } from 'vue'
 
-<style scoped>
-/* Custom styles jika diperlukan */
-</style>
+const articles = ref([])
+
+async function fetchArticles() {
+  try {
+    const res = await $fetch('/api/artikel')
+    articles.value = Array.isArray(res) ? res : (res.data || [])
+  } catch (error) {
+    console.error('Gagal mengambil artikel:', error)
+  }
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
+onMounted(fetchArticles)
+</script>
