@@ -230,7 +230,7 @@ const videos = [
   {
     id: 1,
     title: "LABORATORIUM INOVASI",
-    views: 169,
+    views: 2678,
     src: "https://youtube.com/embed/n9JVaNiQ8Rg",
     description: "Laboratorium Inovasi merupakan salah satu terobosan Lembaga Administrasi Negara (LAN) dalam mendorong Reformasi Birokrasi di tingkat daerah. Hal ini sejalan dengan pesan Presiden RI Joko Widodo yang meminta seluruh elemen pemerintah untuk bekerja tidak menggunakan cara-cara biasa namun menggagas terobosan baru untuk mempercepat pelayanan kepada masyarakat.",
     icon: "lab",
@@ -248,7 +248,7 @@ const videos = [
   {
     id: 2,
     title: "DRUM UP",
-    views: 169,
+    views: 2615,
     src: "https://youtube.com/embed/gJ0jAmLssjc",
     description: "Tahap Drum Up adalah tahap membangun kesadaran dan keinginan untuk berinovasi. Tahapan Drum Up bertujuan untuk menginspirasi dan mengembangkan semangat inovasi peserta Labinov baik secara individu maupun kolektif. Dengan demikian, willingness to innovate atau kemauan berinovasi akan terbentuk yang merupakan modal awal untuk melanjutkan ke tahap-tahap Labinov berikutnya.",
     icon: "drum",
@@ -266,7 +266,7 @@ const videos = [
   {
     id: 3,
     title: "DIAGNOSE",
-    views: 169,
+    views: 2517,
     src: [
       "https://youtube.com/embed/QExvuVbnMwM",
       "https://youtube.com/embed/2LNeEwhr0tQ",
@@ -288,7 +288,7 @@ const videos = [
   {
     id: 4,
     title: "DESIGN",
-    views: 169,
+    views: 2493,
     src: "https://youtube.com/embed/rei_mhPsCm0",
     description: "Tahap Design merupakan penuangan ide inovasi yang telah dihasilkan pada Tahap Diagnose ke dalam suatu rancangan rencana aksi yang teknis dan detail. Tahap Design inovasi sangat penting karena akan mendetailkan langkah-langkah mewujudkan ide inovasi yang sudah digagas.",
     icon: "design",
@@ -306,7 +306,7 @@ const videos = [
   {
     id: 5,
     title: "DELIVER",
-    views: 169,
+    views: 2394,
     src: [
       "https://youtube.com/embed/1EA5t8j4YhY",
       "https://youtube.com/embed/_wMeuWXedLI"
@@ -327,7 +327,7 @@ const videos = [
   {
     id: 6,
     title: "DISPLAY",
-    views: 250,
+    views: 2337,
     src: "https://youtube.com/embed/KArqARoQI5w",
     description: "Display Inovasi yaitu kegiatan penyebarluasan hasil pelaksanaan atau implementasi inovasi yang telah diperjanjikan oleh Pimpinan Tertinggi Instansi Pemerintah dan Pimpinan Unit Organisasi instansi pemerintah yang didampingi. Hal ini merupakan salah satu bentuk akuntabilitas pemerintah kepada masyarakat dalam meningkatkan kinerja pemberian layanan pada masyarakat.",
     icon: "display",
