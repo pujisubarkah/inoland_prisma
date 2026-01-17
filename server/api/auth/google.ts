@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   if (!GOOGLE_CLIENT_ID) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Google OAuth not configured'
+      statusMessage: 'Google OAuth not configured - GOOGLE_CLIENT_ID is missing'
     })
   }
 
@@ -24,6 +24,9 @@ export default defineEventHandler(async (event) => {
       prompt: 'consent'
     }).toString()
 
-  // Redirect to Google
-  await sendRedirect(event, googleAuthUrl, 302)
+  // Return the URL instead of redirecting
+  return {
+    success: true,
+    authUrl: googleAuthUrl
+  }
 })

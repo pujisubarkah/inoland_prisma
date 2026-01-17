@@ -242,7 +242,10 @@
 
       <!-- Modal content -->
       <div
-        class="relative bg-white rounded-xl shadow-2xl border-2 border-blue-300 max-w-lg w-full mx-4 p-0 overflow-hidden animate-fadeIn max-h-[90vh] overflow-y-auto"
+        :class="[
+          'relative bg-white rounded-xl shadow-2xl border-2 border-blue-300 w-full mx-4 p-0 overflow-hidden animate-fadeIn max-h-[90vh] overflow-y-auto',
+          showRegister ? 'max-w-3xl' : 'max-w-lg'
+        ]"
         style="z-index: 99999999;"
       >
         <div class="flex flex-col sm:flex-row justify-between items-start">
@@ -323,68 +326,103 @@
             </form>
 
             <!-- Registration Form -->
-            <form v-else @submit.prevent="submitRegister" class="mt-4">
-              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label for="reg-fullname" class="form-label">{{ $t('namaLengkap') }}</label>
-                <input
-                  id="reg-fullname"
-                  v-model="registerForm.nama_lengkap"
-                  type="text"
-                  required
-                  class="form-input"
-                />
+            <form v-else @submit.prevent="submitRegister" class="mt-4 space-y-4">
+              <!-- Grid 2 kolom untuk desktop -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Nama Lengkap -->
+                <div class="flex flex-col">
+                  <label for="reg-fullname" class="block text-sm font-semibold text-blue-700 mb-1">{{ $t('namaLengkap') }}</label>
+                  <input
+                    id="reg-fullname"
+                    v-model="registerForm.nama_lengkap"
+                    type="text"
+                    required
+                    class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
+                  />
+                </div>
+                <!-- Username -->
+                <div class="flex flex-col">
+                  <label for="reg-username" class="block text-sm font-semibold text-blue-700 mb-1">{{ $t('username') }}</label>
+                  <input
+                    id="reg-username"
+                    v-model="registerForm.username"
+                    type="text"
+                    required
+                    class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
+                  />
+                </div>
               </div>
-              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label for="reg-username" class="form-label">{{ $t('username') }}</label>
-                <input
-                  id="reg-username"
-                  v-model="registerForm.username"
-                  type="text"
+
+              <!-- Kategori Instansi - Full width -->
+              <div class="flex flex-col">
+                <label for="reg-kategori" class="block text-sm font-semibold text-blue-700 mb-1">{{ $t('kategoriInstansi') }}</label>
+                <select
+                  id="reg-kategori"
+                  v-model="selectedKategori"
                   required
-                  class="form-input"
-                />
+                  class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
+                  @change="registerForm.instansi = ''"
+                >
+                  <option value="" disabled>Pilih Kategori Instansi</option>
+                  <option v-for="kat in kategoriInstansi" :key="kat.id" :value="kat.id">
+                    {{ kat.kat_instansi }}
+                  </option>
+                </select>
               </div>
-              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label for="reg-instansi" class="form-label">{{ $t('instansi') }}</label>
-                <input
+
+              <!-- Instansi - Full width -->
+              <div class="flex flex-col">
+                <label for="reg-instansi" class="block text-sm font-semibold text-blue-700 mb-1">{{ $t('instansi') }}</label>
+                <select
                   id="reg-instansi"
                   v-model="registerForm.instansi"
-                  type="text"
                   required
-                  class="form-input"
-                />
+                  class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
+                  :disabled="!selectedKategori"
+                >
+                  <option value="" disabled>{{ selectedKategori ? 'Pilih Instansi' : 'Pilih Kategori Terlebih Dahulu' }}</option>
+                  <option v-for="inst in filteredInstansi" :key="inst.id" :value="inst.agency_name">
+                    {{ inst.agency_name }}
+                  </option>
+                </select>
               </div>
-              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label for="reg-email" class="form-label">{{ $t('email') }}</label>
+
+              <!-- Email - Full width -->
+              <div class="flex flex-col">
+                <label for="reg-email" class="block text-sm font-semibold text-blue-700 mb-1">{{ $t('email') }}</label>
                 <input
                   id="reg-email"
                   v-model="registerForm.email"
                   type="email"
                   required
-                  class="form-input"
+                  class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
                 />
               </div>
-              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label for="reg-password" class="form-label">{{ $t('password') }}</label>
-                <input
-                  id="reg-password"
-                  v-model="registerForm.password"
-                  type="password"
-                  required
-                  class="form-input"
-                />
-              </div>
-              <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label for="reg-confirm" class="form-label leading-tight">
-                  {{ $t('konfirmasiPassword') }}
-                </label>
-                <input
-                  id="reg-confirm"
-                  v-model="registerForm.confirm"
-                  type="password"
-                  required
-                  class="form-input"
-                />
+
+              <!-- Grid 2 kolom untuk password -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Password -->
+                <div class="flex flex-col">
+                  <label for="reg-password" class="block text-sm font-semibold text-blue-700 mb-1">{{ $t('password') }}</label>
+                  <input
+                    id="reg-password"
+                    v-model="registerForm.password"
+                    type="password"
+                    required
+                    class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
+                  />
+                </div>
+                <!-- Konfirmasi Password -->
+                <div class="flex flex-col">
+                  <label for="reg-confirm" class="block text-sm font-semibold text-blue-700 mb-1">{{ $t('konfirmasiPassword') }}</label>
+                  <input
+                    id="reg-confirm"
+                    v-model="registerForm.confirm"
+                    type="password"
+                    required
+                    class="w-full border border-blue-300 rounded-lg px-3 py-2.5 sm:py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-base touch-manipulation"
+                  />
+                </div>
               </div>
               <button
                 type="submit"
@@ -434,6 +472,15 @@ const registerForm = ref({
   email: '',
   password: '',
   confirm: ''
+})
+
+// State untuk dropdown instansi
+const kategoriInstansi = ref([])
+const allInstansi = ref([])
+const selectedKategori = ref('')
+const filteredInstansi = computed(() => {
+  if (!selectedKategori.value) return []
+  return allInstansi.value.filter(inst => inst.agency_category_id === parseInt(selectedKategori.value))
 })
 
 const { locale, t } = useI18n()
@@ -505,8 +552,15 @@ async function submitLogin() {
 
 async function loginWithGoogle() {
   try {
-    // Redirect to Google OAuth
-    window.location.href = '/api/auth/google'
+    const res = await fetch('/api/auth/google')
+    const data = await res.json()
+
+    if (res.ok && data.success) {
+      // Redirect to Google OAuth URL
+      window.location.href = data.authUrl
+    } else {
+      loginError.value = data.message || t('loginDenganGoogleGagal')
+    }
   } catch (error) {
     console.error('Google login error:', error)
     loginError.value = t('loginDenganGoogleGagal')
@@ -583,6 +637,28 @@ onMounted(async () => {
         })
         .catch(() => { userNotifCount.value = 0 })
     }
+  }
+
+  // Fetch kategori instansi
+  try {
+    const resKategori = await fetch('/api/instansi_kategori')
+    const dataKategori = await resKategori.json()
+    if (dataKategori.success) {
+      kategoriInstansi.value = dataKategori.data
+    }
+  } catch (error) {
+    console.error('Error fetching kategori instansi:', error)
+  }
+
+  // Fetch semua instansi
+  try {
+    const resInstansi = await fetch('/api/instansi')
+    const dataInstansi = await resInstansi.json()
+    if (dataInstansi.success) {
+      allInstansi.value = dataInstansi.data
+    }
+  } catch (error) {
+    console.error('Error fetching instansi:', error)
   }
 })
 </script>

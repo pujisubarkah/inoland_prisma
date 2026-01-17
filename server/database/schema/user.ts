@@ -11,4 +11,6 @@ export const user = pgTable('users', {
   is_verified: boolean('is_verified'),
   created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
   username: varchar('username', { length: 255 }).unique(),
+  google_id: varchar('google_id', { length: 255 }),
+  avatar: varchar('avatar', { length: 500 }),
 })
