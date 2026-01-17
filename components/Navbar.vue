@@ -166,7 +166,11 @@
           @click="toggleProfile"
         >
           <UserCircleIcon class="w-6 h-6 sm:w-7 sm:h-7 text-blue-100 flex-shrink-0" />
-          <span class="text-blue-50 font-medium text-xs sm:text-sm truncate max-w-[80px] sm:max-w-[120px] hidden xs:block">{{ userProfile.nama_lengkap }}</span>
+          <div class="hidden sm:flex flex-col items-start min-w-0">
+            <span class="text-blue-50/80 font-normal text-[10px] leading-tight">{{ $t('selamatDatang') }}</span>
+            <span class="text-blue-50 font-semibold text-xs sm:text-sm truncate max-w-[120px]">{{ userProfile.username || userProfile.nama_lengkap }}</span>
+          </div>
+          <span class="text-blue-50 font-medium text-xs truncate max-w-[80px] sm:hidden">{{ userProfile.username || userProfile.nama_lengkap }}</span>
           <svg class="w-3 h-3 sm:w-4 sm:h-4 text-blue-100 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
@@ -175,7 +179,7 @@
           v-if="isProfileOpen"
           class="absolute right-0 mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-xl py-2 border border-gray-200" style="z-index: 9999997;"
         >
-          <div class="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2">
+          <div class="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3">
             <UserCircleIcon class="w-8 h-8 sm:w-10 sm:h-10 text-blue-400 flex-shrink-0" />
             <div class="min-w-0 flex-1">
               <div class="font-semibold text-blue-700 text-xs sm:text-sm truncate">{{ userProfile.nama_lengkap }}</div>
@@ -183,31 +187,6 @@
             </div>
           </div>
           <hr class="my-2 border-gray-100" />
-          <NuxtLink
-            v-if="userProfile.role_id === 1"
-            to="/admin"
-            class="px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex flex-col items-start relative"
-          >
-            <span>{{ $t('admin') }}</span>
-            <span v-if="adminNotifCount > 0" class="mt-1 inline-block bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 animate-pulse" style="min-width:20px;">{{ adminNotifCount }}</span>
-          </NuxtLink>
-          <NuxtLink
-            v-if="userProfile.role_id === 4"
-            :to="'/' + (userProfile.username || userProfile.instansi || 'admin_instansi')"
-            class="px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex flex-col items-start relative"
-          >
-            <span>{{ $t('adminInstansi') }}</span>
-            <span v-if="adminNotifCount > 0" class="mt-1 inline-block bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 animate-pulse" style="min-width:20px;">{{ adminNotifCount }}</span>
-          </NuxtLink>
-          <NuxtLink
-            v-if="userProfile.role_id === 2"
-            to="/pengguna"
-            class="px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex flex-col items-start"
-          >
-            <span>{{ $t('pengguna') }}
-              <span v-if="userNotifCount > 0" class="ml-2 inline-block bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 animate-pulse align-middle" style="min-width:20px;">{{ userNotifCount }}</span>
-            </span>
-          </NuxtLink>
           <button @click="handleLogout" class="w-full text-left px-3 sm:px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition-colors touch-manipulation min-h-[44px] flex items-center">{{ $t('logout') }}</button>
         </div>
       </div>      <!-- Login Button -->
@@ -616,6 +595,24 @@ onMounted(async () => {
   if (savedLocale && (savedLocale === 'id' || savedLocale === 'en')) {
     console.log('Loading saved locale:', savedLocale)
     locale.value = savedLocale
+  }
+  
+  // Check for Google OAuth login success from URL
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.get('loginSuccess') === 'true' && urlParams.get('userData')) {
+    try {
+      const userData = JSON.parse(decodeURIComponent(urlParams.get('userData')))
+      localStorage.setItem('userProfile', JSON.stringify(userData))
+      userProfile.value = userData
+      
+      // Clean URL by removing query parameters
+      window.history.replaceState({}, document.title, window.location.pathname)
+      
+      // Show success message
+      toast.success(t('berhasilLogin'))
+    } catch (error) {
+      console.error('Error parsing user data from URL:', error)
+    }
   }
   
   const stored = localStorage.getItem('userProfile')

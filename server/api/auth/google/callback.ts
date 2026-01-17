@@ -124,8 +124,23 @@ export default defineEventHandler(async (event) => {
       maxAge: 60 * 60 * 24, // 1 day
     })
 
-    // Redirect to home page
-    await sendRedirect(event, '/', 302)
+    // Prepare user data for client-side storage
+    const userData = {
+      id: existingUser.id,
+      email: existingUser.email,
+      nama_lengkap: existingUser.nama_lengkap,
+      username: existingUser.username,
+      instansi: existingUser.instansi,
+      role_id: existingUser.role_id,
+      is_verified: existingUser.is_verified,
+      avatar: existingUser.avatar
+    }
+
+    // Encode user data in URL to be captured by client
+    const userDataEncoded = encodeURIComponent(JSON.stringify(userData))
+    
+    // Redirect to home page with user data
+    await sendRedirect(event, `/?loginSuccess=true&userData=${userDataEncoded}`, 302)
 
   } catch (error) {
     console.error('Google OAuth callback error:', error)
