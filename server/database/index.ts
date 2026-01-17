@@ -13,6 +13,10 @@ import { instansi_kategori } from './schema/instansi_kategori'
 import { indeks_inovasi } from './schema/indeks_inovasi'
 import { sdgs } from './schema/sdgs'
 import { ide_inovasi } from './schema/ide_inovasi'
+import { survey_periode } from './schema/survey_periode'
+import { surveyIndicator, surveyComponent } from '@/server/database/schema/survey'
+import { surveyResponse } from './schema/survey_response'
+import { surveyResponseDetail } from './schema/survey_response_detail'
 
 // Gunakan Pool untuk connection pooling yang lebih baik
 export const pool = new Pool({

@@ -8,6 +8,7 @@
   "dokumentasiMedia": "Documentation & Media",
   "ceritaKeberhasilan": "Success Stories",
   "surveyKesiapanInovasi": "Innovation Readiness Survey",
+  "faq": "Frequently Asked Questions (FAQ)",
   "ajukanPendampingan": "Apply for Assistance",
   "admin": "Admin",
   "adminInstansi": "Institution Admin",
@@ -35,5 +36,11 @@
   "registrasiGagal": "Registration failed, please try again.",
   "pendaftaranBerhasil": "Registration successful! Admin will verify your account",
   "berhasilLogout": "Successfully logged out!",
-  "logoutGagal": "Logout failed!"
+  "logoutGagal": "Logout failed!",
+  "berhasilLogin": "Login successful!",
+  "faqTitle": "Frequently Asked Questions",
+  "faqSubtitle": "Find answers to common questions about INOLAND",
+  "faqContactTitle": "Can't Find Your Answer?",
+  "faqContactDescription": "If your question hasn't been answered, feel free to contact us",
+  "faqContactButton": "Contact Us"
 }

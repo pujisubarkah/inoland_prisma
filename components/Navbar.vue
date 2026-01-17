@@ -466,17 +466,18 @@ const { locale, t } = useI18n()
 
 const menu = computed(() => [
   { name: t('beranda'), path: '/' },
-  { name: t('pembelajaranInovasi'), path: '/layanan' },
-  { name: t('cariInovasi'), path: '/cari' },
+  { name: t('pembelajaran Inovasi'), path: '/layanan' },
+  { name: t('cari Inovasi'), path: '/cari' },
   { name: t('referensi'), path: '/referensi' },
   { 
     name: t('tentangInoland'), 
     path: '#',
     submenu: [
-      { name: t('profilInoland'), path: '/profil-inoland' },
-      { name: t('dokumentasiMedia'), path: '/galeri' },
-      { name: t('ceritaKeberhasilan'), path: '/cerita-keberhasilan' },
-      { name: t('surveyKesiapanInovasi'), path: '/survey-kesiapan-inovasi' }
+      { name: t('profil Inoland'), path: '/profil-inoland' },
+      { name: t('dokumentasi Media'), path: '/galeri' },
+      { name: t('cerita Keberhasilan'), path: '/cerita-keberhasilan' },
+      { name: t('survey Kesiapan Inovasi'), path: '/survey-kesiapan-inovasi' },
+      { name: t('faq'), path: '/faq' }
     ]
   }
 ])
