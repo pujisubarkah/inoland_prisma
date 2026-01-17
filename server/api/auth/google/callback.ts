@@ -17,7 +17,13 @@ export default defineEventHandler(async (event) => {
 
   const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
   const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
-  const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${getRequestURL(event).origin}/api/auth/google/callback`
+  const requestUrl = getRequestURL(event)
+  const isProduction = requestUrl.hostname === 'inoland.lan.go.id'
+
+  // Set redirect URI based on environment
+  const GOOGLE_REDIRECT_URI = isProduction
+    ? 'https://inoland.lan.go.id/api/auth/google/callback'
+    : process.env.GOOGLE_REDIRECT_URI || `${requestUrl.protocol}//${requestUrl.host}/api/auth/google/callback`
 
   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
     throw createError({
