@@ -20,6 +20,18 @@
       <ul class="space-y-2">
         <li>
           <button
+            @click="setActive('Notifikasi')"
+            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2 relative"
+          >
+            <span v-if="isSidebarOpen" class="ml-2">Notifikasi</span>
+            <span v-else>🔔</span>
+            <span v-if="unreadCount > 0" class="absolute right-2 top-2 bg-red-500 text-xs rounded-full px-2">
+              {{ unreadCount }}
+            </span>
+          </button>
+        </li>
+        <li>
+          <button
             @click="setActive('Profil')"
             class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
           >
@@ -50,6 +62,16 @@
 
     <!-- Main Content -->
     <div class="flex-1">
+      <!-- Tampilkan daftar notifikasi jika dipilih -->
+      <div v-if="activeComponent === 'Notifikasi'" class="p-8">
+        <h3 class="text-xl font-bold mb-4">Notifikasi</h3>
+        <ul>
+          <li v-for="notif in notifications" :key="notif.id" class="mb-2 p-3 bg-blue-50 rounded">
+            {{ notif.message }}
+          </li>
+        </ul>
+        <div v-if="notifications.length === 0" class="text-gray-500">Tidak ada notifikasi.</div>
+      </div>
       <profil v-if="activeComponent === 'Profil'" />
       <InnovationIdeaForm v-if="activeComponent === 'Ide'" />
       <Rencana v-if="activeComponent === 'Rencana'" />
@@ -58,13 +80,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import InnovationIdeaForm from '@/components/InnovationIdeaForm.vue'
 import Rencana from '@/components/Rencana.vue'
 import profil from '@/components/profil.vue'
 
 const isSidebarOpen = ref(false)
 const activeComponent = ref('Profil')
+
+// Dummy data notifikasi, ganti dengan fetch API sesuai kebutuhan
+const notifications = ref([
+  // { id: 1, message: 'Pengumuman baru dari admin!' }
+])
+const unreadCount = ref(notifications.value.length)
 
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value
@@ -73,6 +101,13 @@ function toggleSidebar() {
 function setActive(component) {
   activeComponent.value = component
 }
+
+// Contoh: fetch notifikasi dari backend saat komponen dimount
+onMounted(async () => {
+  // const data = await $fetch('/api/admin/notifications')
+  // notifications.value = data
+  // unreadCount.value = data.length
+})
 </script>
 
 <style scoped>
