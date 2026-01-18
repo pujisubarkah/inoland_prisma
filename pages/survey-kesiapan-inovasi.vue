@@ -2,16 +2,25 @@
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 py-10 px-4">
     <div class="max-w-4xl mx-auto">
       <!-- HEADER -->
-      <div class="text-center mb-10">
-        <h1 class="text-3xl font-bold text-blue-800">
-          Dashboard Survey Kesiapan Inovasi
-        </h1>
-        <p class="text-blue-600 mt-2">
-          Ringkasan Hasil Survey Ekosistem Inovasi Instansi
-        </p>
-        <p v-if="activePeriode" class="text-sm text-gray-600 mt-1">
-          Periode Survey: {{ activePeriode.tahun }}
-        </p>
+      <div class="flex justify-between items-center mb-10">
+        <div class="text-center flex-1">
+          <h1 class="text-3xl font-bold text-blue-800">
+            Dashboard Survey Kesiapan Inovasi
+          </h1>
+          <p class="text-blue-600 mt-2">
+            Ringkasan Hasil Survey Ekosistem Inovasi Instansi
+          </p>
+          <p v-if="activePeriode" class="text-sm text-gray-600 mt-1">
+            Periode Survey: {{ activePeriode.tahun }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Button to Fill Survey -->
+      <div class="text-center">
+        <button @click="navigateTo('/survey-form')" class="btn-primary">
+          Isi Survey
+        </button>
       </div>
 
       <!-- LOADING -->
@@ -34,26 +43,24 @@
       <div v-else class="bg-white p-8 rounded-xl shadow">
         <h2 class="text-xl font-bold mb-4">Hasil Survey Kesiapan Inovasi</h2>
 
-        <!-- Chart Spiderweb -->
-        <div v-if="chartSeries[0].data.length > 0" class="mb-8">
-          <apexchart
-            type="radar"
-            :options="chartOptions"
-            :series="chartSeries"
-            height="400"
-          />
-        </div>
+        <!-- Chart Spiderweb for each instansi -->
+        <template v-if="surveyData.length > 0">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div v-for="inst in surveyData" :key="inst.instansi.id" class="bg-gray-50 p-4 rounded-lg shadow-sm">
+              <h3 class="text-lg font-semibold mb-2 text-center">{{ inst.instansi.nama_instansi }}</h3>
+              <apexchart
+                type="radar"
+                :options="getChartOptions(inst.components)"
+                :series="getChartSeries(inst.components)"
+                height="350"
+              />
+            </div>
+          </div>
+        </template>
 
         <!-- No Data Message -->
         <div v-else class="text-center py-10">
           <p class="text-gray-600 mb-4">Belum ada hasil survey. Silakan isi survey terlebih dahulu.</p>
-        </div>
-
-        <!-- Button to Fill Survey -->
-        <div class="text-center">
-          <button @click="navigateTo('/survey-form')" class="btn-primary">
-            Isi Survey
-          </button>
         </div>
       </div>
     </div>
@@ -61,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useCurrentUser } from '~/composables/useCurrentUser'
 
 interface Periode {
@@ -71,19 +78,46 @@ interface Periode {
   created_at?: string | null
 }
 
-interface SurveyResult {
+interface SurveyResponseDetail {
   id: number
-  nama: string
-  averageScore: number
+  indicator: {
+    id: number
+    kode: string
+    pertanyaan: string
+    component: {
+      id: number
+      kode: string
+      nama: string
+    }
+  }
+  skor: number
 }
 
-interface SurveyResultsResponse {
-  success: boolean
-  data: Array<{
-    id: number
+interface ComponentData {
+  component: {
+    id: string
+    kode: string
     nama: string
-    averageScore: number
-  }>
+  }
+  averageSkor: number
+}
+
+interface InstansiData {
+  instansi: {
+    id: number
+    nama_instansi: string
+  }
+  periode: {
+    id: number
+    tahun: number
+    is_active: boolean
+  }
+  components: ComponentData[]
+}
+
+interface ResponseData {
+  success: boolean
+  data: InstansiData[]
 }
 
 const { user } = useCurrentUser()
@@ -91,14 +125,17 @@ const { user } = useCurrentUser()
 const isLoading = ref(true)
 const error = ref('')
 const activePeriode = ref<Periode | null>(null)
-const surveyResults = ref<SurveyResult[]>([])
-const chartSeries = ref([{ name: 'Skor Rata-rata', data: [] as number[] }])
+const surveyDetails = ref<SurveyResponseDetail[]>([])
+const surveyData = ref<InstansiData[]>([])
+const chartSeries = ref([{ name: 'Skor Indikator', data: [] as number[] }])
 const chartOptions = ref({
   chart: { type: 'radar' },
   xaxis: { categories: [] as string[] },
   yaxis: { min: 0, max: 4 },
   colors: ['#2563eb']
 })
+
+const hasChartData = computed(() => chartSeries.value.length > 0 && chartSeries.value[0]!.data.length > 0)
 
 // Methods
 const loadData = async () => {
@@ -118,8 +155,8 @@ const loadData = async () => {
       }
     }
 
-    // Load survey results for chart
-    await loadSurveyResults()
+    // Load survey response details for chart
+    await loadSurveyResponseDetails()
 
   } catch (err: any) {
     error.value = err.message || 'Gagal memuat data'
@@ -129,24 +166,16 @@ const loadData = async () => {
   }
 }
 
-const loadSurveyResults = async () => {
+const loadSurveyResponseDetails = async () => {
   try {
-    // Fetch hasil survey berdasarkan instansi pengguna
-    const resultsRes = await $fetch<SurveyResultsResponse>('/api/survey/results', {
-      query: { instansiId: user.value?.instansi_id }
-    })
-    if (resultsRes.success && Array.isArray(resultsRes.data)) {
-      surveyResults.value = resultsRes.data.map((item: any) => ({
-        id: item.id,
-        nama: item.nama,
-        averageScore: item.averageScore || 0
-      }))
-      // Update chart
-      chartSeries.value[0].data = surveyResults.value.map(r => r.averageScore)
-      chartOptions.value.xaxis.categories = surveyResults.value.map(r => r.nama)
+    // Fetch detail hasil survey
+    const responseRes = await $fetch<ResponseData>('/api/response')
+    if (responseRes.success && Array.isArray(responseRes.data)) {
+      surveyData.value = responseRes.data
+      // Charts will be handled in template
     }
   } catch (err: any) {
-    console.error('Load survey results error:', err)
+    console.error('Load survey response error:', err)
   }
 }
 
@@ -158,6 +187,18 @@ onMounted(() => {
 useHead({
   title: 'Dashboard Survey Kesiapan Inovasi - INOLAND'
 })
+
+const getChartOptions = (components: ComponentData[]) => ({
+  chart: { type: 'radar' },
+  xaxis: { categories: components.map(c => c.component.kode) },
+  yaxis: { min: 0, max: 4 },
+  colors: ['#2563eb']
+})
+
+const getChartSeries = (components: ComponentData[]) => ([{
+  name: 'Average Skor',
+  data: components.map(c => c.averageSkor)
+}])
 </script>
 
 <style scoped lang="postcss">

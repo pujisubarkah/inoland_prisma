@@ -10,6 +10,18 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/i18n',
   ],
+  components: {
+    dirs: [
+      {
+        path: '~/components',
+        priority: 0
+      },
+      {
+        path: '~/components/ui',
+        priority: 1
+      }
+    ]
+  },
   i18n: {
     locales: [
       { code: 'id', iso: 'id-ID', name: 'Bahasa Indonesia', file: 'id.json' },

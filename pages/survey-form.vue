@@ -3,16 +3,22 @@
     <div class="max-w-4xl mx-auto">
 
       <!-- HEADER -->
-      <div class="text-center mb-10">
-        <h1 class="text-3xl font-bold text-blue-800">
-          Survey Kesiapan Inovasivasi
-        </h1>
-        <p class="text-blue-600 mt-1">
-          Self-Assessment Ekosistem Inovasi Instansi
-        </p>
-        <p v-if="activePeriode" class="text-sm text-gray-600 mt-1">
-          Periode {{ activePeriode.tahun }}
-        </p>
+      <div class="flex justify-between items-center mb-10">
+        <button @click="navigateTo('/survey-kesiapan-inovasi')" class="btn-secondary flex items-center gap-2">
+          ← Kembali
+        </button>
+        <div class="text-center flex-1">
+          <h1 class="text-3xl font-bold text-blue-800">
+            Survey Kesiapan Inovasivasi
+          </h1>
+          <p class="text-blue-600 mt-1">
+            Self-Assessment Ekosistem Inovasi Instansi
+          </p>
+          <p v-if="activePeriode" class="text-sm text-gray-600 mt-1">
+            Periode {{ activePeriode.tahun }}
+          </p>
+        </div>
+        <div class="w-20"></div> <!-- Spacer untuk balance -->
       </div>
 
       <!-- LOADING -->
@@ -209,7 +215,12 @@ const progressPercent = computed(() => {
   return Math.round(((currentStep.value + 1) / totalSteps.value) * 100)
 })
 const isStepValid = computed(() => {
+  if (currentStep.value === 0) {
+    // Validasi untuk langkah informasi pengisi
+    return form.value.instansiId && form.value.pengisi && form.value.jabatanPengisi
+  }
   if (!currentComponent.value) return false
+  // Validasi untuk langkah komponen
   return currentComponent.value.indicators.every(
     (indicator) => answers.value[indicator.id] !== undefined
   )
@@ -313,7 +324,13 @@ const submitSurvey = async () => {
         details
       }
     })
-    toast.success('Survey berhasil dikirim! Terima kasih atas partisipasi Anda.')
+    toast.success('🎉 Survey Berhasil Dikirim!', {
+      description: 'Terima kasih atas partisipasi Anda dalam meningkatkan ekosistem inovasi instansi.',
+      action: {
+        label: 'Lihat Hasil',
+        onClick: () => navigateTo('/survey-kesiapan-inovasi'),
+      },
+    })
     // Reset or redirect
   } catch (err: any) {
     console.error('Submit survey error:', err)
