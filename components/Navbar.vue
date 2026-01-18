@@ -521,6 +521,13 @@ async function submitLogin() {
       userProfile.value = data.user
       isLoginModalOpen.value = false
       loginError.value = ''
+      
+      // Redirect based on role_id
+      if (data.user.role_id === 1) {
+        navigateTo('/admin')
+      } else if (data.user.role_id === 4) {
+        navigateTo('/admin_instansi')
+      }
     } else {
       loginError.value = data.message || t('loginGagal')
     }
@@ -603,11 +610,24 @@ onMounted(async () => {
   if (urlParams.get('loginSuccess') === 'true' && urlParams.get('userData')) {
     try {
       const userData = JSON.parse(decodeURIComponent(urlParams.get('userData')))
+      
+      // Set default role_id to 2 for Google login if not provided
+      if (!userData.role_id) {
+        userData.role_id = 2
+      }
+      
       localStorage.setItem('userProfile', JSON.stringify(userData))
       userProfile.value = userData
       
       // Clean URL by removing query parameters
       window.history.replaceState({}, document.title, window.location.pathname)
+      
+      // Redirect based on role_id
+      if (userData.role_id === 1) {
+        navigateTo('/admin')
+      } else if (userData.role_id === 4) {
+        navigateTo('/admin_instansi')
+      }
       
       // Show success message
       toast.success(t('berhasilLogin'))
