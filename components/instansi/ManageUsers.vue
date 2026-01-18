@@ -83,8 +83,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/_exports/button'
+import { Label } from '@/components/ui/_exports/label'
 import { useUserStore } from '@/stores/user' // Import your Pinia store
 
 const userStore = useUserStore() // Initialize the store

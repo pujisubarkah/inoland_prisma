@@ -14,11 +14,9 @@ export default defineNuxtConfig({
     dirs: [
       {
         path: '~/components',
-        priority: 0
-      },
-      {
-        path: '~/components/ui',
-        priority: 1
+        priority: 0,
+        // Exclude all files and subfolders in 'ui' from Nuxt auto-import
+        ignore: ['ui/**']
       }
     ]
   },

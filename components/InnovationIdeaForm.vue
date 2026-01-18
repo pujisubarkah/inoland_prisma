@@ -143,9 +143,9 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import html2canvas from 'html2canvas'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/_exports/textarea'
+import { Button } from '@/components/ui/_exports/button'
+import { Label } from '@/components/ui/_exports/label'
 import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()

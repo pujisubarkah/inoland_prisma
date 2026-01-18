@@ -68,8 +68,8 @@
 
 <script setup>
 import { reactive, watch } from 'vue'
-import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input' // pastikan path sesuai setup shadcn-vue
+import { Textarea } from '@/components/ui/_exports/textarea'
+import { Input } from '@/components/ui/_exports/input' // pastikan path sesuai setup shadcn-vue
 
 const props = defineProps({
   formData: {

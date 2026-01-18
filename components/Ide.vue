@@ -53,7 +53,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/_exports/button';
 import InputField from './InputField.vue';
 import InnovationIdeaForm from './InnovationIdeaForm.vue';
 import InnovationResponseForm from './InnovationResponseForm.vue';

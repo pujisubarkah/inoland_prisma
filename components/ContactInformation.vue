@@ -56,8 +56,8 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/_exports/input'
+import { Label } from '@/components/ui/_exports/label'
 
 const props = defineProps({
   formData: Object,

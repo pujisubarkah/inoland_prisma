@@ -99,7 +99,7 @@ import { ref, reactive } from 'vue'
 import { PaperAirplaneIcon } from '@heroicons/vue/24/outline'
 import Dialog from '@/components/ui/dialog/Dialog.vue'
 import InputField from '@/components/InputField.vue'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Checkbox } from '@/components/ui/_exports/checkbox'
 
 
 
