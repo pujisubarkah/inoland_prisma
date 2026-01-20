@@ -8,4 +8,4 @@ export const TextArea = () => {
 // Note: This file is being moved to _exports/textarea
 
 
-export { default as Textarea } from './Textarea.vue'
+export { default as Textarea } from '../../textarea/Textarea.vue'
