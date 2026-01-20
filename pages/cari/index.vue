@@ -17,7 +17,7 @@
 
     <!-- Navigation Cards -->
     <div class="container mx-auto px-8 py-16">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Sebaran Inovasi Card -->
         <NuxtLink 
           to="/cari/maps_inovasi"
@@ -59,30 +59,6 @@
             </p>
             <div class="flex items-center text-blue-600 font-semibold group-hover:text-blue-700">
               Lihat Daftar
-              <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
-              </svg>
-            </div>
-          </div>
-        </NuxtLink>
-
-        <!-- Dashboard Inovasi Card -->
-        <NuxtLink 
-          to="/cari/dashboard_inovasi"
-          class="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2"
-        >
-          <div class="p-8">
-            <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-200 transition-colors">
-              <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M3 4a1 1 0 000 2v9a2 2 0 002 2h6a2 2 0 002-2V6a1 1 0 100-2H3zM8 8a1 1 0 011-1h.01a1 1 0 110 2H9a1 1 0 01-1-1zM8 12a1 1 0 011-1h.01a1 1 0 110 2H9a1 1 0 01-1-1zM15 4a1 1 0 100 2v9a2 2 0 01-2 2H7v-2h6V6a1 1 0 01-1-1h2z"/>
-              </svg>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-3">Dashboard Inovasi</h3>
-            <p class="text-gray-600 mb-4">
-              Analisis mendalam dan visualisasi data inovasi dengan grafik dan statistik terkini.
-            </p>
-            <div class="flex items-center text-green-600 font-semibold group-hover:text-green-700">
-              Buka Dashboard
               <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
               </svg>

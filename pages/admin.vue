@@ -20,6 +20,15 @@
       <ul class="space-y-2">
         <li>
           <button
+            @click="setActive('Dashboard')"
+            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
+          >
+            <span v-if="isSidebarOpen" class="ml-2">Dashboard</span>
+            <span v-else>📊</span>
+          </button>
+        </li>
+        <li>
+          <button
             @click="setActive('Berita')"
             class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
           >
@@ -59,6 +68,7 @@
 
     <!-- Main Content -->
     <div class="flex-1">
+      <Dashboardinovasi v-if="activeComponent === 'Dashboard'" />
       <TambahBerita v-if="activeComponent === 'Berita'" />
       <TambahInovasi v-if="activeComponent === 'Inovasi'" />
       <TambahArtikel v-if="activeComponent === 'Artikel'" />
@@ -73,9 +83,10 @@ import TambahBerita from '@/components/TambahBerita.vue'
 import TambahInovasi from '@/components/TambahInovasi.vue'
 import AturRole from '@/components/AturRole.vue'
 import TambahArtikel from '@/components/TambahArtikel.vue'
+import Dashboardinovasi from '@/components/Dashboardinovasi.vue'
 
 const isSidebarOpen = ref(false)
-const activeComponent = ref('Berita')
+const activeComponent = ref('Dashboard')
 
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value

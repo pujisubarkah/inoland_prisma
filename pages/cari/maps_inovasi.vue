@@ -30,12 +30,6 @@
           >
             LIST INOVASI
           </NuxtLink>
-          <NuxtLink 
-            to="/cari/dashboard_inovasi"
-            class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
-          >
-            DASHBOARD
-          </NuxtLink>
         </div>
       </div>
     </div>
@@ -428,17 +422,20 @@
                                       .slice()
                                       .sort((a, b) => a.indeks_tahun - b.indeks_tahun)
                                       .filter(i => {
-                                        const levelKey = dialogSelectedIndex === 'indeks_skor' ? 'indeks_level' : 
-                                                       dialogSelectedIndex === 'ipp_skor' ? 'ipp_level' : 
+                                        const levelKey = dialogSelectedIndex === 'indeks_skor' ? 'indeks_level' :
+                                                       dialogSelectedIndex === 'ipp_skor' ? 'ipp_level' :
                                                        dialogSelectedIndex === 'idsd_skor' ? 'idsd_level' : 'rb_level'
                                         return i[levelKey] && i[levelKey] > 0
                                       })
                                     const dataPoint = filteredData[dataIndex]
+                                    if (!dataPoint) {
+                                      return ['Data tidak tersedia']
+                                    }
                                     const scoreKey = dialogSelectedIndex
-                                    const predicateKey = dialogSelectedIndex === 'indeks_skor' ? 'indeks_predikat' : 
-                                                       dialogSelectedIndex === 'ipp_skor' ? 'ipp_predikat' : 
+                                    const predicateKey = dialogSelectedIndex === 'indeks_skor' ? 'indeks_predikat' :
+                                                       dialogSelectedIndex === 'ipp_skor' ? 'ipp_predikat' :
                                                        dialogSelectedIndex === 'idsd_skor' ? 'idsd_predikat' : 'rb_predikat'
-                                    
+  
                                     return [
                                       `Tahun: ${dataPoint.indeks_tahun}`,
                                       `Skor: ${dataPoint[scoreKey]}`,
