@@ -22,32 +22,90 @@
           <p>Memuat data...</p>
         </div>
 
-        <!-- Table -->
-        <table v-else-if="currentInovasi.length" class="table">
-          <thead>
-            <tr>
-              <th @click="handleSort('judul_inovasi')">Judul Inovasi</th>
-              <th @click="handleSort('sdgs')">SDGS</th>
-              <th @click="handleSort('tahun')">Tahun</th>
-              <th @click="handleSort('kld')">Pemda</th>
-              <th @click="handleSort('inovator')">Inovator</th>
-              <th @click="handleSort('deskripsi')">Deskripsi</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="inovasi in currentInovasi" :key="inovasi.id">
-              <td>{{ inovasi.judul_inovasi }}</td>
-              <td>
-                <img v-if="inovasi.sdgs" :src="inovasi.sdgs.image" width="75" />
-                <div>{{ inovasi.sdgs?.sdgs || 'N/A' }}</div>
-              </td>
-              <td>{{ inovasi.tahun }}</td>
-              <td>{{ inovasi.kld }}</td>
-              <td>{{ inovasi.inovator }}</td>
-              <td>{{ inovasi.deskripsi }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Cards Grid -->
+        <div v-else-if="currentInovasi.length" class="cards-grid">
+          <div v-for="inovasi in currentInovasi" :key="inovasi.id" class="innovation-card">
+            <div class="card-header">
+              <div class="card-image">
+                <img v-if="inovasi.sdgs?.image" :src="inovasi.sdgs.image" :alt="inovasi.sdgs.sdgs" />
+                <div v-else class="no-image">
+                  <i class="fas fa-lightbulb"></i>
+                </div>
+              </div>
+              <div class="card-title-section">
+                <h3 class="card-title">{{ inovasi.judul_inovasi }}</h3>
+                <div class="card-meta">
+                  <span class="meta-item">
+                    <i class="fas fa-calendar"></i> {{ inovasi.tahun }}
+                  </span>
+                  <span class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i> {{ inovasi.kld }}
+                  </span>
+                  <span class="meta-item">
+                    <i class="fas fa-user"></i> {{ inovasi.inovator }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-content">
+              <p class="card-description">{{ inovasi.deskripsi }}</p>
+              
+              <div class="sdgs-badge" v-if="inovasi.sdgs">
+                <span class="sdgs-label">{{ inovasi.sdgs.sdgs }}</span>
+              </div>
+            </div>
+            
+            <!-- Reviews Section -->
+            <div class="reviews-section">
+              <div class="reviews-header">
+                <h4>Ulasan & Penilaian</h4>
+                <div class="rating">
+                  <div class="stars">
+                    <i v-for="star in 5" :key="star" class="fas fa-star" :class="{ 'filled': star <= getRandomRating() }"></i>
+                  </div>
+                  <span class="rating-text">{{ getRandomRating() }}/5</span>
+                </div>
+              </div>
+              
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <div class="reviewer-avatar">
+                      <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="reviewer-details">
+                      <span class="reviewer-name">{{ getRandomReviewer() }}</span>
+                      <span class="review-date">{{ getRandomDate() }}</span>
+                    </div>
+                  </div>
+                  <div class="review-rating">
+                    <i v-for="star in 5" :key="star" class="fas fa-star" :class="{ 'filled': star <= getRandomRating() }"></i>
+                  </div>
+                </div>
+                <p class="review-text">{{ getRandomReview(inovasi.judul_inovasi) }}</p>
+              </div>
+              
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <div class="reviewer-avatar">
+                      <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="reviewer-details">
+                      <span class="reviewer-name">{{ getRandomReviewer() }}</span>
+                      <span class="review-date">{{ getRandomDate() }}</span>
+                    </div>
+                  </div>
+                  <div class="review-rating">
+                    <i v-for="star in 5" :key="star" class="fas fa-star" :class="{ 'filled': star <= getRandomRating() }"></i>
+                  </div>
+                </div>
+                <p class="review-text">{{ getRandomReview(inovasi.judul_inovasi) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <!-- No Results -->
         <div v-else-if="!loading" class="no-result">
@@ -201,6 +259,36 @@ const handleSort = (field: keyof Inovasi) => {
   inovasiData.value = sortedData
 }
 
+const getRandomRating = () => {
+  return Math.floor(Math.random() * 5) + 1
+}
+
+const getRandomReviewer = () => {
+  const reviewers = ['Ahmad S.', 'Siti R.', 'Budi P.', 'Maya L.', 'Rizki K.', 'Nina W.', 'Dedi M.', 'Lina T.']
+  return reviewers[Math.floor(Math.random() * reviewers.length)]
+}
+
+const getRandomDate = () => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const month = months[Math.floor(Math.random() * months.length)]
+  const day = Math.floor(Math.random() * 28) + 1
+  const year = 2023 + Math.floor(Math.random() * 2)
+  return `${day} ${month} ${year}`
+}
+
+const getRandomReview = (title: string) => {
+  const reviews = [
+    `Inovasi ${title} sangat bermanfaat untuk masyarakat. Implementasinya sudah terlihat dampaknya di lapangan.`,
+    `Sebagai pegawai pemerintah, saya melihat inovasi ini sangat inovatif dan efisien. Terus dikembangkan!`,
+    `Inovasi yang luar biasa! Sudah lama saya tunggu solusi seperti ini. Semoga bisa direplikasi di daerah lain.`,
+    `Pendekatan yang kreatif untuk menyelesaikan masalah klasik. Tim inovatornya patut diacungi jempol.`,
+    `Dari segi implementasi sudah bagus, tapi perlu monitoring berkelanjutan agar sustainabilitasnya terjaga.`,
+    `Inovasi ini menginspirasi saya untuk berinovasi juga. Mudah-mudahan bisa diadopsi secara nasional.`,
+    `Sudah terbukti efektif di lapangan. Data menunjukkan peningkatan signifikan dalam pelayanan publik.`
+  ]
+  return reviews[Math.floor(Math.random() * reviews.length)]
+}
+
 // Watchers
 watch(searchTerm, () => {
   currentPage.value = 1 // Reset to first page when searching
@@ -272,32 +360,221 @@ onMounted(() => {
   color: #ccc;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
   margin: 20px 0;
 }
 
-.table th,
-.table td {
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
+.innovation-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #e5e7eb;
 }
 
-.table thead tr {
-  background-color: #444;
+.innovation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  padding: 20px;
+  gap: 16px;
+}
+
+.card-image {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  color: #9ca3af;
+  font-size: 24px;
+}
+
+.card-title-section {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.meta-item i {
+  color: #9ca3af;
+}
+
+.card-content {
+  padding: 0 20px 20px;
+}
+
+.card-description {
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sdgs-badge {
+  display: inline-block;
+}
+
+.sdgs-label {
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
-  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
 }
 
-.table th:hover {
-  background-color: #555;
+.reviews-section {
+  border-top: 1px solid #e5e7eb;
+  padding: 20px;
+  background: #f9fafb;
 }
 
-.table tbody tr:hover {
-  background-color: #f5f5f5;
+.reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.reviews-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.stars .fa-star {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+.stars .fa-star.filled {
+  color: #fbbf24;
+}
+
+.rating-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.review-item {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reviewer-avatar {
+  font-size: 32px;
+  color: #9ca3af;
+}
+
+.reviewer-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewer-name {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.review-date {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.review-rating {
+  display: flex;
+  gap: 2px;
+}
+
+.review-rating .fa-star {
+  color: #d1d5db;
+  font-size: 12px;
+}
+
+.review-rating .fa-star.filled {
+  color: #fbbf24;
+}
+
+.review-text {
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0;
+  font-size: 14px;
 }
 
 .no-result {
@@ -395,13 +672,35 @@ onMounted(() => {
     max-width: 300px;
   }
   
-  .table {
-    font-size: 14px;
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   
-  .table th,
-  .table td {
-    padding: 10px 8px;
+  .card-header {
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .card-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .card-content {
+    padding: 0 16px 16px;
+  }
+  
+  .reviews-section {
+    padding: 16px;
+  }
+  
+  .reviews-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
 
@@ -425,6 +724,14 @@ onMounted(() => {
   .pagination button {
     padding: 6px 10px;
     font-size: 14px;
+  }
+  
+  .card-title {
+    font-size: 16px;
+  }
+  
+  .meta-item {
+    font-size: 12px;
   }
 }
 </style>

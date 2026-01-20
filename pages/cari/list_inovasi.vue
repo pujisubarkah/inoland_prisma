@@ -63,31 +63,10 @@
     <div class="px-8 pb-8">
       <div class="bg-white rounded-lg shadow-sm p-6">
         <!-- Download Section -->
-        <div v-if="filteredInovasi.length > 0 && !loading" class="mb-6 flex items-center justify-between download-section">
-          <div class="flex items-center gap-4">
-            <h3 class="text-lg font-semibold text-gray-900">
-              {{ filteredInovasi.length }} inovasi ditemukan
-            </h3>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="text-sm text-gray-600">Export data:</span>            <select 
-              v-model="selectedExportFormat"
-              class="export-select"
-            >
-              <option value="xlsx">Excel (.xlsx)</option>
-              <option value="csv">CSV (.csv)</option>
-              <option value="pdf">PDF (.pdf)</option>
-            </select>            <button 
-              @click="downloadData"
-              :disabled="isDownloading"
-              class="download-btn"
-            >
-              <i v-if="!isDownloading" class="fas fa-download"></i>
-              <i v-else class="fas fa-spinner fa-spin"></i>
-              <span v-if="!isDownloading">Download</span>
-              <span v-else>Mengunduh...</span>
-            </button>
-          </div>
+        <div v-if="filteredInovasi.length > 0 && !loading" class="mb-6 flex items-center download-section">
+          <h3 class="text-lg font-semibold text-gray-900">
+            {{ filteredInovasi.length }} inovasi ditemukan
+          </h3>
         </div>
 
         <!-- Loading State -->
@@ -96,149 +75,110 @@
           <p>Memuat data...</p>
         </div>
 
-        <!-- Table -->
-        <div v-else-if="currentInovasi.length" class="overflow-x-auto">          <table class="modern-table">
-            <thead>
-              <tr>
-                <th @click="handleSort('judul_inovasi')" class="sortable w-1/4">
-                  <div class="header-content">
-                    <span>Judul Inovasi</span>
-                    <i :class="getSortIcon('judul_inovasi')" class="sort-icon"></i>
-                  </div>
-                </th>
-                <th @click="handleSort('sdgs')" class="sortable w-20">
-                  <div class="header-content">
-                    <span>SDGS</span>
-                    <i :class="getSortIcon('sdgs')" class="sort-icon"></i>
-                  </div>
-                </th>
-                <th @click="handleSort('tahun')" class="sortable w-16">
-                  <div class="header-content">
-                    <span>Tahun</span>
-                    <i :class="getSortIcon('tahun')" class="sort-icon"></i>
-                  </div>
-                </th>                <th @click="handleSort('instansi')" class="sortable w-1/6">
-                  <div class="header-content">
-                    <span>Instansi</span>
-                    <i :class="getSortIcon('instansi')" class="sort-icon"></i>
-                  </div>
-                </th>
-                <th @click="handleSort('inovator')" class="sortable w-1/6">
-                  <div class="header-content">
-                    <span>Inovator</span>
-                    <i :class="getSortIcon('inovator')" class="sort-icon"></i>
-                  </div>
-                </th>
-                <th @click="handleSort('inovator_detail')" class="sortable w-1/6">
-                  <div class="header-content">
-                    <span>Unit Kerja</span>
-                    <i :class="getSortIcon('inovator_detail')" class="sort-icon"></i>
-                  </div>
-                </th>
-                <th @click="handleSort('deskripsi')" class="sortable w-1/3">
-                  <div class="header-content">
-                    <span>Deskripsi</span>
-                    <i :class="getSortIcon('deskripsi')" class="sort-icon"></i>
-                  </div>
-                </th>
-              </tr>
-            </thead>            <tbody>              <tr v-for="inovasi in currentInovasi" :key="inovasi.id">
-                <td class="font-medium text-gray-900" data-label="Judul Inovasi">
-                  <div class="max-w-sm">
-                    {{ inovasi.judul_inovasi }}
-                  </div>
-                </td>
-                <td class="text-center" data-label="SDGS">
-                  <div class="flex flex-col items-center gap-2">
-                    <img v-if="inovasi.sdgs?.image" :src="inovasi.sdgs.image" width="50" class="rounded" />
-                    <span class="text-xs text-gray-700 font-medium">{{ inovasi.sdgs?.nama || 'N/A' }}</span>
-                  </div>
-                </td>
-                <td class="text-center" data-label="Tahun">
-                  <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                    {{ inovasi.tahun }}
+        <!-- Cards Grid -->
+        <div v-else-if="currentInovasi.length" class="cards-grid">
+          <div v-for="inovasi in currentInovasi" :key="inovasi.id" class="innovation-card">
+            <div class="card-header">
+              <div class="card-image">
+                <img v-if="inovasi.sdgs?.image" :src="inovasi.sdgs.image" :alt="inovasi.sdgs.nama" />
+                <div v-else class="no-image">
+                  <i class="fas fa-lightbulb"></i>
+                </div>
+              </div>
+              <div class="card-title-section">
+                <h3 class="card-title">{{ inovasi.judul_inovasi }}</h3>
+                <div class="card-meta">
+                  <span class="meta-item">
+                    <i class="fas fa-calendar"></i> {{ inovasi.tahun }}
                   </span>
-                </td>                <td class="text-gray-700" data-label="Instansi">
-                  <div class="max-w-32">
-                    <div class="font-medium text-gray-900">
-                      {{ inovasi.instansi?.agency_name || inovasi.kld || 'N/A' }}
+                  <span class="meta-item">
+                    <i class="fas fa-building"></i> {{ inovasi.instansi?.agency_name || inovasi.kld || 'N/A' }}
+                  </span>
+                  <span class="meta-item">
+                    <i class="fas fa-user"></i> {{ inovasi.inovator || 'N/A' }}
+                  </span>
+                  <span v-if="inovasi.inovator_detail?.longlat" class="meta-item">
+                    <a :href="getGoogleMapsUrl(inovasi.inovator_detail.longlat)" target="_blank" class="maps-link">
+                      <i class="fas fa-map-marker-alt"></i> Lokasi
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-content">
+              <p class="card-description">
+                {{ inovasi.deskripsi && inovasi.deskripsi.length > 200 ? inovasi.deskripsi.substring(0, 200) + '...' : inovasi.deskripsi || 'Tidak ada deskripsi' }}
+              </p>
+
+              <div class="inovasi-rating">
+                <div class="stars">
+                  <i
+                    v-for="star in 5"
+                    :key="star"
+                    class="fas fa-star"
+                    :class="{ filled: star <= Math.round(inovasi.rating || 0) }"
+                  ></i>
+                </div>
+                <span class="rating-text">
+                  {{ inovasi.rating ? inovasi.rating.toFixed(1) : '0.0' }}/5
+                </span>
+              </div>
+
+              <div class="sdgs-badge" v-if="inovasi.sdgs">
+                <span class="sdgs-label">{{ inovasi.sdgs.nama }}</span>
+              </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="reviews-section">
+              <div class="reviews-header">
+                <h4>Ulasan & Penilaian</h4>
+                <div class="rating">
+                  <div class="stars">
+                    <i v-for="star in 5" :key="star" class="fas fa-star" :class="{ 'filled': star <= getRandomRating() }"></i>
+                  </div>
+                  <span class="rating-text">{{ getRandomRating() }}/5</span>
+                </div>
+              </div>
+
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <div class="reviewer-avatar">
+                      <i class="fas fa-user-circle"></i>
                     </div>
-                    <div v-if="inovasi.instansi?.kat_instansi" class="text-xs text-gray-500 mt-1">
-                      {{ inovasi.instansi.kat_instansi }}
+                    <div class="reviewer-details">
+                      <span class="reviewer-name">{{ getRandomReviewer() }}</span>
+                      <span class="review-date">{{ getRandomDate() }}</span>
                     </div>
                   </div>
-                </td>
-                <td class="text-gray-700" data-label="Inovator">
-                  <div class="max-w-32">
-                    <div class="font-medium text-gray-900">
-                      {{ inovasi.inovator || inovasi.kld || 'N/A' }}
+                  <div class="review-rating">
+                    <i v-for="star in 5" :key="star" class="fas fa-star" :class="{ 'filled': star <= getRandomRating() }"></i>
+                  </div>
+                </div>
+                <p class="review-text">{{ getRandomReview(inovasi.judul_inovasi) }}</p>
+              </div>
+
+              <div class="review-item">
+                <div class="review-header">
+                  <div class="reviewer-info">
+                    <div class="reviewer-avatar">
+                      <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="reviewer-details">
+                      <span class="reviewer-name">{{ getRandomReviewer() }}</span>
+                      <span class="review-date">{{ getRandomDate() }}</span>
                     </div>
                   </div>
-                </td>
-                <td class="text-gray-700" data-label="Unit Kerja">
-                  <div class="max-w-32">
-                    <div class="font-medium text-gray-900 mb-1 flex items-center gap-1">
-                      <span>{{ inovasi.inovator_detail?.inovator || 'N/A' }}</span>
-                      <button 
-                        @click="showAddressInfo(inovasi, $event)"
-                        class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"
-                        title="Lihat alamat"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                        </svg>
-                      </button>
-                    </div>
-                    
-                    <!-- Google Maps Link -->
-                    <div v-if="inovasi.inovator_detail?.longlat" class="mt-0.5">
-                      <a 
-                        :href="getGoogleMapsUrl(inovasi.inovator_detail.longlat)"
-                        target="_blank"
-                        class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors font-medium maps-link"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0">
-                          <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM10 5.47l4 1.4v11.66l-4-1.4V5.47zm-5 .99l3-1.01v11.7l-3 1.01V6.46zm14 11.08l-3 1.01V6.86l3-1.01v11.69z"/>
-                        </svg>
-                        <span>Lihat Lokasi</span>
-                      </a>
-                    </div>
-                    <div v-else class="mt-0.5">
-                      <span class="text-xs text-gray-400 italic">Maps belum tersedia</span>
-                    </div>
+                  <div class="review-rating">
+                    <i v-for="star in 5" :key="star" class="fas fa-star" :class="{ 'filled': star <= getRandomRating() }"></i>
                   </div>
-                </td>
-                <td class="text-gray-600 text-sm" data-label="Deskripsi">
-                  <div class="max-w-md">
-                    <div v-if="!inovasi.deskripsi" class="text-gray-400 italic">
-                      Tidak ada deskripsi
-                    </div>
-                    <div v-else>
-                      <div v-if="!expandedDescriptions.has(inovasi.id) && inovasi.deskripsi.length > 200">
-                        {{ inovasi.deskripsi.substring(0, 200) }}...
-                        <button 
-                          @click="toggleDescription(inovasi.id)"
-                          class="text-blue-600 hover:text-blue-800 font-medium ml-1 underline text-xs"
-                        >
-                          Baca Selengkapnya
-                        </button>
-                      </div>
-                      <div v-else>
-                        {{ inovasi.deskripsi }}
-                        <button 
-                          v-if="inovasi.deskripsi.length > 200"
-                          @click="toggleDescription(inovasi.id)"
-                          class="text-blue-600 hover:text-blue-800 font-medium ml-1 underline text-xs"
-                        >
-                          Sembunyikan
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </div>
+                <p class="review-text">{{ getRandomReview(inovasi.judul_inovasi) }}</p>
+              </div>
+            </div>
+          </div>
         </div>
         
         <!-- No Results -->
@@ -353,6 +293,7 @@ interface Inovasi {
     longlat: string
   }
   showFullDescription?: boolean  // Add this for tracking expanded state
+  rating?: number  // Add optional rating property to match usage in template
 }
 
 useHead({
@@ -631,10 +572,41 @@ const closeAddressPopup = () => {
   selectedInovatorAddress.value = ''
 }
 
+// Helper functions for reviews
+const getRandomRating = () => {
+  return Math.floor(Math.random() * 5) + 1
+}
+
+const getRandomReviewer = () => {
+  const reviewers = ['Ahmad S.', 'Siti R.', 'Budi P.', 'Maya L.', 'Rizki K.', 'Nina W.', 'Dedi M.', 'Lina T.']
+  return reviewers[Math.floor(Math.random() * reviewers.length)]
+}
+
+const getRandomDate = () => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const month = months[Math.floor(Math.random() * months.length)]
+  const day = Math.floor(Math.random() * 28) + 1
+  const year = 2023 + Math.floor(Math.random() * 2)
+  return `${day} ${month} ${year}`
+}
+
+const getRandomReview = (title: string) => {
+  const reviews = [
+    `Inovasi ${title} sangat bermanfaat untuk masyarakat. Implementasinya sudah terlihat dampaknya di lapangan.`,
+    `Sebagai pegawai pemerintah, saya melihat inovasi ini sangat inovatif dan efisien. Terus dikembangkan!`,
+    `Inovasi yang luar biasa! Sudah lama saya tunggu solusi seperti ini. Semoga bisa direplikasi di daerah lain.`,
+    `Pendekatan yang kreatif untuk menyelesaikan masalah klasik. Tim inovatornya patut diacungi jempol.`,
+    `Dari segi implementasi sudah bagus, tapi perlu monitoring berkelanjutan agar sustainabilitasnya terjaga.`,
+    `Inovasi ini menginspirasi saya untuk berinovasi juga. Mudah-mudahan bisa diadopsi secara nasional.`,
+    `Sudah terbukti efektif di lapangan. Data menunjukkan peningkatan signifikan dalam pelayanan publik.`
+  ]
+  return reviews[Math.floor(Math.random() * reviews.length)]
+}
+
 // Download functionality
 const downloadData = async () => {
   if (isDownloading.value) return
-  
+
   try {
     isDownloading.value = true
       // Prepare data for export (use filteredInovasi to include current filters)
@@ -658,7 +630,7 @@ const downloadData = async () => {
     } else if (selectedExportFormat.value === 'pdf') {
       await downloadPDF(dataToExport)
     }
-    
+
   } catch (error) {
     console.error('Error downloading data:', error)
     alert('Terjadi kesalahan saat mengunduh data. Silakan coba lagi.')
@@ -818,44 +790,261 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Modern Table Styles */
-.modern-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+/* Cards Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  gap: 24px;
+  margin: 24px 0;
+}
+
+.innovation-card {
   background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.innovation-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  padding: 24px;
+  gap: 20px;
+}
+
+.card-image {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  table-layout: fixed; /* Fixed layout for better column control */
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.modern-table th {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  font-weight: 600;
-  padding: 16px 20px;
-  text-align: left;
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  color: #9ca3af;
+  font-size: 32px;
+}
+
+.card-title-section {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-  position: relative;
+  color: #6b7280;
 }
 
-/* Column Width Controls */
-.modern-table th:nth-child(1) { width: 25%; } /* Judul Inovasi */
-.modern-table th:nth-child(2) { width: 10%; } /* SDGS */
-.modern-table th:nth-child(3) { width: 8%; }  /* Tahun */
-.modern-table th:nth-child(4) { width: 15%; } /* Pemda */
-.modern-table th:nth-child(5) { width: 15%; } /* Inovator */
-.modern-table th:nth-child(6) { width: 27%; } /* Deskripsi */
-
-.modern-table th.sortable {
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.2s ease;
+.meta-item i {
+  color: #9ca3af;
+  font-size: 12px;
 }
 
+.maps-link {
+  color: #3b82f6 !important;
+  text-decoration: none;
+}
+
+.maps-link:hover {
+  color: #1d4ed8 !important;
+  text-decoration: underline;
+}
+
+.card-content {
+  padding: 0 24px 24px;
+}
+
+.card-description {
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.inovasi-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.inovasi-rating .stars {
+  display: flex;
+  gap: 3px;
+}
+
+.inovasi-rating .stars .fa-star {
+  color: #d1d5db;
+  font-size: 16px;
+}
+
+.inovasi-rating .stars .fa-star.filled {
+  color: #fbbf24;
+}
+
+.inovasi-rating .rating-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.sdgs-badge {
+  display: inline-block;
+}
+
+.sdgs-label {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 24px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.reviews-section {
+  border-top: 1px solid #e5e7eb;
+  padding: 24px;
+  background: #f9fafb;
+}
+
+.reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.reviews-header h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stars {
+  display: flex;
+  gap: 3px;
+}
+
+.stars .fa-star {
+  color: #d1d5db;
+  font-size: 16px;
+}
+
+.stars .fa-star.filled {
+  color: #fbbf24;
+}
+
+.rating-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.review-item {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reviewer-avatar {
+  font-size: 36px;
+  color: #9ca3af;
+}
+
+.reviewer-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewer-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 15px;
+}
+
+.review-date {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.review-rating {
+  display: flex;
+  gap: 3px;
+}
+
+.review-rating .fa-star {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+.review-rating .fa-star.filled {
+  color: #fbbf24;
+}
+
+.review-text {
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 15px;
+}
 .modern-table th.sortable:hover {
   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
   transform: translateY(-1px);
@@ -1088,104 +1277,74 @@ onUnmounted(() => {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .modern-table {
-    font-size: 14px;
-    table-layout: auto; /* Auto layout on mobile */
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
   
-  .modern-table th,
-  .modern-table td {
-    padding: 12px 16px;
-  }
-  
-  /* Adjust column widths for mobile */
-  .modern-table th:nth-child(1) { width: 30%; } /* Judul Inovasi */
-  .modern-table th:nth-child(2) { width: 12%; } /* SDGS */
-  .modern-table th:nth-child(3) { width: 10%; } /* Tahun */
-  .modern-table th:nth-child(4) { width: 16%; } /* Pemda */
-  .modern-table th:nth-child(5) { width: 16%; } /* Inovator */
-  .modern-table th:nth-child(6) { width: 16%; } /* Deskripsi - smaller on mobile */
-  
-  .header-content {
-    flex-direction: column;
-    gap: 4px;
-    align-items: flex-start;
-  }
-  
-  .sort-icon {
-    align-self: flex-end;
-  }
-  
-  .pagination-modern {
-    overflow-x: auto;
-  }
-  
-  .pagination-modern .flex:first-child {
+  .card-header {
+    padding: 20px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2;
+    gap: 16px;
   }
   
-  .pagination-btn {
-    padding: 8px 12px;
-    font-size: 14px;
-    min-width: 40px;
+  .card-image {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .card-content {
+    padding: 0 20px 20px;
+  }
+  
+  .reviews-section {
+    padding: 20px;
+  }
+  
+  .reviews-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .review-item {
+    padding: 16px;
+  }
+  
+  .reviewer-info {
+    gap: 12px;
+  }
+  
+  .reviewer-avatar {
+    font-size: 32px;
   }
 }
 
 @media (max-width: 640px) {
-  .modern-table th,
-  .modern-table td {
-    padding: 10px 12px;
+  .card-title {
+    font-size: 18px;
+  }
+  
+  .card-meta {
+    gap: 12px;
+  }
+  
+  .meta-item {
     font-size: 13px;
   }
   
-  .modern-table th {
-    font-size: 12px;
+  .card-description {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
   }
   
-  .pagination-btn {
-    padding: 6px 10px;
-    font-size: 13px;
-    min-width: 36px;
+  .reviews-header h4 {
+    font-size: 16px;
   }
   
-  /* Stack table on very small screens */
-  .modern-table thead {
-    display: none;
-  }
-  
-  .modern-table tbody tr {
-    display: block;
-    margin-bottom: 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 16px;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  
-  .modern-table tbody td {
-    display: block;
-    padding: 8px 0;
-    border: none;
-    border-bottom: 1px solid #f3f4f6;
-    position: relative;
-    padding-left: 120px;
-  }
-  
-  .modern-table tbody td:before {
-    content: attr(data-label);
-    position: absolute;
-    left: 0;
-    top: 8px;
-    font-weight: 600;
-    color: #374151;
-    width: 110px;
-    font-size: 12px;
-  }
-    .modern-table tbody td:last-child {
-    border-bottom: none;
+  .review-text {
+    font-size: 14px;
   }
 }
 
