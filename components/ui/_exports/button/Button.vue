@@ -11,7 +11,7 @@
 import { computed } from 'vue'
 import { buttonVariants, type ButtonVariants } from './index'
 
-interface Props extends ButtonVariants {
+interface Props extends /* @vue-ignore */ ButtonVariants {
   asChild?: boolean
 }
 
