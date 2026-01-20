@@ -71,7 +71,7 @@ export default defineNuxtConfig({
   },
   shadcn: {
     prefix: '',
-    componentDir: './components/ui'
+    componentDir: './components/ui/_exports'
   },
   nitro: {
     ignore: ['.prisma'],
