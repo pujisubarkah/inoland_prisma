@@ -149,198 +149,25 @@
           </section>
           </ClientOnly>
 
-          <!-- Popup Kabupaten dengan Dialog shadcn -->
-          <Dialog v-model:open="dialogOpen">
-            <template #content>              <div class="popup-box relative">                <button class="close-btn absolute top-2 right-2" @click="dialogOpen = false; selectedProvinsi = null; selectedKabkot = null; dialogKabkotIndeks = []; dialogKabkotName = ''; indeksInovasi = []; inovasiKabupaten = []; dialogKabkotInovasi = []; currentPage = 1">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-                </button>
-                <h1 class="text-xl font-bold mb-2">Peta Kabupaten/Kota di Provinsi {{ selectedProvinceName }}</h1>
-                <hr class="my-2" />
-                <!-- Table kiri, peta & chart kanan -->
-                <div class="flex flex-col md:flex-row gap-6 mb-6">                  <!-- Table Inovasi Kabupaten -->
-                  <div class="w-full md:w-1/2">                    <h2 class="font-bold mb-2 text-blue-700 flex items-center justify-between">
-                      <span>Daftar Ide Inovasi {{ selectedKabkot ? dialogKabkotName : selectedProvinceName }}</span>
-                      <div class="flex items-center gap-2">
-                        <button 
-                          v-if="selectedKabkot" 
-                          @click="resetToProvinceData"
-                          class="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
-                          title="Lihat semua inovasi di provinsi"
-                        >
-                          Lihat Semua di Provinsi
-                        </button>
-                      </div>
-                    </h2>                    
-                    
-                    
-                    <!-- Info Boxes -->
-                    <div class="flex justify-between gap-3 mb-4">
-                      <!-- Province Info Box -->
-                      <div class="flex-1 p-3 border border-gray-300 rounded-lg shadow-sm bg-gradient-to-br from-blue-50 to-blue-100 text-center">
-                        <div class="font-semibold text-blue-800 text-sm mb-1">
-                          {{ selectedProvinceName }}
-                        </div>
-                        <div class="text-blue-600 font-bold text-lg">
-                          {{ provinsis.find(p => p.id_provinsi === selectedProvinsi)?.jumlah_inovasi || 0 }} inovasi
-                        </div>
-                        <div class="text-xs text-blue-500 mt-1">Provinsi</div>
-                      </div>
-                      
-                      <!-- Kabupaten Info Box -->
-                      <div class="flex-1 p-3 border border-gray-300 rounded-lg shadow-sm text-center"
-                           :class="selectedKabkot ? 'bg-gradient-to-br from-green-50 to-green-100' : 'bg-gradient-to-br from-gray-50 to-gray-100'">
-                        <div class="font-semibold text-sm mb-1"
-                             :class="selectedKabkot ? 'text-green-800' : 'text-gray-600'">
-                          {{ selectedKabkot ? dialogKabkotName : 'Pilih Kabupaten/Kota' }}
-                        </div>
-                        <div class="font-bold text-lg"
-                             :class="selectedKabkot ? 'text-green-600' : 'text-gray-500'">
-                          {{ selectedKabkot ? 
-                             (kabupaten.find(k => k.id_kabkot === selectedKabkot)?.jumlah_inovasi || 0) + ' inovasi' : 
-                             'N/A' 
-                          }}
-                        </div>
-                        <div class="text-xs mt-1"
-                             :class="selectedKabkot ? 'text-green-500' : 'text-gray-400'">
-                          Kabupaten/Kota
-                        </div>
-                      </div>
-                    </div>                    <!-- Download Buttons -->
-                    <div v-if="dialogKabkotInovasi.length > 0" class="mb-4">
-                      <div class="text-sm text-gray-600 mb-2">
-                        📊 Tersedia {{ dialogKabkotInovasi.length }} data untuk diunduh
-                      </div>
-                      <ClientOnly>
-                        <div class="flex flex-wrap gap-2">
-                        <button 
-                          @click="downloadExcel"
-                          :disabled="isDownloading || dialogKabkotInovasi.length === 0"
-                          class="flex items-center gap-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Download data sebagai Excel"
-                        >
-                          <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                          </svg>
-                          <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-                          </svg>
-                          Excel
-                        </button>
-                        <button 
-                          @click="downloadCSV"
-                          :disabled="isDownloading || dialogKabkotInovasi.length === 0"
-                          class="flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Download data sebagai CSV"
-                        >
-                          <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                          </svg>
-                          <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-                          </svg>
-                          CSV
-                        </button>
-                        <button 
-                          @click="downloadPDF"
-                          :disabled="isDownloading || dialogKabkotInovasi.length === 0"
-                          class="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Download data sebagai PDF"
-                        >
-                          <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                          </svg>
-                          <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-                          </svg>                          PDF
-                        </button>
-                        </div>
-                      </ClientOnly>
-                    </div>
-                    
-                    <!-- Pagination Controls -->
-                    <div class="flex justify-between items-center mb-4">
-                      <div class="flex items-center gap-2">
-                        <label class="text-sm font-medium text-gray-700">Tampilkan:</label>
-                        <select v-model="itemsPerPage" @change="currentPage = 1" class="px-3 py-1 border border-gray-300 rounded-md text-sm">
-                          <option :value="25">25</option>
-                          <option :value="50">50</option>
-                          <option :value="100">100</option>
-                        </select>
-                        <span class="text-sm text-gray-600">dari {{ dialogKabkotInovasi.length }} item</span>
-                      </div>
-                      
-                      <div v-if="totalPages > 1" class="flex items-center gap-1">
-                        <button
-                          @click="currentPage = Math.max(1, currentPage - 1)"
-                          :disabled="currentPage === 1"
-                          class="px-2 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          ‹
-                        </button>
-                        
-                        <span class="px-3 py-1 text-sm">
-                          {{ currentPage }} / {{ totalPages }}
-                        </span>
-                        
-                        <button
-                          @click="currentPage = Math.min(totalPages, currentPage + 1)"
-                          :disabled="currentPage === totalPages"
-                          class="px-2 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          ›
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div style="max-height:500px;overflow:auto;">
-                      <div style="overflow-x:auto;">
-                        <Table class="inovasi-table w-full">
-                          <thead>
-                            <tr>
-                              <th>No</th>
-                              <th>Tahun</th>
-                              <th>Judul Inovasi</th>
-                              <th>SDGS</th>
-                              <th>Inovator</th>
-                              <th>Unit/Instansi</th>
-                              <th>Deskripsi</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr v-for="(item, index) in currentInovasi" :key="item.id">
-                              <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                              <td>{{ item.tahun }}</td>
-                              <td>{{ item.judul_inovasi }}</td>
-                              <td>{{ item.sdgs?.nama || '-' }}</td>
-                              <td>{{ item.inovator || '-' }}</td>
-                              <td>{{ item.inovator_detail?.inovator || '-' }} / {{ item.instansi?.agency_name || '-' }}</td>
-                              <td>{{ item.deskripsi || 'Tidak ada deskripsi' }}</td>
-                            </tr>                            <tr v-if="currentInovasi.length === 0">
-                              <td colspan="6" class="text-center text-gray-500 py-4">
-                                <div v-if="selectedKabkot">
-                                  Tidak ada data inovasi untuk {{ dialogKabkotName }}
-                                </div>
-                                <div v-else>
-                                  Tidak ada data inovasi untuk {{ selectedProvinceName }}
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </Table>
-                      </div>
-                    </div>
-                    
-                    <!-- Bottom Pagination Info -->
-                    <div v-if="dialogKabkotInovasi.length > 0" class="mt-3 text-xs text-gray-600 text-center">
-                      Menampilkan {{ (currentPage - 1) * itemsPerPage + 1 }} - 
-                      {{ Math.min(currentPage * itemsPerPage, dialogKabkotInovasi.length) }} 
-                      dari {{ dialogKabkotInovasi.length }} total item
-                    </div>
-                  </div><!-- Peta & Chart Kabupaten -->
-                  <div class="w-full md:w-1/2 flex flex-col gap-6 items-center justify-start">                    <div class="overflow-hidden rounded-lg shadow-md w-full relative">
-                      <svg viewBox="-100 0 1000 600" height="300" preserveAspectRatio="xMidYMid meet" class="map-kabupaten w-full">
+          <!-- Kabupaten Section - Show when province is selected -->
+          <ClientOnly v-if="selectedProvinsi">
+            <section class="mt-8">
+              <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="mb-6">
+                  <h2 class="text-2xl font-bold mb-2 bg-gradient-to-r from-slate-800 to-blue-600 bg-clip-text text-transparent">
+                    Peta Kabupaten/Kota di Provinsi {{ selectedProvinceName }}
+                  </h2>
+                  <p class="text-slate-600 text-lg">
+                    Klik pada kabupaten/kota untuk melihat detail inovasi
+                  </p>
+                </div>
+
+                <!-- Layout: Peta Kabupaten (kiri) dan Daftar Inovasi (kanan) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <!-- Peta Kabupaten - Kiri -->
+                  <div class="space-y-4">
+                    <div class="overflow-hidden rounded-lg shadow-md relative">
+                      <svg viewBox="-100 0 1000 600" height="400" preserveAspectRatio="xMidYMid meet" class="map-kabupaten w-full">
                         <path
                           v-for="kab in kabupaten"
                           :key="kab.id_kabkot"
@@ -352,7 +179,8 @@
                           @mouseenter="handleKabupatenMapHover($event, kab)"
                           @mouseleave="handleKabupatenMapLeave"
                         >
-                          <title>{{ kab.nama_kabkot }}</title>                        </path>
+                          <title>{{ kab.nama_kabkot }}</title>
+                        </path>
                         <!-- Tooltip untuk peta kabupaten -->
                         <foreignObject v-if="kabupatenTooltip.visible" :x="kabupatenTooltip.x" :y="kabupatenTooltip.y" width="280" height="100">
                           <div class="bg-white border border-blue-400 rounded-lg p-3 shadow-lg text-base font-semibold text-blue-700 z-50">
@@ -361,10 +189,13 @@
                           </div>
                         </foreignObject>
                       </svg>
-                    </div><div class="bg-white rounded-lg shadow p-6 animate-fadeIn w-full">
-                      <h2 class="font-bold mb-4 text-blue-700 text-lg">
-                        Indeks {{ getIndexLabel(dialogSelectedIndex) }} {{ dialogKabkotName }}
-                      </h2>
+                    </div>
+
+                    <!-- Chart Indeks Kabupaten -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                      <h3 class="font-bold mb-4 text-blue-700 text-lg">
+                        Indeks {{ getIndexLabel(dialogSelectedIndex) }} {{ dialogKabkotName || selectedProvinceName }}
+                      </h3>
                       <select v-model="dialogSelectedIndex" class="mb-6 p-3 border border-blue-300 rounded-lg w-full text-sm">
                         <option value="indeks_skor">Indeks Inovasi Daerah</option>
                         <option value="ipp_skor">Indeks Pelayanan Publik</option>
@@ -435,7 +266,7 @@
                                     const predicateKey = dialogSelectedIndex === 'indeks_skor' ? 'indeks_predikat' :
                                                        dialogSelectedIndex === 'ipp_skor' ? 'ipp_predikat' :
                                                        dialogSelectedIndex === 'idsd_skor' ? 'idsd_predikat' : 'rb_predikat'
-  
+
                                     return [
                                       `Tahun: ${dataPoint.indeks_tahun}`,
                                       `Skor: ${dataPoint[scoreKey]}`,
@@ -461,7 +292,8 @@
                                   }
                                 }
                               }
-                            }                          }"
+                            }
+                          }"
                           style="height:280px"
                         />
                       </div>
@@ -470,10 +302,204 @@
                       </div>
                     </div>
                   </div>
+
+                  <!-- Daftar Inovasi - Kanan -->
+                  <div class="space-y-4">
+                    <div class="bg-white rounded-lg shadow p-6">
+                      <h3 class="font-bold mb-4 text-blue-700 flex items-center justify-between">
+                        <span>Daftar Ide Inovasi {{ selectedKabkot ? dialogKabkotName : selectedProvinceName }}</span>
+                        <div class="flex items-center gap-2">
+                          <button 
+                            v-if="selectedKabkot" 
+                            @click="resetToProvinceData"
+                            class="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                            title="Lihat semua inovasi di provinsi"
+                          >
+                            Lihat Semua di Provinsi
+                          </button>
+                          <button 
+                            @click="closeKabupatenView"
+                            class="text-xs px-3 py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                            title="Tutup peta kabupaten"
+                          >
+                            Tutup
+                          </button>
+                        </div>
+                      </h3>
+
+                      <!-- Info Boxes -->
+                      <div class="flex justify-between gap-3 mb-4">
+                        <!-- Province Info Box -->
+                        <div class="flex-1 p-3 border border-gray-300 rounded-lg shadow-sm bg-gradient-to-br from-blue-50 to-blue-100 text-center">
+                          <div class="font-semibold text-blue-800 text-sm mb-1">
+                            {{ selectedProvinceName }}
+                          </div>
+                          <div class="text-blue-600 font-bold text-lg">
+                            {{ provinsis.find(p => p.id_provinsi === selectedProvinsi)?.jumlah_inovasi || 0 }} inovasi
+                          </div>
+                          <div class="text-xs text-blue-500 mt-1">Provinsi</div>
+                        </div>
+
+                        <!-- Kabupaten Info Box -->
+                        <div class="flex-1 p-3 border border-gray-300 rounded-lg shadow-sm text-center"
+                             :class="selectedKabkot ? 'bg-gradient-to-br from-green-50 to-green-100' : 'bg-gradient-to-br from-gray-50 to-gray-100'">
+                          <div class="font-semibold text-sm mb-1"
+                               :class="selectedKabkot ? 'text-green-800' : 'text-gray-600'">
+                            {{ selectedKabkot ? dialogKabkotName : 'Pilih Kabupaten/Kota' }}
+                          </div>
+                          <div class="font-bold text-lg"
+                               :class="selectedKabkot ? 'text-green-600' : 'text-gray-500'">
+                            {{ selectedKabkot ? 
+                               (kabupaten.find(k => k.id_kabkot === selectedKabkot)?.jumlah_inovasi || 0) + ' inovasi' : 
+                               'N/A' 
+                            }}
+                          </div>
+                          <div class="text-xs mt-1"
+                               :class="selectedKabkot ? 'text-green-500' : 'text-gray-400'">
+                            Kabupaten/Kota
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Download Buttons -->
+                      <div v-if="dialogKabkotInovasi.length > 0" class="mb-4">
+                        <div class="text-sm text-gray-600 mb-2">
+                          📊 Tersedia {{ dialogKabkotInovasi.length }} data untuk diunduh
+                        </div>
+                        <ClientOnly>
+                          <div class="flex flex-wrap gap-2">
+                            <button 
+                              @click="downloadExcel"
+                              :disabled="isDownloading || dialogKabkotInovasi.length === 0"
+                              class="flex items-center gap-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Download data sebagai Excel"
+                            >
+                              <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                              </svg>
+                              <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+                              </svg>
+                              Excel
+                            </button>
+                            <button 
+                              @click="downloadCSV"
+                              :disabled="isDownloading || dialogKabkotInovasi.length === 0"
+                              class="flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Download data sebagai CSV"
+                            >
+                              <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                              </svg>
+                              <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+                              </svg>
+                              CSV
+                            </button>
+                            <button 
+                              @click="downloadPDF"
+                              :disabled="isDownloading || dialogKabkotInovasi.length === 0"
+                              class="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Download data sebagai PDF"
+                            >
+                              <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                              </svg>
+                              <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+                              </svg>
+                              PDF
+                            </button>
+                          </div>
+                        </ClientOnly>
+                      </div>
+
+                      <!-- Pagination Controls -->
+                      <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-2">
+                          <label class="text-sm font-medium text-gray-700">Tampilkan:</label>
+                          <select v-model="itemsPerPage" @change="currentPage = 1" class="px-3 py-1 border border-gray-300 rounded-md text-sm">
+                            <option :value="25">25</option>
+                            <option :value="50">50</option>
+                            <option :value="100">100</option>
+                          </select>
+                          <span class="text-sm text-gray-600">dari {{ dialogKabkotInovasi.length }} item</span>
+                        </div>
+
+                        <div v-if="totalPages > 1" class="flex items-center gap-1">
+                          <button
+                            @click="currentPage = Math.max(1, currentPage - 1)"
+                            :disabled="currentPage === 1"
+                            class="px-2 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            ‹
+                          </button>
+
+                          <span class="px-3 py-1 text-sm">
+                            {{ currentPage }} / {{ totalPages }}
+                          </span>
+
+                          <button
+                            @click="currentPage = Math.min(totalPages, currentPage + 1)"
+                            :disabled="currentPage === totalPages"
+                            class="px-2 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            ›
+                          </button>
+                        </div>
+                      </div>
+
+                      <div style="max-height:600px;overflow:auto;">
+                        <div style="overflow-x:auto;">
+                          <Table class="inovasi-table w-full">
+                            <thead>
+                              <tr>
+                                <th>No</th>
+                                <th>Tahun</th>
+                                <th>Judul Inovasi</th>
+                                <th>SDGS</th>
+                                <th>Inovator</th>
+                                <th>Unit/Instansi</th>
+                                <th>Deskripsi</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(item, index) in currentInovasi" :key="item.id">
+                                <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                                <td>{{ item.tahun }}</td>
+                                <td>{{ item.judul_inovasi }}</td>
+                                <td>{{ item.sdgs?.nama || '-' }}</td>
+                                <td>{{ item.inovator || '-' }}</td>
+                                <td>{{ item.inovator_detail?.inovator || '-' }} / {{ item.instansi?.agency_name || '-' }}</td>
+                                <td>{{ item.deskripsi || 'Tidak ada deskripsi' }}</td>
+                              </tr>
+                              <tr v-if="currentInovasi.length === 0">
+                                <td colspan="7" class="text-center text-gray-500 py-4">
+                                  <div v-if="selectedKabkot">
+                                    Tidak ada data inovasi untuk {{ dialogKabkotName }}
+                                  </div>
+                                  <div v-else>
+                                    Tidak ada data inovasi untuk {{ selectedProvinceName }}
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </div>
+                      </div>
+
+                      <!-- Bottom Pagination Info -->
+                      <div v-if="dialogKabkotInovasi.length > 0" class="mt-3 text-xs text-gray-600 text-center">
+                        Menampilkan {{ (currentPage - 1) * itemsPerPage + 1 }} -
+                        {{ Math.min(currentPage * itemsPerPage, dialogKabkotInovasi.length) }}
+                        dari {{ dialogKabkotInovasi.length }} total item
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </template>
-          </Dialog>
+            </section>
+          </ClientOnly>
 
           <!-- Legend -->
           <div class="legend bg-white p-4 rounded-lg shadow-md mt-6">
@@ -1211,7 +1237,7 @@ const loadKabupaten = async (id_provinsi: number) => {
     selectedKabkot.value = null // Reset selected kabkot when province is selected
     dialogKabkotName.value = selectedProvinceName.value || `Provinsi ${id_provinsi}`
     currentPage.value = 1 // Reset pagination
-    dialogOpen.value = true
+    // dialogOpen.value = true // Removed: no longer open dialog
   } catch (error) {
     console.error('Error fetching kabupaten:', error)
   }
@@ -1294,41 +1320,37 @@ function handleKabupatenMapLeave() {
   kabupatenTooltip.value = { ...kabupatenTooltip.value, visible: false }
 }
 
-// Reset to province data
-async function resetToProvinceData() {
-  console.log('🔄 Resetting to province data for:', selectedProvinsi.value)
+// Close kabupaten view and reset to province map only
+function closeKabupatenView() {
+  selectedProvinsi.value = null
   selectedKabkot.value = null
-  dialogKabkotName.value = selectedProvinceName.value || `Provinsi ${selectedProvinsi.value}`
+  kabupaten.value = []
+  dialogKabkotIndeks.value = []
+  dialogKabkotName.value = ''
+  indeksInovasi.value = []
+  inovasiKabupaten.value = []
+  dialogKabkotInovasi.value = []
   currentPage.value = 1
-  
-  // Reload province data
-  if (selectedProvinsi.value) {
-    try {
-      // Load province-level index data
-      const { data: provIndeksData } = await useFetch(`/api/indeks_inovasi`, { 
-        query: { provId: selectedProvinsi.value, level: 'Provinsi' } 
-      })
-      
-      if (provIndeksData.value && typeof provIndeksData.value === 'object' && 'data' in provIndeksData.value) {
-        dialogKabkotIndeks.value = (provIndeksData.value as any).data as IndeksInovasi[]
-      } else {
-        dialogKabkotIndeks.value = []
-      }
-      
-      // Load all innovations from the province
-      const { data: provInovasiData } = await useFetch(`/api/inolands`, { 
-        query: { provId: selectedProvinsi.value } 
-      })
-      
-      if (provInovasiData.value && typeof provInovasiData.value === 'object' && 'data' in provInovasiData.value) {
-        dialogKabkotInovasi.value = (provInovasiData.value as any).data as Inovasi[]
-        console.log('✅ Reset to province data, count:', dialogKabkotInovasi.value.length)
-      } else {
-        dialogKabkotInovasi.value = []
-      }
-    } catch (error) {
-      console.error('❌ Error resetting to province data:', error)
+}
+
+// Reset to province data when kabupaten is selected
+async function resetToProvinceData() {
+  if (!selectedProvinsi.value) return
+  selectedKabkot.value = null
+  dialogKabkotName.value = selectedProvinceName.value
+  currentPage.value = 1
+  try {
+    const { data: provInovasiData } = await useFetch(`/api/inolands`, {
+      query: { provId: selectedProvinsi.value }
+    })
+    if (provInovasiData.value && typeof provInovasiData.value === 'object' && 'data' in provInovasiData.value) {
+      dialogKabkotInovasi.value = (provInovasiData.value as any).data as Inovasi[]
+    } else {
+      dialogKabkotInovasi.value = []
     }
+  } catch (error) {
+    console.error('Error resetting to province data:', error)
+    dialogKabkotInovasi.value = []
   }
 }
 

@@ -464,7 +464,7 @@ const filteredInstansi = computed(() => {
 
 const { locale, t } = useI18n()
 
-const menu = computed(() => [
+const menu = ref([
   { name: t('beranda'), path: '/' },
   { name: t('pembelajaranInovasi'), path: '/layanan' },
   { name: t('cariInovasi'), path: '/cari' },
@@ -482,6 +482,26 @@ const menu = computed(() => [
   }
 ])
 
+function updateMenu() {
+  menu.value = [
+    { name: t('beranda'), path: '/' },
+    { name: t('pembelajaranInovasi'), path: '/layanan' },
+    { name: t('cariInovasi'), path: '/cari' },
+    { name: t('referensi'), path: '/referensi' },
+    { 
+      name: t('tentangInoland'), 
+      path: '#',
+      submenu: [
+        { name: t('profilInoland'), path: '/profil-inoland' },
+        { name: t('dokumentasiMedia'), path: '/galeri' },
+        { name: t('ceritaKeberhasilan'), path: '/cerita-keberhasilan' },
+        { name: t('surveyKesiapanInovasi'), path: '/survey-kesiapan-inovasi' },
+        { name: t('faq'), path: '/faq' }
+      ]
+    }
+  ]
+}
+
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
   if (!isMenuOpen.value) {
@@ -498,6 +518,7 @@ function changeLanguage(lng) {
   locale.value = lng
   localStorage.setItem('i18n_locale', lng)
   console.log('Current locale:', locale.value)
+  updateMenu()
 }
 
 function openPendampingan() {
@@ -604,6 +625,7 @@ onMounted(async () => {
     console.log('Loading saved locale:', savedLocale)
     locale.value = savedLocale
   }
+  updateMenu()
   
   // Check for Google OAuth login success from URL
   const urlParams = new URLSearchParams(window.location.search)
