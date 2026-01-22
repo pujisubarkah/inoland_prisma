@@ -14,6 +14,14 @@
             Koleksi cerita sukses inovasi daerah yang telah diimplementasikan dan memberikan dampak positif bagi masyarakat. Kisah-kisah ini menjadi inspirasi bagi daerah lain untuk mengembangkan inovasi yang bermanfaat.
           </p>
         </div>
+        <div class="mt-6 flex justify-center">
+           <NuxtLink to="/cerita-keberhasilan/baru" class="inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold">
+             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+             </svg>
+             Berbagi Cerita Anda
+           </NuxtLink>
+        </div>
       </div>
 
       <!-- Success Stories Grid -->

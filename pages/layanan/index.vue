@@ -61,28 +61,20 @@
     </div>
 
     <!-- Dynamic Component Rendering -->
-    <div v-else>
-      <component :is="currentComponent" @back="selectedEcosystem = null" />
-    </div>
+    <!-- Sekarang navigasi ke halaman, tidak perlu render dinamis di sini -->
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import LaboratoriumInovasi from '~/components/laboratorium_inovasi.vue'
-import EkosistemInovasi from '~/components/ekosistem_inovasi.vue'
+import { useRouter } from 'vue-router'
 
-// Reactive state
-const selectedEcosystem = ref(null) // null for overview, 'labinov' or 'ekosistem'
-
-// Computed for dynamic component
-const currentComponent = computed(() => {
-  return selectedEcosystem.value === 'labinov' ? LaboratoriumInovasi : EkosistemInovasi
-})
-
-// Methods
+const router = useRouter()
 const selectEcosystem = (ecosystem) => {
-  selectedEcosystem.value = ecosystem
+  if (ecosystem === 'labinov') {
+    router.push('/layanan/laboratorium_inovasi')
+  } else if (ecosystem === 'ekosistem') {
+    router.push('/layanan/ekosistem_inovasi')
+  }
 }
 
 // Set page title
