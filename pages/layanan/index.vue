@@ -4,7 +4,7 @@
     <!-- Ecosystem Selection (like Udemy course cards) -->
     <div v-if="!selectedEcosystem" class="px-8 py-8">
       <div class="max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Pilih Pembelajaran Inovasi</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">{{ $t('layananH1') }}</h1>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Laboratorium Inovasi Card -->
           <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
@@ -15,19 +15,18 @@
               </svg>
             </div>
             <div class="p-6">
-              <h2 class="text-xl font-semibold text-gray-800 mb-2">Laboratorium Inovasi</h2>
+              <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ $t('laboratoriumInovasi') }}</h2>
               <p class="text-gray-600 mb-4">
-                Pembelajaran mandiri Laboratorium Inovasi dengan 6 tahap inovasi lengkap dengan quiz dan sertifikat. 
-                Pelajari proses inovasi dari Drum Up hingga Display.
+                {{ $t('laboratoriumDesc') }}
               </p>
               <div class="flex items-center mb-4">
-                <span class="text-sm text-gray-500">6 Modul • Sertifikat Tersedia</span>
+                <span class="text-sm text-gray-500">{{ $t('laboratoriumMeta') }}</span>
               </div>
               <button 
                 @click="selectEcosystem('labinov')"
                 class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Mulai Belajar
+                {{ $t('mulaiBelajar') }}
               </button>
             </div>
           </div>
@@ -41,18 +40,18 @@
               </svg>
             </div>
             <div class="p-6">
-              <h2 class="text-xl font-semibold text-gray-800 mb-2">Ekosistem Inovasi</h2>
+              <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ $t('ekosistemInovasi') }}</h2>
               <p class="text-gray-600 mb-4">
-                Eksplorasi ekosistem inovasi yang lebih luas, termasuk kolaborasi, teknologi, dan implementasi inovasi di berbagai sektor.
+                {{ $t('ekosistemDesc') }}
               </p>
               <div class="flex items-center mb-4">
-                <span class="text-sm text-gray-500">Modul Dinamis • Sertifikat Tersedia</span>
+                <span class="text-sm text-gray-500">{{ $t('ekosistemMeta') }}</span>
               </div>
               <button 
                 @click="selectEcosystem('ekosistem')"
                 class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
               >
-                Mulai Belajar
+                {{ $t('mulaiBelajar') }}
               </button>
             </div>
           </div>
@@ -69,6 +68,7 @@
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const { t } = useI18n()
 const selectEcosystem = (ecosystem) => {
   if (ecosystem === 'labinov') {
     router.push('/layanan/laboratorium_inovasi')
@@ -79,9 +79,9 @@ const selectEcosystem = (ecosystem) => {
 
 // Set page title
 useHead({
-  title: 'Pembelajaran Inovasi | INOLAND',
+  title: t('layananTitle'),
   meta: [
-    { name: 'description', content: 'Pembelajaran mandiri ekosistem inovasi dengan berbagai modul dan sertifikat' }
+    { name: 'description', content: t('layananMetaDesc') }
   ]
 })
 </script>

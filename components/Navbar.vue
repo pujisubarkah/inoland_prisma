@@ -71,6 +71,7 @@
           class="p-1 rounded transition-all duration-200"
           :class="locale === 'id' ? 'bg-white/90 shadow-sm' : 'hover:bg-white/20'"
           aria-label="Bahasa Indonesia"
+          type="button"
         >
           <img src="https://flagcdn.com/w40/id.png" alt="ID" class="w-6 h-4 object-cover rounded" />
         </button>
@@ -79,6 +80,7 @@
           class="p-1 rounded transition-all duration-200"
           :class="locale === 'en' ? 'bg-white/90 shadow-sm' : 'hover:bg-white/20'"
           aria-label="English"
+          type="button"
         >
           <img src="https://flagcdn.com/w40/gb.png" alt="EN" class="w-6 h-4 object-cover rounded" />
         </button>
@@ -264,7 +266,7 @@
                 type="submit"
                 class="w-full bg-blue-700 text-white font-bold py-3 sm:py-2 rounded-lg hover:bg-blue-800 transition touch-manipulation"
               >
-                {{ $t('masukButton') }}
+                {{ $t('masuk') }}
               </button>
               <div v-if="loginError" class="mt-3 text-red-600 text-sm text-center font-semibold">
                 {{ loginError }}
@@ -426,7 +428,7 @@
 <script setup>
 import { UserCircleIcon } from '@heroicons/vue/24/solid'
 import { toast } from 'vue-sonner'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 
 const isMenuOpen = ref(false)
 const isProfileOpen = ref(false)
@@ -464,23 +466,7 @@ const filteredInstansi = computed(() => {
 
 const { locale, t } = useI18n()
 
-const menu = ref([
-  { name: t('beranda'), path: '/' },
-  { name: t('pembelajaranInovasi'), path: '/layanan' },
-  { name: t('cariInovasi'), path: '/cari' },
-  { name: t('referensi'), path: '/referensi' },
-  { 
-    name: t('tentangInoland'), 
-    path: '#',
-    submenu: [
-      { name: t('profilInoland'), path: '/profil-inoland' },
-      { name: t('dokumentasiMedia'), path: '/galeri' },
-      { name: t('ceritaKeberhasilan'), path: '/cerita-keberhasilan' },
-      { name: t('surveyKesiapanInovasi'), path: '/survey-kesiapan-inovasi' },
-      { name: t('faq'), path: '/faq' }
-    ]
-  }
-])
+const menu = ref([])
 
 function updateMenu() {
   menu.value = [
@@ -501,122 +487,15 @@ function updateMenu() {
     }
   ]
 }
-
-function toggleMenu() {
-  isMenuOpen.value = !isMenuOpen.value
-  if (!isMenuOpen.value) {
-    mobileSubmenuOpen.value = null // Close mobile submenu when main menu closes
-  }
-}
-
-function toggleProfile() {
-  isProfileOpen.value = !isProfileOpen.value
-}
-
-function changeLanguage(lng) {
-  console.log('Changing language to:', lng)
-  locale.value = lng
-  localStorage.setItem('i18n_locale', lng)
-  console.log('Current locale:', locale.value)
+function changeLanguage(lang) {
+  locale.value = lang
+  localStorage.setItem('i18n_locale', lang)
   updateMenu()
 }
 
-function openPendampingan() {
-  // Close mobile menu if open
-  isMenuOpen.value = false
-  // Navigate to ajukan-pendampingan page
-  navigateTo('/ajukan-pendampingan')
-}
-
-async function submitLogin() {
-  loginError.value = ''
-  try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(loginForm.value)
-    })
-    const data = await res.json()
-    if (res.ok && data.user) {
-      localStorage.setItem('userProfile', JSON.stringify(data.user))
-      userProfile.value = data.user
-      isLoginModalOpen.value = false
-      loginError.value = ''
-      
-      // Redirect based on role_id
-      if (data.user.role_id === 1) {
-        navigateTo('/admin')
-      } else if (data.user.role_id === 4) {
-        navigateTo('/admin_instansi')
-      }
-    } else {
-      loginError.value = data.message || t('loginGagal')
-    }
-  } catch (error) {
-    console.error('Login error:', error)
-    loginError.value = t('loginGagal')
-  }
-}
-
-async function loginWithGoogle() {
-  try {
-    const res = await fetch('/api/auth/google')
-    const data = await res.json()
-
-    if (res.ok && data.success) {
-      // Redirect to Google OAuth URL
-      window.location.href = data.authUrl
-    } else {
-      loginError.value = data.message || t('loginDenganGoogleGagal')
-    }
-  } catch (error) {
-    console.error('Google login error:', error)
-    loginError.value = t('loginDenganGoogleGagal')
-  }
-}
-
-async function submitRegister() {
-  try {
-    const res = await fetch('/api/auth/registrasi', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(registerForm.value)
-    })
-    const data = await res.json()
-    if (res.ok) {
-      // Registrasi sukses, tutup modal dan reset form
-      showRegister.value = false
-      isLoginModalOpen.value = false
-      registerForm.value = {
-        namalengkap: '',
-        username: '',
-        instansi: '',
-        email: '',
-        password: '',
-        confirm: ''
-      }
-      toast.success(t('pendaftaranBerhasil'))
-    } else {
-      alert(data.message || t('registrasiGagal'))
-    }
-  } catch (error) {
-    console.error('Registration error:', error)
-    alert(t('registrasiGagal'))
-  }
-}
-
-async function handleLogout() {
-  try {
-    userProfile.value = null
-    localStorage.removeItem('userProfile')
-    toast.success(t('berhasilLogout'))
-    // Redirect ke beranda
-    window.location.href = '/'
-  } catch (error) {
-    console.error('Logout error:', error)
-    toast.error(t('logoutGagal'))
-  }
-}
+watch(locale, () => {
+  updateMenu()
+})
 
 onMounted(async () => {
   // Set bahasa dari localStorage
@@ -664,7 +543,7 @@ onMounted(async () => {
     if (userProfile.value && userProfile.value.role_id === 1) {
       fetch('/api/notifications?role=admin')
         .then(res => res.json())
-        .then(data => {
+        .then((data) => {
           adminNotifCount.value = Array.isArray(data) ? data.length : 0
         })
         .catch(() => { adminNotifCount.value = 0 })
