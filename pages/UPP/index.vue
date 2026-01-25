@@ -17,51 +17,42 @@
       </button>
 
       <!-- Sidebar Menu -->
-      <ul class="space-y-2">
-        <li>
-          <button
-            @click="setActive('Notifikasi')"
-            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2 relative"
-          >
-            <span v-if="isSidebarOpen" class="ml-2">Notifikasi</span>
-            <span v-else>🔔</span>
-            <span v-if="unreadCount > 0" class="absolute right-2 top-2 bg-red-500 text-xs rounded-full px-2">
-              {{ unreadCount }}
-            </span>
-          </button>
-        </li>
-        <li>
-          <button
-            @click="setActive('Profil')"
-            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
-          >
-            <span v-if="isSidebarOpen" class="ml-2">Profil</span>
-            <span v-else>👤</span>
-          </button>
-        </li>
-        <li>
-          <button
-            @click="setActive('Ide')"
-            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
-          >
-            <span v-if="isSidebarOpen" class="ml-2">Ide Inovasi</span>
-            <span v-else>💡</span>
-          </button>
-        </li>
-        <li>
-          <button
-            @click="setActive('Rencana')"
-            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
-          >
-            <span v-if="isSidebarOpen" class="ml-2">Rencana Aksi</span>
-            <span v-else>📋</span>
-          </button>
-        </li>
-      </ul>
+          <ul class="space-y-2">
+            <li>
+              <button
+                @click="setActive('Notifikasi')"
+                class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2 relative"
+              >
+                <span v-if="isSidebarOpen" class="ml-2">Notifikasi</span>
+                <span v-else>🔔</span>
+                <span v-if="unreadCount > 0" class="absolute right-2 top-2 bg-red-500 text-xs rounded-full px-2">
+                  {{ unreadCount }}
+                </span>
+              </button>
+            </li>
+            <li>
+              <button
+                @click="setActive('Ide')"
+                class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
+              >
+                <span v-if="isSidebarOpen" class="ml-2">Ide Inovasi</span>
+                <span v-else>💡</span>
+              </button>
+            </li>
+            <li>
+              <button
+                @click="setActive('Rencana')"
+                class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
+              >
+                <span v-if="isSidebarOpen" class="ml-2">Rencana Aksi</span>
+                <span v-else>📋</span>
+              </button>
+            </li>
+          </ul>
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1">
+      <div class="flex-1">
       <!-- Tampilkan daftar notifikasi jika dipilih -->
       <div v-if="activeComponent === 'Notifikasi'" class="p-8">
         <h3 class="text-xl font-bold mb-4">Notifikasi</h3>
@@ -72,7 +63,6 @@
         </ul>
         <div v-if="notifications.length === 0" class="text-gray-500">Tidak ada notifikasi.</div>
       </div>
-      <profil v-if="activeComponent === 'Profil'" />
       <InnovationIdeaForm v-if="activeComponent === 'Ide'" />
       <Rencana v-if="activeComponent === 'Rencana'" />
     </div>
@@ -81,12 +71,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import InnovationIdeaForm from '@/components/InnovationIdeaForm.vue'
-import Rencana from '@/components/Rencana.vue'
-import profil from '@/components/profil.vue'
+import InnovationIdeaForm from '@/pages/admin_instansi/InnovationIdeaForm.vue'
+import Rencana from '@/pages/admin_instansi/Rencana.vue'
 
 const isSidebarOpen = ref(false)
-const activeComponent = ref('Profil')
+const activeComponent = ref('Ide')
 
 // Dummy data notifikasi, ganti dengan fetch API sesuai kebutuhan
 const notifications = ref([

@@ -503,16 +503,20 @@ const menu = computed(() => [
 const adminPath = computed(() => {
   const u = userProfile.value
   if (!u) return null
-  if (u.role_id === 1 || u.role_id === '1') return '/admin'
+  if (u.role_id === 1 || u.role_id === '1') return '/super_admin'
+  if (u.role_id === 6 || u.role_id === '6') return '/admin'
   if (u.role_id === 4 || u.role_id === '4') return '/admin_instansi'
+  if (u.role_id === 5 || u.role_id === '5') return '/UPP'
   return null
 })
 
 const adminLabel = computed(() => {
   const u = userProfile.value
   if (!u) return ''
-  if (u.role_id === 1 || u.role_id === '1') return 'Admin'
+  if (u.role_id === 1 || u.role_id === '1') return 'Super Admin'
+  if (u.role_id === 6 || u.role_id === '6') return 'Admin'
   if (u.role_id === 4 || u.role_id === '4') return 'Admin Instansi'
+  if (u.role_id === 5 || u.role_id === '5') return 'UPP'
   return ''
 })
 
@@ -608,9 +612,13 @@ async function submitLogin() {
       // Redirect sesuai role (await navigation, then close modal)
       let target = '/'
       if (data.user.role_id === 1 || data.user.role_id === '1') {
+        target = '/super_admin'
+      } else if (data.user.role_id === 6 || data.user.role_id === '6') {
         target = '/admin'
       } else if (data.user.role_id === 4 || data.user.role_id === '4') {
         target = '/admin_instansi'
+      } else if (data.user.role_id === 5 || data.user.role_id === '5') {
+        target = '/UPP'
       }
       console.log('submitLogin: akan navigate ke', target)
       try {
@@ -667,9 +675,13 @@ onMounted(async () => {
       
       // Redirect based on role_id
       if (userData.role_id === 1) {
+        navigateTo('/super_admin')
+      } else if (userData.role_id === 6) {
         navigateTo('/admin')
       } else if (userData.role_id === 4) {
         navigateTo('/admin_instansi')
+      } else if (userData.role_id === 5) {
+        navigateTo('/UPP')
       }
       
       // Show success message
@@ -679,10 +691,10 @@ onMounted(async () => {
     }
   }
   
-  const stored = localStorage.getItem('userProfile')
-  if (stored) {
-    userProfile.value = JSON.parse(stored)
-    if (userProfile.value && userProfile.value.role_id === 1) {
+  const storedProfile = localStorage.getItem('userProfile')
+  if (storedProfile) {
+    userProfile.value = JSON.parse(storedProfile)
+    if (userProfile.value && (userProfile.value.role_id === 6 || userProfile.value.role_id === '6')) {
       fetch('/api/notifications?role=admin')
         .then(res => res.json())
         .then((data) => {

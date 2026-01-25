@@ -4,7 +4,6 @@
     <form @submit.prevent="handleSubmit">
       <div class="flex flex-col gap-4 mb-5">
         <InputField label="Nama OPD" v-model="formData.opdName" :autoFill="true" />
-   
       </div>
 
       <div class="flex justify-end mb-5">
@@ -54,7 +53,6 @@
         >
           <h2 class="text-xl font-bold mb-4">Tambah Kegiatan</h2>
           <div class="flex flex-col gap-2">
-            <!-- DropdownMenu Phase -->
             <div class="mb-2">
               <label class="block font-medium text-blue-700 mb-1">Phase</label>
               <select v-model="newActivity.phase" class="border p-2 rounded w-full bg-white text-left">
@@ -101,8 +99,6 @@ import Dialog from '@/components/ui/dialog/Dialog.vue'
 import InputField from '@/components/InputField.vue'
 import { Checkbox } from '@/components/ui/_exports/checkbox'
 
-
-
 const showModal = ref(false)
 
 const formData = reactive({
@@ -129,7 +125,6 @@ const newActivity = reactive({
 })
 
 function handleSubmit() {
-  // Validasi sebelum submit
   if (!formData.opdName || !formData.contactPerson || !formData.phone || !formData.email || !formData.innovationTitle) {
     alert('Lengkapi semua data utama!')
     return
@@ -166,13 +161,6 @@ function saveNewActivity() {
   showModal.value = false
 }
 
-function phaseLabel(val) {
-  if (val === 'preparation') return 'Persiapan'
-  if (val === 'implementation') return 'Pelaksanaan'
-  if (val === 'monitoring') return 'Monitoring'
-  return val
-}
-
 function monthName(idx) {
   const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des']
   return months[idx]
@@ -185,104 +173,33 @@ function monthName(idx) {
   backdrop-filter: blur(10px) saturate(160%);
   box-shadow: 0 8px 32px rgba(60,130,246,0.18), 0 2px 8px rgba(0,0,0,0.10);
   border-radius: 18px;
-  padding: 32px 32px 28px 32px; /* padding lebih besar */
+  padding: 32px 32px 28px 32px;
   width: 100%;
-  max-width: 640px; /* lebar dialog diperbesar */
+  max-width: 640px;
   animation: dialogFadeIn 0.35s cubic-bezier(.4,2,.3,1);
   border: 2px solid #3b82f6;
   transition: box-shadow 0.2s, border 0.2s;
 }
 
 @keyframes dialogFadeIn {
-  from { opacity: 0; transform: translateY(40px) scale(0.96);}
-  to   { opacity: 1; transform: translateY(0) scale(1);}
+  from { opacity: 0; transform: translateY(40px) scale(0.96);} 
+  to   { opacity: 1; transform: translateY(0) scale(1);} 
 }
 
-.dialog-content h2 {
-  text-align: center;
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #2563eb;
-  margin-bottom: 18px;
-  letter-spacing: 0.5px;
-}
-
-.dialog-content label {
-  font-weight: 500;
-  color: #2563eb;
-  margin-bottom: 2px;
-}
-
-.dialog-content select,
-.dialog-content input[type="text"] {
-  background: #f8fafc;
-  border: 1.5px solid #3b82f6;
-  font-size: 1rem;
-  padding: 8px 12px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  transition: border 0.2s;
-}
-
-.dialog-content select:focus,
-.dialog-content input[type="text"]:focus {
-  border-color: #2563eb;
-  outline: none;
-}
-
-.dialog-content .grid label {
-  background: #f1f5f9;
-  border-radius: 6px;
-  padding: 2px 6px;
-  margin-bottom: 2px;
-}
-
-.dialog-content .flex.justify-end button {
-  min-width: 90px;
-  font-weight: 600;
-  font-size: 1rem;
-  box-shadow: 0 2px 8px rgba(60,130,246,0.08);
-}
-
-.dialog-content .flex.justify-end button:last-child {
-  background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
-  border: none;
-}
-
-.dialog-content .flex.justify-end button:last-child:hover {
-  background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
-}
-
-.timeline-badge {
-  background: #f1f5f9;
-  border-radius: 12px;
-  padding: 8px 6px 4px 6px;
-  margin-bottom: 2px;
-  border: 2px solid #e0e7ef;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.06);
-  transition: border 0.2s, background 0.2s, box-shadow 0.2s;
-}
-.timeline-badge.active {
-  background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
-  border-color: #2563eb;
-  box-shadow: 0 4px 16px rgba(37,99,235,0.12);
-}
-.timeline-badge .month-label {
-  color: #2563eb;
-  letter-spacing: 0.5px;
-}
-.timeline-badge.active .month-label {
-  color: #fff;
-  text-shadow: 0 1px 4px #2563eb44;
-}
-.timeline-badge .mb-1 {
-  accent-color: #2563eb;
-}
+.dialog-content h2 { text-align: center; font-size: 1.35rem; font-weight: 700; color: #2563eb; margin-bottom: 18px; }
+.dialog-content label { font-weight: 500; color: #2563eb; margin-bottom: 2px; }
+.dialog-content select, .dialog-content input[type="text"] { background: #f8fafc; border: 1.5px solid #3b82f6; font-size: 1rem; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; transition: border 0.2s; }
+.dialog-content select:focus, .dialog-content input[type="text"]:focus { border-color: #2563eb; outline: none; }
+.dialog-content .grid label { background: #f1f5f9; border-radius: 6px; padding: 2px 6px; margin-bottom: 2px; }
+.dialog-content .flex.justify-end button { min-width: 90px; font-weight: 600; font-size: 1rem; box-shadow: 0 2px 8px rgba(60,130,246,0.08); }
+.dialog-content .flex.justify-end button:last-child { background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%); border: none; }
+.dialog-content .flex.justify-end button:last-child:hover { background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%); }
+.timeline-badge { background: #f1f5f9; border-radius: 12px; padding: 8px 6px 4px 6px; margin-bottom: 2px; border: 2px solid #e0e7ef; box-shadow: 0 2px 8px rgba(37,99,235,0.06); transition: border 0.2s, background 0.2s, box-shadow 0.2s; }
+.timeline-badge.active { background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%); border-color: #2563eb; box-shadow: 0 4px 16px rgba(37,99,235,0.12); }
+.timeline-badge .month-label { color: #2563eb; letter-spacing: 0.5px; }
+.timeline-badge.active .month-label { color: #fff; text-shadow: 0 1px 4px #2563eb44; }
 
 @media (max-width: 700px) {
-  .dialog-content {
-    max-width: 98vw;
-    padding: 18px 8px 12px 8px;
-  }
+  .dialog-content { max-width: 98vw; padding: 18px 8px 12px 8px; }
 }
 </style>

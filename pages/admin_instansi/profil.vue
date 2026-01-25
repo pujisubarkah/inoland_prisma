@@ -72,3 +72,9 @@ const handleSubmit = async () => {
   }
 }
 </script>
+
+<style scoped>
+.profile-form {
+  background: #fff;
+}
+</style>
