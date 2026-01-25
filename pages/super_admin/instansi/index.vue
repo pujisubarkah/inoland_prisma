@@ -132,7 +132,7 @@ const handleDelete = async (id) => {
         <thead class="bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 text-white">
           <tr>
             <th class="p-4 text-left">No</th>
-            <th class="p-4 text-left">Agency ID</th>
+            <th class="p-4 text-left">ID Instansi</th>
             <th class="p-4 text-left">Nama Instansi</th>
             <th class="p-4 text-left">Kategori</th>
             <th class="p-4 text-left">Aksi</th>
@@ -145,8 +145,10 @@ const handleDelete = async (id) => {
             <td class="p-4">{{ item.agency_name }}</td>
             <td class="p-4">{{ item.kategori?.kat_instansi || '-' }}</td>
             <td class="p-4">
-              <button @click="() => openEditModal(item)" class="mr-2 text-xs px-3 py-1 bg-yellow-100 text-yellow-800 rounded">Edit</button>
-              <button @click="() => handleDelete(item.id)" class="text-xs px-3 py-1 bg-red-100 text-red-700 rounded">Hapus</button>
+              <div class="flex items-center gap-2 whitespace-nowrap">
+                <button @click="() => openEditModal(item)" class="text-blue-600 hover:text-blue-700 bg-white border border-blue-200 rounded-lg px-3 py-1 shadow hover:scale-110 transition">✏️ Edit</button>
+                <button @click="() => handleDelete(item.id)" class="text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-lg px-3 py-1 shadow hover:scale-110 transition">🗑️ Hapus</button>
+              </div>
             </td>
           </tr>
           <tr v-if="!isLoading && instansi.length === 0"><td class="p-4 text-center" colspan="5">Tidak ada data instansi.</td></tr>
