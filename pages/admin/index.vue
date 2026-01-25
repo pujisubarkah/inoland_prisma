@@ -72,15 +72,6 @@
             <span v-else>🏆</span>
           </button>
         </li>
-        <li>
-          <button
-            @click="setActive('Role')"
-            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
-          >
-            <span v-if="isSidebarOpen" class="ml-2">User List</span>
-            <span v-else>👤</span>
-          </button>
-        </li>
       </ul>
     </div>
 
@@ -91,7 +82,6 @@
       <TambahInovasi v-if="activeComponent === 'Inovasi'" />
       <PengajuanPendampingan v-if="activeComponent === 'Pendampingan'" />
       <TambahArtikel v-if="activeComponent === 'Artikel'" />
-      <AturRole v-if="activeComponent === 'Role'" />
       <TambahSuccessStory v-if="activeComponent === 'SuccessStory'" />
     </div>
   </div>
@@ -101,7 +91,6 @@
 import { ref } from 'vue'
 import TambahBerita from './TambahBerita.vue'
 import TambahInovasi from './TambahInovasi.vue'
-import AturRole from './AturRole.vue'
 import TambahArtikel from './TambahArtikel.vue'
 import Dashboardinovasi from './Dashboardinovasi.vue'
 import PengajuanPendampingan from './PengajuanPendampingan.vue'
