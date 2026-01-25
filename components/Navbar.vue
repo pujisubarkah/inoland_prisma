@@ -150,6 +150,12 @@
             {{ item.name }}
           </NuxtLink>
         </li>
+        <!-- Mobile Admin Link -->
+        <li v-if="adminPath" class="my-1">
+          <NuxtLink :to="adminPath" @click="toggleMenu" class="w-full px-4 py-3 rounded-lg transition-colors bg-blue-600 text-white font-medium hover:bg-blue-700">
+            {{ adminLabel }}
+          </NuxtLink>
+        </li>
         <!-- CTA Button for Mobile -->
         <li class="my-1 mt-3">
           <button
@@ -161,7 +167,12 @@
             {{ $t('ajukanPendampingan') }}
           </button>
         </li>
-      </ul>      <!-- Profile Menu -->
+      </ul>
+      <div v-if="adminPath" class="hidden lg:block mr-2">
+        <NuxtLink :to="adminPath" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+          {{ adminLabel }}
+        </NuxtLink>
+      </div>      <!-- Profile Menu -->
       <div v-if="userProfile" class="relative">
         <button
           class="flex items-center gap-1 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg bg-blue-500/30 border border-blue-400/30 shadow-sm backdrop-blur-sm hover:bg-blue-400/40 hover:scale-105 transition-all duration-200 touch-manipulation"
@@ -429,6 +440,8 @@
 import { UserCircleIcon } from '@heroicons/vue/24/solid'
 import { toast } from 'vue-sonner'
 import { onMounted, ref, computed, watch } from 'vue'
+import { navigateTo } from '#app'
+import { useUserStore } from '@/stores/user'
 
 const isMenuOpen = ref(false)
 const isProfileOpen = ref(false)
@@ -446,6 +459,9 @@ const loginForm = ref({
   email: '',
   password: ''
 })
+
+// Pinia user store (for logout/reset)
+const userStore = useUserStore()
 
 const registerForm = ref({
   username: '',
@@ -484,13 +500,144 @@ const menu = computed(() => [
   }
 ])
 
+const adminPath = computed(() => {
+  const u = userProfile.value
+  if (!u) return null
+  if (u.role_id === 1 || u.role_id === '1') return '/admin'
+  if (u.role_id === 4 || u.role_id === '4') return '/admin_instansi'
+  return null
+})
+
+const adminLabel = computed(() => {
+  const u = userProfile.value
+  if (!u) return ''
+  if (u.role_id === 1 || u.role_id === '1') return 'Admin'
+  if (u.role_id === 4 || u.role_id === '4') return 'Admin Instansi'
+  return ''
+})
+
 function changeLanguage(lang) {
   setLocale(lang)
   localStorage.setItem('i18n_locale', lang)
 }
 
+function handleLogout() {
+  try {
+    // Clear local storage entries used for auth
+    localStorage.removeItem('userProfile')
+    try {
+      localStorage.removeItem('user')
+    } catch (e) {
+      // ignore
+    }
+  } catch (err) {
+    console.error('handleLogout: error clearing localStorage', err)
+  }
+
+  // Reset Pinia store fields if available
+  try {
+    if (userStore) {
+      userStore.user_id = null
+      userStore.nama_lengkap = ''
+      userStore.email = ''
+      userStore.role_id = null
+      userStore.instansi = ''
+      userStore._loaded = true
+    }
+  } catch (err) {
+    console.error('handleLogout: error resetting userStore', err)
+  }
+
+  // Update local reactive profile
+  userProfile.value = null
+  isProfileOpen.value = false
+  toast.success(t('Logout berhasil'))
+  // Navigate to home
+  try {
+    navigateTo('/')
+  } catch (err) {
+    console.error('handleLogout: navigateTo error', err)
+    // fallback
+    if (typeof window !== 'undefined') window.location.href = '/'
+  }
+}
+
 function openPendampingan() {
   navigateTo('/ajukan-pendampingan')
+}
+
+function toggleMenu() {
+  isMenuOpen.value = !isMenuOpen.value
+  // Tutup semua submenu mobile saat menu utama ditutup
+  if (!isMenuOpen.value) {
+    mobileSubmenuOpen.value = null
+  }
+}
+
+function toggleProfile() {
+  isProfileOpen.value = !isProfileOpen.value
+  // If opening profile, close other overlays that could interfere
+  if (isProfileOpen.value) {
+    isLoginModalOpen.value = false
+    isMenuOpen.value = false
+    mobileSubmenuOpen.value = null
+  }
+}
+
+async function submitLogin() {
+  loginError.value = ''
+  try {
+    console.log('submitLogin: mengirim credentials', loginForm.value.email)
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginForm.value)
+    })
+    const data = await res.json()
+    console.log('submitLogin: response', data)
+    // Some auth endpoints return `{ message, user }` without `success` flag.
+    // Treat presence of `data.user` as successful login as a fallback.
+    if ((data.success === true) || data.user) {
+      try {
+        localStorage.setItem('userProfile', JSON.stringify(data.user))
+        userProfile.value = data.user
+      } catch (storageErr) {
+        console.error('submitLogin: localStorage error', storageErr)
+      }
+      toast.success(t('berhasilLogin'))
+      // Redirect sesuai role (await navigation, then close modal)
+      let target = '/'
+      if (data.user.role_id === 1 || data.user.role_id === '1') {
+        target = '/admin'
+      } else if (data.user.role_id === 4 || data.user.role_id === '4') {
+        target = '/admin_instansi'
+      }
+      console.log('submitLogin: akan navigate ke', target)
+      try {
+        await navigateTo(target)
+        console.log('submitLogin: navigateTo selesai ke', target)
+      } catch (navErr) {
+        console.error('submitLogin: navigateTo error', navErr)
+      }
+      // Fallback: jika pathname belum berubah, lakukan redirect penuh
+      try {
+        if (typeof window !== 'undefined' && window.location.pathname !== target) {
+          console.warn('submitLogin: navigateTo tidak mengubah lokasi, fallback ke window.location.href')
+          window.location.href = target
+        }
+      } catch (fallErr) {
+        console.error('submitLogin: fallback redirect error', fallErr)
+      }
+      // Tutup modal setelah navigation selesai
+      isLoginModalOpen.value = false
+    } else {
+      loginError.value = data.message || 'Login gagal. Cek email dan password Anda.'
+      console.warn('submitLogin: login gagal', loginError.value)
+    }
+  } catch (err) {
+    loginError.value = 'Terjadi kesalahan saat login.'
+    console.error('submitLogin: Error fetch/login', err)
+  }
 }
 
 onMounted(async () => {

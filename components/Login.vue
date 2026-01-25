@@ -85,6 +85,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { navigateTo } from '#app'
 import { useUserStore } from '@/stores/user'
 
 const props = defineProps({
@@ -158,14 +159,33 @@ async function handleSubmit() {
         role_id: res.user.role_id,
         instansi: res.user.instansi || ''
       })
-      
+
       // Verify user data was saved to Pinia
       console.log('Pinia user_id after setUser:', userStore.user_id)
 
-      if (res.user.role_id === '1') {
-        navigateTo('/dashboard')
-      } else {
-        navigateTo('/')
+      // Redirect sesuai role
+      console.log('User role_id:', res.user.role_id, 'akan redirect...');
+      let target = '/'
+      if (res.user.role_id === 1 || res.user.role_id === '1') {
+        target = '/admin'
+      } else if (res.user.role_id === 4 || res.user.role_id === '4') {
+        target = '/admin_instansi'
+      }
+      console.log('Redirect ke', target)
+      try {
+        await navigateTo(target)
+        console.log('navigateTo selesai ke', target)
+      } catch (navErr) {
+        console.error('Error saat navigateTo:', navErr)
+      }
+      // Fallback jika navigateTo tidak berpindah halaman
+      try {
+        if (typeof window !== 'undefined' && window.location.pathname !== target) {
+          console.warn('handleSubmit: navigateTo tidak mengubah lokasi, fallback ke window.location.href')
+          window.location.href = target
+        }
+      } catch (fallErr) {
+        console.error('handleSubmit: fallback redirect error', fallErr)
       }
       emit('close')
     }

@@ -26,67 +26,39 @@
 
       <!-- Success Stories Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <!-- Story Card 1 -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-          <div class="h-48 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+        <div
+          v-for="story in successStories"
+          :key="story.id"
+          class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+        >
+          <div
+            class="h-48 flex items-center justify-center"
+            :class="story.colorClass || 'bg-gradient-to-br from-green-400 to-green-600'"
+          >
             <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
           <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Sistem E-Government Kabupaten X</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ story.title }}</h3>
             <p class="text-gray-600 text-sm mb-4">
-              Inovasi pelayanan publik berbasis digital yang meningkatkan efisiensi dan transparansi pemerintah daerah.
+              {{ story.summary }}
             </p>
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-green-600">Dampak: Efisiensi 70%</span>
+              <span class="text-sm font-medium text-green-600">Dampak: {{ story.impact }}</span>
               <button class="text-blue-600 hover:text-blue-800 font-medium text-sm">
                 Baca Selengkapnya →
               </button>
             </div>
           </div>
         </div>
-
-        <!-- Story Card 2 -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-          <div class="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
-          <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Bank Sampah Digital Kota Y</h3>
-            <p class="text-gray-600 text-sm mb-4">
-              Platform digital yang menghubungkan masyarakat dengan bank sampah untuk pengelolaan limbah yang lebih efektif.
-            </p>
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-blue-600">Dampak: Pengurangan Limbah 50%</span>
-              <button class="text-blue-600 hover:text-blue-800 font-medium text-sm">
-                Baca Selengkapnya →
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Story Card 3 -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-          <div class="h-48 bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Sistem Pembelajaran Online Daerah Z</h3>
-            <p class="text-gray-600 text-sm mb-4">
-              Platform edukasi yang memfasilitasi pembelajaran jarak jauh untuk meningkatkan akses pendidikan di daerah terpencil.
-            </p>
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-purple-600">Dampak: Jangkauan 10.000 Siswa</span>
-              <button class="text-blue-600 hover:text-blue-800 font-medium text-sm">
-                Baca Selengkapnya →
-              </button>
-            </div>
-          </div>
+        <div v-if="successStories.length === 0" class="col-span-full text-center text-gray-500 py-12">
+          Tidak ada cerita keberhasilan ditemukan.
         </div>
       </div>
 
@@ -105,6 +77,20 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+
+const successStories = ref([])
+
+onMounted(async () => {
+  try {
+    const { data } = await useFetch('/api/success-stories')
+    // Asumsikan data.value adalah array of stories
+    successStories.value = Array.isArray(data.value) ? data.value : []
+  } catch (e) {
+    successStories.value = []
+  }
+})
+
 // Page meta
 useHead({
   title: 'Cerita Keberhasilan - INOLAND',

@@ -19,7 +19,6 @@
             <th class="border-b text-base font-semibold p-4 pl-8 text-left w-24">Tahun</th>
             <th class="border-b text-base font-semibold p-4 text-left w-56">Judul Inovasi</th>
             <th class="border-b text-base font-semibold p-4 text-left w-40">KLD</th>
-            <!-- <th class="border-b text-base font-semibold p-4 text-left w-40">Urusan</th> -->
             <th class="border-b text-base font-semibold p-4 text-left w-32">Inovator</th>
             <th class="border-b text-base font-semibold p-4 text-left w-32">SDGS</th>
             <th class="border-b text-base font-semibold p-4 text-left w-96">Deskripsi</th>
@@ -36,7 +35,6 @@
             <td class="border-b p-4 font-bold text-blue-700">{{ item.tahun }}</td>
             <td class="border-b p-4 font-bold text-blue-700">{{ item.judul_inovasi }}</td>
             <td class="border-b p-4 font-bold text-blue-700">{{ item.kld }}</td>
-            <!-- <td class="border-b p-4 font-bold text-blue-700">{{ item.urusan || '-' }}</td> -->
             <td class="border-b p-4 font-bold text-blue-700">{{ item.inovator || '-' }}</td>
             <td class="border-b p-4 font-bold text-blue-700">{{ item.sdgs || '-' }}</td>
             <td class="border-b p-4 text-blue-700 w-96">
@@ -112,11 +110,6 @@
         <input v-model="formInovasi.kld" type="text" required placeholder="KLD"
           class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
       </div>
-      <!-- <div>
-        <label class="block text-sm font-bold text-white mb-2">Urusan</label>
-        <input v-model="formInovasi.urusan" type="text" required placeholder="Urusan"
-          class="w-full rounded-lg px-4 py-2 border border-blue-300 bg-white/90 text-blue-700 font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow" />
-      </div> -->
       <div>
         <label class="block text-sm font-bold text-white mb-2">Inovator</label>
         <input v-model="formInovasi.inovator" type="text" placeholder="Inovator"
@@ -170,7 +163,6 @@ const formInovasi = ref({
 const fetchInolands = async () => {
   try {
     const res = await $fetch('/api/inolands')
-    // Ambil data dari res.data
     inolands.value = Array.isArray(res.data) ? res.data : []
   } catch (error) {
     console.error('Gagal mengambil data inovasi:', error)
@@ -183,7 +175,6 @@ onMounted(() => {
 
 const handleEditClick = (id) => {
   console.log('Edit item with id:', id)
-  // Logika edit di sini
 }
 
 const deleteProduct = async (id) => {
@@ -196,7 +187,6 @@ const handlePageChange = (newPage) => {
 }
 
 const handleAddInovasi = () => {
-  // id baru dari Date.now(), wilayah kosong
   inolands.value.unshift({
     ...formInovasi.value,
     id: Date.now(),

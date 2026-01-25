@@ -112,6 +112,17 @@
         </form>
       </div>
     </div>
+
+    <!-- Quill Editor for Content -->
+    <ClientOnly>
+      <QuillEditor
+        v-model="form.content"
+        theme="snow"
+        toolbar="full"
+        class="bg-white rounded border border-blue-300"
+        style="min-height:200px;"
+      />
+    </ClientOnly>
   </div>
 </template>
 

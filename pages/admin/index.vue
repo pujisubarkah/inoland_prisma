@@ -47,11 +47,29 @@
         </li>
         <li>
           <button
+            @click="setActive('Pendampingan')"
+            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
+          >
+            <span v-if="isSidebarOpen" class="ml-2 text-left">Pengajuan Pendampingan</span>
+            <span v-else>📝</span>
+          </button>
+        </li>
+        <li>
+          <button
             @click="setActive('Artikel')"
             class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
           >
             <span v-if="isSidebarOpen" class="ml-2">Tambah Artikel</span>
             <span v-else>📝</span>
+          </button>
+        </li>
+        <li>
+          <button
+            @click="setActive('SuccessStory')"
+            class="bg-gray-700 w-full py-2 rounded flex items-center justify-start px-2"
+          >
+            <span v-if="isSidebarOpen" class="ml-2">Tambah Cerita Sukses</span>
+            <span v-else>🏆</span>
           </button>
         </li>
         <li>
@@ -71,19 +89,23 @@
       <Dashboardinovasi v-if="activeComponent === 'Dashboard'" />
       <TambahBerita v-if="activeComponent === 'Berita'" />
       <TambahInovasi v-if="activeComponent === 'Inovasi'" />
+      <PengajuanPendampingan v-if="activeComponent === 'Pendampingan'" />
       <TambahArtikel v-if="activeComponent === 'Artikel'" />
       <AturRole v-if="activeComponent === 'Role'" />
+      <TambahSuccessStory v-if="activeComponent === 'SuccessStory'" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import TambahBerita from '@/components/TambahBerita.vue'
-import TambahInovasi from '@/components/TambahInovasi.vue'
-import AturRole from '@/components/AturRole.vue'
-import TambahArtikel from '@/components/TambahArtikel.vue'
-import Dashboardinovasi from '@/components/Dashboardinovasi.vue'
+import TambahBerita from './TambahBerita.vue'
+import TambahInovasi from './TambahInovasi.vue'
+import AturRole from './AturRole.vue'
+import TambahArtikel from './TambahArtikel.vue'
+import Dashboardinovasi from './Dashboardinovasi.vue'
+import PengajuanPendampingan from './PengajuanPendampingan.vue'
+import TambahSuccessStory from './TambahSuccessStory.vue'
 
 const isSidebarOpen = ref(false)
 const activeComponent = ref('Dashboard')

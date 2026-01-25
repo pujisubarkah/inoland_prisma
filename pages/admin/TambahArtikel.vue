@@ -50,13 +50,15 @@
         </div>
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold mb-2">Konten Artikel (HTML)</label>
-          <QuillEditor
-            v-model="form.content"
-            theme="snow"
-            toolbar="full"
-            class="bg-white rounded border border-blue-300"
-            style="min-height:200px;"
-          />
+          <ClientOnly>
+            <QuillEditor
+              v-model="form.content"
+              theme="snow"
+              toolbar="full"
+              class="bg-white rounded border border-blue-300"
+              style="min-height:200px;"
+            />
+          </ClientOnly>
         </div>
         <button
           type="submit"
@@ -90,12 +92,8 @@
             <img :src="artikel.avatar" alt="avatar" class="w-10 h-10 rounded-full object-cover border" v-if="artikel.avatar"/>
           </td>
           <td class="py-2 px-4 flex gap-2">
-            <button @click="editArtikel(artikel)" class="text-blue-600 hover:text-blue-700 bg-white border border-blue-200 rounded-lg px-2 py-1 shadow hover:scale-110 transition">
-              ✏️
-            </button>
-            <button @click="deleteArtikel(artikel.id)" class="text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-lg px-2 py-1 shadow hover:scale-110 transition">
-              🗑️
-            </button>
+            <button @click="editArtikel(artikel)" class="text-blue-600 hover:text-blue-700 bg-white border border-blue-200 rounded-lg px-2 py-1 shadow hover:scale-110 transition">✏️</button>
+            <button @click="deleteArtikel(artikel.id)" class="text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-lg px-2 py-1 shadow hover:scale-110 transition">🗑️</button>
           </td>
         </tr>
         <tr v-if="daftarArtikel.length === 0">
@@ -105,82 +103,39 @@
     </table>
 
     <!-- Modal Edit Artikel -->
-    <div
-      v-if="showEditModal"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-      style="background: rgba(0,0,0,0.35); backdrop-filter: blur(2px);"
-    >
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0,0,0,0.35); backdrop-filter: blur(2px);">
       <div class="bg-white rounded-xl shadow-xl p-8 max-w-lg w-full mx-auto relative">
-        <button
-          @click="closeEditModal"
-          class="absolute top-4 right-4 text-gray-700 text-2xl font-bold hover:text-red-400 transition"
-          title="Tutup"
-        >×</button>
+        <button @click="closeEditModal" class="absolute top-4 right-4 text-gray-700 text-2xl font-bold hover:text-red-400 transition" title="Tutup">×</button>
         <h2 class="text-2xl font-bold text-blue-700 mb-6">Edit Artikel</h2>
         <form @submit.prevent="updateArtikel" class="space-y-5">
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Judul Artikel</label>
-            <input
-              v-model="form.title"
-              type="text"
-              class="shadcn-input w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
+            <input v-model="form.title" type="text" class="shadcn-input w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required />
           </div>
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Ringkasan</label>
-            <input
-              v-model="form.summary"
-              type="text"
-              class="shadcn-input w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+            <input v-model="form.summary" type="text" class="shadcn-input w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Tanggal</label>
-            <input
-              v-model="form.date"
-              type="date"
-              class="shadcn-input w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
+            <input v-model="form.date" type="date" class="shadcn-input w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required />
           </div>
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Avatar (URL gambar)</label>
-            <input
-              v-model="form.avatar"
-              type="text"
-              class="shadcn-input w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+            <input v-model="form.avatar" type="text" class="shadcn-input w-full px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
           <div>
             <label class="block text-gray-700 font-semibold mb-2">Konten Artikel (HTML)</label>
-            <QuillEditor
-              v-model="form.content"
-              theme="snow"
-              toolbar="full"
-              class="bg-white rounded border border-blue-300"
-              style="min-height:200px;"
-            />
+            <ClientOnly>
+              <QuillEditor v-model="form.content" theme="snow" toolbar="full" class="bg-white rounded border border-blue-300" style="min-height:200px;" />
+            </ClientOnly>
           </div>
           <div class="flex justify-end gap-3 mt-6">
-            <button
-              type="button"
-              @click="closeEditModal"
-              class="bg-gray-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-gray-600 transition"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              class="bg-blue-700 text-white font-semibold px-6 py-2 rounded hover:bg-blue-800 transition"
-            >
-              Update Artikel
-            </button>
+            <button type="button" @click="closeEditModal" class="bg-gray-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-gray-600 transition">Batal</button>
+            <button type="submit" class="bg-blue-700 text-white font-semibold px-6 py-2 rounded hover:bg-blue-800 transition">Update Artikel</button>
           </div>
         </form>
-        <div v-if="success" class="mt-4 text-green-600 font-semibold">
-          Artikel berhasil diupdate!
-        </div>
+        <div v-if="success" class="mt-4 text-green-600 font-semibold">Artikel berhasil diupdate!</div>
       </div>
     </div>
   </div>
@@ -194,13 +149,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css'
 const showForm = ref(false)
 const success = ref(false)
 const editingId = ref(null)
-const form = ref({
-  title: '',
-  summary: '',
-  date: '',
-  avatar: '',
-  content: ''
-})
+const form = ref({ title: '', summary: '', date: '', avatar: '', content: '' })
 
 const daftarArtikel = ref([])
 const showEditModal = ref(false)
@@ -222,10 +171,7 @@ async function fetchArtikel() {
 
 async function submitArtikel() {
   try {
-    const res = await $fetch('/api/artikel', {
-      method: 'POST',
-      body: { ...form.value }
-    })
+    const res = await $fetch('/api/artikel', { method: 'POST', body: { ...form.value } })
     success.value = true
     showForm.value = false
     form.value = { title: '', summary: '', date: '', avatar: '', content: '' }
@@ -238,13 +184,7 @@ async function submitArtikel() {
 
 function editArtikel(artikel) {
   editingId.value = artikel.id
-  form.value = {
-    title: artikel.title,
-    summary: artikel.summary,
-    date: artikel.date,
-    avatar: artikel.avatar,
-    content: artikel.content || '' // pastikan default string kosong jika tidak ada
-  }
+  form.value = { title: artikel.title, summary: artikel.summary, date: artikel.date, avatar: artikel.avatar, content: artikel.content || '' }
   showEditModal.value = true
 }
 
@@ -256,10 +196,7 @@ function closeEditModal() {
 
 async function updateArtikel() {
   try {
-    await $fetch(`/api/artikel/${editingId.value}`, {
-      method: 'PUT',
-      body: { ...form.value }
-    })
+    await $fetch(`/api/artikel/${editingId.value}`, { method: 'PUT', body: { ...form.value } })
     success.value = true
     showEditModal.value = false
     editingId.value = null
@@ -296,9 +233,5 @@ onMounted(fetchArtikel)
   border-color: #2563eb;
   box-shadow: 0 0 0 2px #2563eb33;
 }
-.shadcn-textarea {
-  resize: vertical;
-  min-height: 120px;
-  max-height: 600px;
-}
+.shadcn-textarea { resize: vertical; min-height: 120px; max-height: 600px; }
 </style>
