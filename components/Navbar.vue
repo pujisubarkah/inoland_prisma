@@ -464,47 +464,42 @@ const filteredInstansi = computed(() => {
   return allInstansi.value.filter(inst => inst.agency_category_id === parseInt(selectedKategori.value))
 })
 
-const { locale, t } = useI18n()
+const { locale, t, setLocale } = useI18n()
 
-const menu = ref([])
+const menu = computed(() => [
+  { name: t('beranda'), path: '/' },
+  { name: t('pembelajaranInovasi'), path: '/layanan' },
+  { name: t('cariInovasi'), path: '/cari' },
+  { name: t('referensi'), path: '/referensi' },
+  { 
+    name: t('tentangInoland'), 
+    path: '#',
+    submenu: [
+      { name: t('profilInoland'), path: '/profil-inoland' },
+      { name: t('dokumentasiMedia'), path: '/galeri' },
+      { name: t('ceritaKeberhasilan'), path: '/cerita-keberhasilan' },
+      { name: t('surveyKesiapanInovasi'), path: '/survey-kesiapan-inovasi' },
+      { name: t('faq'), path: '/faq' }
+    ]
+  }
+])
 
-function updateMenu() {
-  menu.value = [
-    { name: t('beranda'), path: '/' },
-    { name: t('pembelajaranInovasi'), path: '/layanan' },
-    { name: t('cariInovasi'), path: '/cari' },
-    { name: t('referensi'), path: '/referensi' },
-    { 
-      name: t('tentangInoland'), 
-      path: '#',
-      submenu: [
-        { name: t('profilInoland'), path: '/profil-inoland' },
-        { name: t('dokumentasiMedia'), path: '/galeri' },
-        { name: t('ceritaKeberhasilan'), path: '/cerita-keberhasilan' },
-        { name: t('surveyKesiapanInovasi'), path: '/survey-kesiapan-inovasi' },
-        { name: t('faq'), path: '/faq' }
-      ]
-    }
-  ]
-}
 function changeLanguage(lang) {
-  locale.value = lang
+  setLocale(lang)
   localStorage.setItem('i18n_locale', lang)
-  updateMenu()
 }
 
-watch(locale, () => {
-  updateMenu()
-})
+function openPendampingan() {
+  navigateTo('/ajukan-pendampingan')
+}
 
 onMounted(async () => {
   // Set bahasa dari localStorage
   const savedLocale = localStorage.getItem('i18n_locale')
   if (savedLocale && (savedLocale === 'id' || savedLocale === 'en')) {
     console.log('Loading saved locale:', savedLocale)
-    locale.value = savedLocale
+    setLocale(savedLocale)
   }
-  updateMenu()
   
   // Check for Google OAuth login success from URL
   const urlParams = new URLSearchParams(window.location.search)

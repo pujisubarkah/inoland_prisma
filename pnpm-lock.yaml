@@ -20,9 +20,6 @@ importers:
       '@pinia/nuxt':
         specifier: ^0.11.2
         version: 0.11.2(magicast@0.5.1)(pinia@3.0.3(typescript@5.9.2)(vue@3.5.21(typescript@5.9.2)))
-      '@prisma/client':
-        specifier: ^6.11.1
-        version: 6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2)
       '@supabase/supabase-js':
         specifier: ^2.38.0
         version: 2.57.2
@@ -95,9 +92,6 @@ importers:
       nuxt:
         specifier: ^4.2.2
         version: 4.2.2(@parcel/watcher@2.5.1)(@types/node@24.3.1)(@vue/compiler-sfc@3.5.26)(cac@6.7.14)(db0@0.3.4(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))))(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2)))(eslint@9.39.2(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.30.1)(magicast@0.5.1)(optionator@0.9.4)(rollup@4.55.1)(terser@5.44.0)(typescript@5.9.2)(vite@7.3.1(@types/node@24.3.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.2))(yaml@2.8.2)
-      nuxt-prisma:
-        specifier: ^0.0.3
-        version: 0.0.3(magicast@0.5.1)
       ol:
         specifier: ^10.5.0
         version: 10.6.1
@@ -171,9 +165,6 @@ importers:
       drizzle-kit:
         specifier: ^0.31.1
         version: 0.31.4
-      prisma:
-        specifier: ^6.11.1
-        version: 6.15.0(magicast@0.5.1)(typescript@5.9.2)
       shadcn-nuxt:
         specifier: ^2.2.0
         version: 2.2.0(magicast@0.5.1)
@@ -3371,9 +3362,6 @@ packages:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
-  devalue@5.3.2:
-    resolution: {integrity: sha512-UDsjUbpQn9kvm68slnrs+mfxwFkIflOhkanmyabZ8zOYk8SMEIbJ3TK+88g70hSIeytu4y18f0z/hYHMTrXIWw==}
-
   devalue@5.6.2:
     resolution: {integrity: sha512-nPRkjWzzDQlsejL1WVifk5rvcFi/y1onBRxjaFMjZeR9mFpqu2gmAZ9xUB9/IEanEP/vBtGeGganC/GO1fmufg==}
 
@@ -4656,9 +4644,6 @@ packages:
   nuxt-define@1.0.0:
     resolution: {integrity: sha512-CYZ2WjU+KCyCDVzjYUM4eEpMF0rkPmkpiFrybTqqQCRpUbPt2h3snswWIpFPXTi+osRCY6Og0W/XLAQgDL4FfQ==}
 
-  nuxt-prisma@0.0.3:
-    resolution: {integrity: sha512-EJ5m0fcpj/IdGrr+vDsnpqqsPwj11GJa+CJ8DpQASPwU6HQhISuVVAxgsZsGO0uS00x3iY4ndMxapGaCF1Wwsw==}
-
   nuxt@4.2.2:
     resolution: {integrity: sha512-n6oYFikgLEb70J4+K19jAzfx4exZcRSRX7yZn09P5qlf2Z59VNOBqNmaZO5ObzvyGUZ308SZfL629/Q2v2FVjw==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -4692,9 +4677,6 @@ packages:
 
   obug@2.1.1:
     resolution: {integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==}
-
-  ofetch@1.4.1:
-    resolution: {integrity: sha512-QZj2DfGplQAr2oj9KzceK9Hwz6Whxazmn85yYeVuS3u9XTMOGMRx0kO95MQ+vLsj/S/NwBDMMLU5hpxvI6Tklw==}
 
   ofetch@1.5.1:
     resolution: {integrity: sha512-2W4oUZlVaqAPAil6FUg/difl6YhqhUR7x2eZY4bQCko22UXg3hptq9KLQdqFClV+Wu85UX7hNtdGTngi/1BxcA==}
@@ -5763,68 +5745,6 @@ packages:
     resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
     engines: {node: '>=18.12.0'}
 
-  unstorage@1.17.1:
-    resolution: {integrity: sha512-KKGwRTT0iVBCErKemkJCLs7JdxNVfqTPc/85ae1XES0+bsHbc/sFBfVi5kJp156cc51BHinIH2l3k0EZ24vOBQ==}
-    peerDependencies:
-      '@azure/app-configuration': ^1.8.0
-      '@azure/cosmos': ^4.2.0
-      '@azure/data-tables': ^13.3.0
-      '@azure/identity': ^4.6.0
-      '@azure/keyvault-secrets': ^4.9.0
-      '@azure/storage-blob': ^12.26.0
-      '@capacitor/preferences': ^6.0.3 || ^7.0.0
-      '@deno/kv': '>=0.9.0'
-      '@netlify/blobs': ^6.5.0 || ^7.0.0 || ^8.1.0 || ^9.0.0 || ^10.0.0
-      '@planetscale/database': ^1.19.0
-      '@upstash/redis': ^1.34.3
-      '@vercel/blob': '>=0.27.1'
-      '@vercel/functions': ^2.2.12 || ^3.0.0
-      '@vercel/kv': ^1.0.1
-      aws4fetch: ^1.0.20
-      db0: '>=0.2.1'
-      idb-keyval: ^6.2.1
-      ioredis: ^5.4.2
-      uploadthing: ^7.4.4
-    peerDependenciesMeta:
-      '@azure/app-configuration':
-        optional: true
-      '@azure/cosmos':
-        optional: true
-      '@azure/data-tables':
-        optional: true
-      '@azure/identity':
-        optional: true
-      '@azure/keyvault-secrets':
-        optional: true
-      '@azure/storage-blob':
-        optional: true
-      '@capacitor/preferences':
-        optional: true
-      '@deno/kv':
-        optional: true
-      '@netlify/blobs':
-        optional: true
-      '@planetscale/database':
-        optional: true
-      '@upstash/redis':
-        optional: true
-      '@vercel/blob':
-        optional: true
-      '@vercel/functions':
-        optional: true
-      '@vercel/kv':
-        optional: true
-      aws4fetch:
-        optional: true
-      db0:
-        optional: true
-      idb-keyval:
-        optional: true
-      ioredis:
-        optional: true
-      uploadthing:
-        optional: true
-
   unstorage@1.17.4:
     resolution: {integrity: sha512-fHK0yNg38tBiJKp/Vgsq4j0JEsCmgqH58HAn707S7zGkArbZsVr/CwINoi+nh3h98BRCwKvx1K3Xg9u3VV83sw==}
     peerDependencies:
@@ -6195,11 +6115,6 @@ packages:
   yaml-eslint-parser@1.3.2:
     resolution: {integrity: sha512-odxVsHAkZYYglR30aPYRY4nUGJnoJ2y1ww2HDvZALo0BDETv9kWbi16J52eHs+PWRNmF4ub6nZqfVOeesOvntg==}
     engines: {node: ^14.17.0 || >=16.0.0}
-
-  yaml@2.8.1:
-    resolution: {integrity: sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==}
-    engines: {node: '>= 14.6'}
-    hasBin: true
 
   yaml@2.8.2:
     resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
@@ -7005,11 +6920,11 @@ snapshots:
       '@rollup/pluginutils': 5.3.0(rollup@4.55.1)
       '@typescript-eslint/scope-manager': 8.53.0
       '@typescript-eslint/typescript-estree': 8.53.0(typescript@5.9.2)
-      debug: 4.4.1
+      debug: 4.4.3
       fast-glob: 3.3.3
       pathe: 2.0.3
       picocolors: 1.1.1
-      unplugin: 2.3.10
+      unplugin: 2.3.11
       vue: 3.5.21(typescript@5.9.2)
     optionalDependencies:
       vue-i18n: 11.2.8(vue@3.5.21(typescript@5.9.2))
@@ -7024,7 +6939,7 @@ snapshots:
 
   '@intlify/vue-i18n-extensions@8.0.0(@intlify/shared@11.2.8)(@vue/compiler-dom@3.5.26)(vue-i18n@11.2.8(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))':
     dependencies:
-      '@babel/parser': 7.28.4
+      '@babel/parser': 7.28.6
     optionalDependencies:
       '@intlify/shared': 11.2.8
       '@vue/compiler-dom': 3.5.26
@@ -7501,9 +7416,9 @@ snapshots:
       '@rollup/plugin-yaml': 4.1.2(rollup@4.55.1)
       '@vue/compiler-sfc': 3.5.26
       defu: 6.1.4
-      devalue: 5.3.2
-      h3: 1.15.4
-      knitwork: 1.2.0
+      devalue: 5.6.2
+      h3: 1.15.5
+      knitwork: 1.3.0
       magic-string: 0.30.21
       mlly: 1.8.0
       nuxt-define: 1.0.0
@@ -7513,10 +7428,10 @@ snapshots:
       oxc-walker: 0.5.2(oxc-parser@0.95.0)
       pathe: 2.0.3
       typescript: 5.9.2
-      ufo: 1.6.1
-      unplugin: 2.3.10
+      ufo: 1.6.3
+      unplugin: 2.3.11
       unplugin-vue-router: 0.16.2(@vue/compiler-sfc@3.5.26)(vue-router@4.6.4(vue@3.5.21(typescript@5.9.2)))(vue@3.5.21(typescript@5.9.2))
-      unstorage: 1.17.1(db0@0.3.4(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))))(ioredis@5.9.2)
+      unstorage: 1.17.4(db0@0.3.4(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))))(ioredis@5.9.2)
       vue-i18n: 11.2.8(vue@3.5.21(typescript@5.9.2))
       vue-router: 4.6.4(vue@3.5.21(typescript@5.9.2))
     transitivePeerDependencies:
@@ -7939,6 +7854,7 @@ snapshots:
     optionalDependencies:
       prisma: 6.15.0(magicast@0.5.1)(typescript@5.9.2)
       typescript: 5.9.2
+    optional: true
 
   '@prisma/config@6.15.0(magicast@0.5.1)':
     dependencies:
@@ -7948,10 +7864,13 @@ snapshots:
       empathic: 2.0.0
     transitivePeerDependencies:
       - magicast
+    optional: true
 
-  '@prisma/debug@6.15.0': {}
+  '@prisma/debug@6.15.0':
+    optional: true
 
-  '@prisma/engines-version@6.15.0-5.85179d7826409ee107a6ba334b5e305ae3fba9fb': {}
+  '@prisma/engines-version@6.15.0-5.85179d7826409ee107a6ba334b5e305ae3fba9fb':
+    optional: true
 
   '@prisma/engines@6.15.0':
     dependencies:
@@ -7959,16 +7878,19 @@ snapshots:
       '@prisma/engines-version': 6.15.0-5.85179d7826409ee107a6ba334b5e305ae3fba9fb
       '@prisma/fetch-engine': 6.15.0
       '@prisma/get-platform': 6.15.0
+    optional: true
 
   '@prisma/fetch-engine@6.15.0':
     dependencies:
       '@prisma/debug': 6.15.0
       '@prisma/engines-version': 6.15.0-5.85179d7826409ee107a6ba334b5e305ae3fba9fb
       '@prisma/get-platform': 6.15.0
+    optional: true
 
   '@prisma/get-platform@6.15.0':
     dependencies:
       '@prisma/debug': 6.15.0
+    optional: true
 
   '@rolldown/pluginutils@1.0.0-beta.53': {}
 
@@ -8189,7 +8111,8 @@ snapshots:
 
   '@speed-highlight/core@1.2.14': {}
 
-  '@standard-schema/spec@1.0.0': {}
+  '@standard-schema/spec@1.0.0':
+    optional: true
 
   '@supabase/auth-js@2.71.1':
     dependencies:
@@ -8966,9 +8889,9 @@ snapshots:
       confbox: 0.2.2
       defu: 6.1.4
       dotenv: 16.6.1
-      exsolve: 1.0.7
+      exsolve: 1.0.8
       giget: 2.0.0
-      jiti: 2.5.1
+      jiti: 2.6.1
       ohash: 2.0.11
       pathe: 2.0.3
       perfect-debounce: 1.0.0
@@ -8976,6 +8899,7 @@ snapshots:
       rc9: 2.1.2
     optionalDependencies:
       magicast: 0.5.1
+    optional: true
 
   c12@3.2.0(magicast@0.5.1):
     dependencies:
@@ -9311,7 +9235,8 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  deepmerge-ts@7.1.5: {}
+  deepmerge-ts@7.1.5:
+    optional: true
 
   deepmerge@4.3.1: {}
 
@@ -9353,8 +9278,6 @@ snapshots:
   detect-libc@2.0.4: {}
 
   detect-libc@2.1.2: {}
-
-  devalue@5.3.2: {}
 
   devalue@5.6.2: {}
 
@@ -9429,6 +9352,7 @@ snapshots:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
+    optional: true
 
   electron-to-chromium@1.5.214: {}
 
@@ -9438,7 +9362,8 @@ snapshots:
 
   emoji-regex@9.2.2: {}
 
-  empathic@2.0.0: {}
+  empathic@2.0.0:
+    optional: true
 
   encodeurl@2.0.0: {}
 
@@ -9691,6 +9616,7 @@ snapshots:
   fast-check@3.23.2:
     dependencies:
       pure-rand: 6.1.0
+    optional: true
 
   fast-deep-equal@3.1.3: {}
 
@@ -10178,7 +10104,7 @@ snapshots:
       acorn: 8.15.0
       eslint-visitor-keys: 3.4.3
       espree: 9.6.1
-      semver: 7.7.2
+      semver: 7.7.3
 
   jsonwebtoken@9.0.2:
     dependencies:
@@ -10688,13 +10614,6 @@ snapshots:
 
   nuxt-define@1.0.0: {}
 
-  nuxt-prisma@0.0.3(magicast@0.5.1):
-    dependencies:
-      '@nuxt/kit': 3.19.1(magicast@0.5.1)
-      defu: 6.1.4
-    transitivePeerDependencies:
-      - magicast
-
   nuxt@4.2.2(@parcel/watcher@2.5.1)(@types/node@24.3.1)(@vue/compiler-sfc@3.5.26)(cac@6.7.14)(db0@0.3.4(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))))(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2)))(eslint@9.39.2(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.30.1)(magicast@0.5.1)(optionator@0.9.4)(rollup@4.55.1)(terser@5.44.0)(typescript@5.9.2)(vite@7.3.1(@types/node@24.3.1)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.8.2))(yaml@2.8.2):
     dependencies:
       '@dxup/nuxt': 0.2.2(magicast@0.5.1)
@@ -10840,12 +10759,6 @@ snapshots:
   object-keys@1.1.1: {}
 
   obug@2.1.1: {}
-
-  ofetch@1.4.1:
-    dependencies:
-      destr: 2.0.5
-      node-fetch-native: 1.6.7
-      ufo: 1.6.1
 
   ofetch@1.5.1:
     dependencies:
@@ -11339,6 +11252,7 @@ snapshots:
       typescript: 5.9.2
     transitivePeerDependencies:
       - magicast
+    optional: true
 
   process-nextick-args@2.0.1: {}
 
@@ -11357,7 +11271,8 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  pure-rand@6.1.0: {}
+  pure-rand@6.1.0:
+    optional: true
 
   quansync@0.2.11: {}
 
@@ -12050,9 +11965,9 @@ snapshots:
       picomatch: 4.0.3
       scule: 1.3.0
       tinyglobby: 0.2.15
-      unplugin: 2.3.10
+      unplugin: 2.3.11
       unplugin-utils: 0.3.1
-      yaml: 2.8.1
+      yaml: 2.8.2
     optionalDependencies:
       vue-router: 4.6.4(vue@3.5.21(typescript@5.9.2))
     transitivePeerDependencies:
@@ -12096,20 +12011,6 @@ snapshots:
       acorn: 8.15.0
       picomatch: 4.0.3
       webpack-virtual-modules: 0.6.2
-
-  unstorage@1.17.1(db0@0.3.4(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))))(ioredis@5.9.2):
-    dependencies:
-      anymatch: 3.1.3
-      chokidar: 4.0.3
-      destr: 2.0.5
-      h3: 1.15.4
-      lru-cache: 10.4.3
-      node-fetch-native: 1.6.7
-      ofetch: 1.4.1
-      ufo: 1.6.1
-    optionalDependencies:
-      db0: 0.3.4(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2)))
-      ioredis: 5.9.2
 
   unstorage@1.17.4(db0@0.3.4(drizzle-orm@0.44.5(@prisma/client@6.15.0(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))(typescript@5.9.2))(@types/pg@8.15.5)(pg@8.16.3)(prisma@6.15.0(magicast@0.5.1)(typescript@5.9.2))))(ioredis@5.9.2):
     dependencies:
@@ -12481,9 +12382,7 @@ snapshots:
   yaml-eslint-parser@1.3.2:
     dependencies:
       eslint-visitor-keys: 3.4.3
-      yaml: 2.8.1
-
-  yaml@2.8.1: {}
+      yaml: 2.8.2
 
   yaml@2.8.2: {}
 

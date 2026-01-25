@@ -361,58 +361,7 @@
                         </div>
                       </div>
 
-                      <!-- Download Buttons -->
-                      <div v-if="dialogKabkotInovasi.length > 0" class="mb-4">
-                        <div class="text-sm text-gray-600 mb-2">
-                          📊 Tersedia {{ dialogKabkotInovasi.length }} data untuk diunduh
-                        </div>
-                        <ClientOnly>
-                          <div class="flex flex-wrap gap-2">
-                            <button 
-                              @click="downloadExcel"
-                              :disabled="isDownloading || dialogKabkotInovasi.length === 0"
-                              class="flex items-center gap-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Download data sebagai Excel"
-                            >
-                              <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                              </svg>
-                              <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-                              </svg>
-                              Excel
-                            </button>
-                            <button 
-                              @click="downloadCSV"
-                              :disabled="isDownloading || dialogKabkotInovasi.length === 0"
-                              class="flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Download data sebagai CSV"
-                            >
-                              <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                              </svg>
-                              <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-                              </svg>
-                              CSV
-                            </button>
-                            <button 
-                              @click="downloadPDF"
-                              :disabled="isDownloading || dialogKabkotInovasi.length === 0"
-                              class="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Download data sebagai PDF"
-                            >
-                              <svg v-if="!isDownloading" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                              </svg>
-                              <svg v-else class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-                              </svg>
-                              PDF
-                            </button>
-                          </div>
-                        </ClientOnly>
-                      </div>
+                    
 
                       <!-- Pagination Controls -->
                       <div class="flex justify-between items-center mb-4">
@@ -720,11 +669,11 @@ const selectedIndex = ref<'indeks_skor' | 'ipp_skor' | 'idsd_skor' | 'rb_level'>
 
 // Legend colors
 const legendColors = ref({
-  'Sangat Tinggi (>200)': '#08306b',
-  'Tinggi (>150)': '#08519c',
-  'Menengah (>100)': '#2171b5',
-  'Cukup (>50)': '#4292c6',
-  'Rendah (>0)': '#6baed6',
+  'Sangat Tinggi (>200)': '#064e3b',
+  'Tinggi (>150)': '#065f46',
+  'Menengah (>100)': '#047857',
+  'Cukup (>50)': '#059669',
+  'Rendah (>0)': '#10b981',
   'Tidak ada data': '#fff'
 })
 
@@ -1061,11 +1010,11 @@ function validateProvinceData(provinceList: Provinsi[]): void {
 
 // Choropleth color function
 function getChoroplethColor(jumlah_inovasi: number): string {
-  if (jumlah_inovasi > 200) return '#0d47a1'; // dark vibrant blue
-  if (jumlah_inovasi > 150) return '#1976d2'; // primary blue
-  if (jumlah_inovasi > 100) return '#42a5f5'; // sky blue
-  if (jumlah_inovasi > 50) return '#90caf9';  // soft blue
-  if (jumlah_inovasi > 0) return '#e3f2fd';   // very light blue
+  if (jumlah_inovasi > 200) return '#064e3b'; // dark green
+  if (jumlah_inovasi > 150) return '#065f46'; // strong green
+  if (jumlah_inovasi > 100) return '#047857'; // medium green
+  if (jumlah_inovasi > 50) return '#059669';  // soft green
+  if (jumlah_inovasi > 0) return '#10b981';   // light green
   return '#ffffff'; // white for 0
 }
 
@@ -1742,6 +1691,7 @@ async function generateFallbackPDF() {
   const dateStr = new Date().toISOString().split('T')[0]
   const fileName = `Daftar_Inovasi_Simple_${safeRegionName}_${dateStr}.pdf`
   
+ 
   doc.save(fileName)
 }
 </script>

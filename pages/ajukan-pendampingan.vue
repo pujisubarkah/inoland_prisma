@@ -161,36 +161,6 @@
             />
           </div>
 
-          <!-- Nama Inovasi -->
-          <div>
-            <label for="nama_inovasi" class="block text-sm font-semibold text-gray-700 mb-2">
-              Nama Inovasi yang Akan Didampingi <span class="text-red-500">*</span>
-            </label>
-            <input
-              id="nama_inovasi"
-              v-model="formData.nama_inovasi"
-              type="text"
-              required
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              placeholder="Nama inovasi daerah"
-            />
-          </div>
-
-          <!-- Deskripsi Inovasi -->
-          <div>
-            <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-2">
-              Deskripsi Singkat Inovasi <span class="text-red-500">*</span>
-            </label>
-            <textarea
-              id="deskripsi"
-              v-model="formData.deskripsi"
-              required
-              rows="4"
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              placeholder="Jelaskan secara singkat tentang inovasi yang akan didampingi"
-            ></textarea>
-          </div>
-
           <!-- Jenis Pendampingan -->
           <div>
             <label for="jenis_pendampingan" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -280,8 +250,6 @@ const formData = ref({
   jabatan: '',
   email: '',
   telepon: '',
-  nama_inovasi: '',
-  deskripsi: '',
   jenis_pendampingan: '',
   keterangan: ''
 })
@@ -293,8 +261,6 @@ const resetForm = () => {
     jabatan: '',
     email: '',
     telepon: '',
-    nama_inovasi: '',
-    deskripsi: '',
     jenis_pendampingan: '',
     keterangan: ''
   }
@@ -304,15 +270,11 @@ const submitForm = async () => {
   isSubmitting.value = true
   
   try {
-    // TODO: Implement API call to submit the form
-    // const response = await fetch('/api/pendampingan', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(formData.value)
-    // })
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    const response = await $fetch('/api/inoland-assistance-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: formData.value
+    })
     
     toast.success('Pengajuan pendampingan berhasil dikirim!')
     

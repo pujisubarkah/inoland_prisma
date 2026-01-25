@@ -36,14 +36,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useCurrentUser } from '~/composables/useCurrentUser'
 
 const router = useRouter()
-const { currentUser } = useCurrentUser()
-
-if (!currentUser.value) {
-  router.replace('/login?redirect=/cerita-keberhasilan/baru')
-}
 
 const form = ref({
   title: '',

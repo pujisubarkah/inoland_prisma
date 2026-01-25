@@ -3,12 +3,14 @@ definePageMeta({
   layout: "default"
 })
 
+const { t } = useI18n()
+
 // Set page title
 useHead({
-  title: 'INOLAND - Everyone Can Innovate',
+  title: t('homeTitle'),
   meta: [
     { name: 'description', 
-    content: 'Setiap ide berharga, dan INOLAND adalah ruangnya untuk tumbuh. Bergabunglah dalam Laboratorium Inovasi — ekosistem kolaboratif untuk instansi yang ingin menghadirkan perubahan nyata.' }
+    content: t('homeMetaDesc') }
   ]
 })
 
@@ -40,7 +42,7 @@ import BeritaSection from '~/components/Berita_slider.vue'
             <div class="overflow-hidden w-full max-w-sm sm:max-w-2xl md:max-w-4xl mx-auto h-10 sm:h-12 flex items-center bg-white/10 rounded-full backdrop-blur-sm border border-white/20 relative">
               <div class="marquee-container">
                 <span class="marquee-text text-lg sm:text-xl md:text-2xl font-bold text-cyan-200">
-                  Everyone Can Innovate • Everyone Can Innovate • Everyone Can Innovate • Everyone Can Innovate • 
+                  {{ t('everyoneCanInnovate') }} • {{ t('everyoneCanInnovate') }} • {{ t('everyoneCanInnovate') }} • {{ t('everyoneCanInnovate') }} • 
                 </span>
               </div>
               <!-- Centered underline -->
@@ -49,7 +51,7 @@ import BeritaSection from '~/components/Berita_slider.vue'
           </div>
           
           <p class="text-base sm:text-lg md:text-xl text-blue-100 font-light max-w-2xl sm:max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-600 px-4 sm:px-0">
-            Laboratorium Inovasi untuk menciptakan perubahan nyata
+            {{ t('labDesc') }}
           </p>
         </div>
 
@@ -62,10 +64,10 @@ import BeritaSection from '~/components/Berita_slider.vue'
                 💡
               </div>
               <h3 class="text-base sm:text-lg font-bold text-white mb-2 sm:mb-3 group-hover:text-cyan-200 transition-colors">
-                Ide Berharga
+                {{ t('valuableIdea') }}
               </h3>
               <p class="text-blue-100 leading-relaxed text-xs sm:text-sm">
-                Setiap ide berharga, dan <span class="font-semibold text-cyan-300">Inoland</span> adalah ruangnya untuk tumbuh dan berkembang.
+                {{ t('valuableIdeaDesc') }}
               </p>
             </div>
           </div>
@@ -77,10 +79,10 @@ import BeritaSection from '~/components/Berita_slider.vue'
                 🔬
               </div>
               <h3 class="text-base sm:text-lg font-bold text-white mb-2 sm:mb-3 group-hover:text-purple-200 transition-colors">
-                Laboratorium Inovasi
+                {{ t('innovationLab') }}
               </h3>
               <p class="text-blue-100 leading-relaxed text-xs sm:text-sm">
-                Bergabunglah dalam ekosistem kolaboratif untuk instansi yang ingin menghadirkan perubahan nyata.
+                {{ t('innovationLabDesc') }}
               </p>
             </div>
           </div>
@@ -92,10 +94,10 @@ import BeritaSection from '~/components/Berita_slider.vue'
                 🌱
               </div>
               <h3 class="text-base sm:text-lg font-bold text-white mb-2 sm:mb-3 group-hover:text-green-200 transition-colors">
-                Aksi Nyata
+                {{ t('realAction') }}
               </h3>
               <p class="text-blue-100 leading-relaxed text-xs sm:text-sm">
-                Mari bersama merawat ide dan mengubahnya menjadi aksi. Buka ruang untuk inovasi di instansi Anda.
+                {{ t('realActionDesc') }}
               </p>
             </div>
           </div>
@@ -127,14 +129,14 @@ import BeritaSection from '~/components/Berita_slider.vue'
     <section class="py-12 bg-white">
       <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-800 mb-4">Peta Sebaran Inovasi</h2>
-          <p class="text-gray-600">Visualisasi data inovasi di seluruh Indonesia</p>
+          <h2 class="text-3xl font-bold text-gray-800 mb-4">{{ t('innovationMap') }}</h2>
+          <p class="text-gray-600">{{ t('mapDesc') }}</p>
         </div>
         <ClientOnly>
           <LeafletMap />
           <template #fallback>
             <div class="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-              <p class="text-gray-500">Loading Map...</p>
+              <p class="text-gray-500">{{ t('loadingMap') }}</p>
             </div>
           </template>
         </ClientOnly>
@@ -166,7 +168,7 @@ import BeritaSection from '~/components/Berita_slider.vue'
           <Carousel />
           <template #fallback>
             <div class="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-              <p class="text-gray-500">Loading Carousel...</p>
+              <p class="text-gray-500">{{ t('loadingCarousel') }}</p>
             </div>
           </template>
         </ClientOnly>
