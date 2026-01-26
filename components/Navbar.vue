@@ -648,6 +648,24 @@ async function submitLogin() {
   }
 }
 
+// Trigger Google OAuth flow by requesting auth URL from server and redirecting
+async function loginWithGoogle() {
+  try {
+    const res = await fetch('/api/auth/google')
+    const data = await res.json()
+    if (data && data.authUrl) {
+      // Redirect browser to Google OAuth URL
+      window.location.href = data.authUrl
+    } else {
+      toast.error(t('loginDenganGoogleGagal'))
+      console.error('loginWithGoogle: unexpected response', data)
+    }
+  } catch (err) {
+    toast.error(t('loginDenganGoogleGagal'))
+    console.error('loginWithGoogle: error fetching auth url', err)
+  }
+}
+
 onMounted(async () => {
   // Set bahasa dari localStorage
   const savedLocale = localStorage.getItem('i18n_locale')
