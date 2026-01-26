@@ -71,7 +71,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import InnovationIdeaForm from '@/pages/admin_instansi/InnovationIdeaForm.vue'
+import InnovationIdeaForm from '@/components/InnovationIdeaForm.vue'
 import Rencana from '@/pages/admin_instansi/Rencana.vue'
 
 const isSidebarOpen = ref(false)

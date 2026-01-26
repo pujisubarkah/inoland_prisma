@@ -64,7 +64,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import IdeInovasi from '@/components/Ide.vue';
-import RencanaAksi from '@/components/Rencana.vue';
+import RencanaAksi from '@/pages/admin_instansi/Rencana.vue';
 
 const isSidebarOpen = ref(false);
 const activeComponent = ref('IdeInovasi');

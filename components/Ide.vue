@@ -55,7 +55,7 @@
 import { ref, reactive } from 'vue';
 import { Button } from '@/components/ui/_exports/button';
 import InputField from './InputField.vue';
-import InnovationIdeaForm from './InnovationIdeaForm.vue';
+import InnovationIdeaForm from '@/components/InnovationIdeaForm.vue';
 import InnovationResponseForm from './InnovationResponseForm.vue';
 
 const steps = ['Informasi Kontak','Ide Inovasi','Tanggapan Ide Inovasi'];

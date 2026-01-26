@@ -111,7 +111,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import InnovationIdeaForm from '@/pages/admin_instansi/InnovationIdeaForm.vue'
+import InnovationIdeaForm from '@/components/InnovationIdeaForm.vue'
 import TambahInovasiDaerah from '@/pages/admin_instansi/tambah_inovasi_daerah.vue'
 import TambahUPP from '@/pages/admin_instansi/tambah_upp.vue'
 import Rencana from '@/pages/admin_instansi/Rencana.vue'
