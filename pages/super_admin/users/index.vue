@@ -185,7 +185,94 @@ const handleCloseAdd = () => {
       <button @click="currentPage++" :disabled="currentPage === totalPages" class="px-5 py-2 bg-gradient-to-r from-blue-700 to-cyan-400 text-white font-bold rounded-lg shadow hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
     </div>
 
-    <!-- Modals omitted for brevity (copied from original) -->
+    <!-- Add User Modal -->
+    <div v-if="isAddModalOpen" class="fixed inset-0 flex items-center justify-center z-50">
+      <div class="absolute inset-0 bg-black/60" @click="handleCloseAdd"></div>
+      <div class="relative bg-white rounded-lg w-full max-w-2xl p-6 shadow-xl">
+        <h2 class="text-xl font-semibold mb-4">Tambah Pengguna</h2>
+        <form @submit.prevent="handleAddUser" class="space-y-3">
+          <div class="space-y-3">
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Nama Lengkap</label>
+              <input v-model="addForm.nama_lengkap" placeholder="Nama Lengkap" class="form-input p-2 flex-1" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Username</label>
+              <input v-model="addForm.username" placeholder="Username" class="form-input p-2 flex-1" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Instansi</label>
+              <input v-model="addForm.instansi" placeholder="Instansi" class="form-input p-2 flex-1" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Email</label>
+              <input v-model="addForm.email" placeholder="Email" type="email" class="form-input p-2 flex-1" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Password</label>
+              <input v-model="addForm.password" placeholder="Password" type="password" class="form-input p-2 flex-1" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Konfirmasi</label>
+              <input v-model="addForm.confirm" placeholder="Konfirmasi Password" type="password" class="form-input p-2 flex-1" />
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-2 mt-4">
+            <button type="button" @click="handleCloseAdd" class="px-4 py-2 bg-gray-200 rounded">Batal</button>
+            <button type="submit" class="px-4 py-2 bg-blue-700 text-white rounded">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div v-if="editUser" class="fixed inset-0 flex items-center justify-center z-50">
+      <div class="absolute inset-0 bg-black/60" @click="handleCloseEdit"></div>
+      <div class="relative bg-white rounded-lg w-full max-w-xl p-6 shadow-xl">
+        <h2 class="text-xl font-semibold mb-4">Edit Pengguna</h2>
+
+        <div class="space-y-3">
+          <div class="space-y-3">
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Nama</label>
+              <input :value="editUser.nama_lengkap" disabled class="form-input p-2 bg-gray-100 flex-1" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Email</label>
+              <input :value="editUser.email" disabled class="form-input p-2 bg-gray-100 flex-1" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Role</label>
+              <select v-model="selectedRoleId" class="form-input p-2 flex-1">
+                <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.role_name }}</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
+              <label class="text-sm font-medium text-gray-700 md:w-32">Verifikasi</label>
+              <select v-model="selectedVerified" class="form-input p-2 flex-1">
+                <option :value="true">Terverifikasi</option>
+                <option :value="false">Belum</option>
+              </select>
+            </div>
+
+            <div class="flex justify-end items-center mt-4 gap-3">
+              <button @click="handleDeleteUser(editUser.id)" class="px-3 py-2 bg-red-600 text-white rounded">Hapus</button>
+              <button @click="handleCloseEdit" class="px-4 py-2 bg-gray-200 rounded">Batal</button>
+              <button @click="handleRoleChange" class="px-4 py-2 bg-blue-700 text-white rounded">Simpan</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

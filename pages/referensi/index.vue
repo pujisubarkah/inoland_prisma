@@ -126,6 +126,12 @@ const menuItems = [
     description: 'Platform inovasi Kementerian Dalam Negeri'
   },
   { 
+    label: 'Tulisan Inovasi',
+    icon: 'table',
+    route: '/referensi/tulisan_inovasi',
+    description: 'Kumpulan tulisan dan referensi inovasi'
+  },
+  { 
     label: 'Direktori Inovasi', 
     icon: 'table', 
     route: '/referensi/direktori',
@@ -139,6 +145,7 @@ const menuItems = [
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

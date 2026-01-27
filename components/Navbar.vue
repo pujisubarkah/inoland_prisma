@@ -648,6 +648,59 @@ async function submitLogin() {
   }
 }
 
+async function submitRegister() {
+  try {
+    // Basic client-side validation
+    if (!registerForm.value.username || !registerForm.value.email || !registerForm.value.password || !registerForm.value.confirm) {
+      toast.error(t('Isi semua field registrasi'))
+      return
+    }
+
+    if (registerForm.value.password !== registerForm.value.confirm) {
+      toast.error(t('Password dan konfirmasi tidak sama'))
+      return
+    }
+
+    if (registerForm.value.password.length < 8) {
+      toast.error(t('Password minimal 8 karakter'))
+      return
+    }
+
+    const payload = {
+      nama_lengkap: registerForm.value.nama_lengkap || null,
+      username: registerForm.value.username,
+      email: registerForm.value.email,
+      password: registerForm.value.password,
+      instansi: registerForm.value.instansi || null,
+      role_id: 2
+    }
+
+    const res = await fetch('/api/registrasi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+
+    const data = await res.json().catch(() => ({}))
+
+    if (res.status === 201 || data.statusCode === 201) {
+      toast.success(data.message || t('Registrasi berhasil'))
+      // close modal and switch back to login
+      showRegister.value = false
+      isLoginModalOpen.value = false
+      return
+    }
+
+    // Show server error message if present
+    const errMsg = data.message || data.error || t('Registrasi gagal')
+    toast.error(errMsg)
+
+  } catch (err) {
+    console.error('submitRegister error', err)
+    toast.error(t('Terjadi kesalahan saat registrasi'))
+  }
+}
+
 // Trigger Google OAuth flow by requesting auth URL from server and redirecting
 async function loginWithGoogle() {
   try {

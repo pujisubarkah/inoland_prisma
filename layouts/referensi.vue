@@ -172,6 +172,11 @@ const menuItems = [
     route: '/referensi/tuxedovation'
   },
   { 
+    label: 'Tulisan Inovasi',
+    icon: TableIcon,
+    route: '/referensi/tulisan_inovasi'
+  },
+  { 
     label: 'Direktori Inovasi', 
     icon: TableIcon, 
     route: '/referensi/direktori'
