@@ -139,11 +139,14 @@
       <Content v-if="activeComponent === 'Content'" />
       <Survey v-if="activeComponent === 'Survey'" />
       <Inovasi v-if="activeComponent === 'Inovasi'" />
+      <SDGS v-if="activeComponent === 'SDGS'" />
       <Reports v-if="activeComponent === 'Reports'" />
       <Settings v-if="activeComponent === 'Settings'" />
       <Audit v-if="activeComponent === 'Audit'" />
       <Notifications v-if="activeComponent === 'Notifications'" />
     </div>
+
+    <!-- SDGs Sidebar removed per request -->
   </div>
 </template>
 
@@ -157,15 +160,19 @@ import UPP from './upp/index.vue'
 import Content from './content/index.vue'
 import Survey from './survey/index.vue'
 import Inovasi from './inovasi/index.vue'
+import SDGS from './SDGS/index.vue'
 import Reports from './reports/index.vue'
 import Settings from './settings/index.vue'
 import Audit from './audit/index.vue'
 import Notifications from './notifications/index.vue'
 
+
 definePageMeta({ middleware: 'super-admin' })
 
 const isSidebarOpen = ref(false)
 const activeComponent = ref('Dashboard')
+
+// SDGs sidebar removed (was temporary)
 
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value
@@ -174,6 +181,23 @@ function toggleSidebar() {
 function setActive(component) {
   activeComponent.value = component
 }
+
+// menuItems for top active menu
+const menuItems = [
+  { key: 'Dashboard', label: 'Dashboard' },
+  { key: 'Users', label: 'Manajemen Users' },
+  { key: 'Roles', label: 'Roles & Permission' },
+  { key: 'Instansi', label: 'Manajemen Instansi' },
+  { key: 'UPP', label: 'Manajemen UPP' },
+  { key: 'Content', label: 'Konten' },
+  { key: 'Survey', label: 'Survey & Respon' },
+  { key: 'Inovasi', label: 'Inovasi / Pengajuan' },
+  { key: 'SDGS', label: 'SDGs' },
+  { key: 'Reports', label: 'Laporan' },
+  { key: 'Settings', label: 'Pengaturan' },
+  { key: 'Audit', label: 'Audit Log' },
+  { key: 'Notifications', label: 'Notifikasi' }
+]
 </script>
 
 <style scoped>

@@ -35,6 +35,8 @@
   "loginDenganGoogleGagal": "Login dengan Google gagal, silakan coba lagi.",
   "registrasiGagal": "Registrasi gagal, silakan coba lagi.",
   "pendaftaranBerhasil": "Pendaftaran berhasil! Admin akan memverifikasi akun Anda",
+  "registrasiBerhasilMenungguVerifikasi": "akun anda berhasil di daftarkan dan menunggu verifikasi dari admin",
+  "emailSudahDigunakan": "Email sudah digunakan",
   "berhasilLogout": "Berhasil logout!",
   "logoutGagal": "Logout gagal!",
   "berhasilLogin": "Berhasil login!",

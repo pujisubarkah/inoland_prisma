@@ -18,13 +18,18 @@
       </select>
     </div>
 
-    <div class="flex justify-end w-11/12 mx-auto">
-      <button
-        @click="showModalAdd = true"
-        class="py-2 px-4 font-bold text-white rounded-lg shadow flex items-center bg-gray-700 hover:bg-gray-800 transition"
-      >
-        <span class="mr-2">➕</span> Tambah Inovasi
-      </button>
+    <div class="flex justify-between items-center w-11/12 mx-auto mb-4">
+      <div class="text-sm text-gray-600">
+        Total Inovasi: <span class="font-bold text-gray-800">{{ inolands.length }}</span>
+      </div>
+      <div>
+        <button
+          @click="showModalAdd = true"
+          class="py-2 px-4 font-bold text-white rounded-lg shadow flex items-center bg-gray-700 hover:bg-gray-800 transition"
+        >
+          <span class="mr-2">➕</span> Tambah Inovasi
+        </button>
+      </div>
     </div>
 
     <div class="w-full flex justify-center mt-16">
@@ -147,6 +152,22 @@
               </select>
             </div>
 
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Provinsi</label>
+              <select v-model="formInovasi.wilayah.nama_provinsi" class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition" @change="(formInovasi.wilayah.nama_kabkot = '', fetchKabkotsByProvName(formInovasi.wilayah.nama_provinsi))">
+                <option value="">Pilih Provinsi (opsional)</option>
+                <option v-for="p in wilayahList" :key="p" :value="p">{{ p }}</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Kabupaten/Kota</label>
+              <select v-model="formInovasi.wilayah.nama_kabkot" class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition" :disabled="!formInovasi.wilayah.nama_provinsi">
+                <option value="">Pilih Kabupaten/Kota</option>
+                <option v-for="k in kabkotsForForm" :key="k" :value="k">{{ k }}</option>
+              </select>
+            </div>
+
             <div class="flex flex-col md:flex-row md:items-start">
               <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4 pt-2">Deskripsi <span class="text-red-500">*</span></label>
               <textarea v-model="formInovasi.deskripsi" rows="4" required placeholder="Jelaskan inovasi secara singkat dan jelas"
@@ -167,19 +188,105 @@
         </form>
       </div>
     </div>
+    
+    <!-- Edit Inovasi Modal -->
+    <div
+      v-if="showModalEdit"
+      class="fixed inset-0 z-50 flex items-center justify-center"
+      style="background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(2px);"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-4xl mx-auto relative overflow-y-auto border border-gray-200"
+        style="max-height: 90vh;"
+      >
+        <button
+          @click="handleCloseEdit"
+          class="absolute top-4 right-4 text-gray-400 text-2xl font-bold hover:text-red-400 transition"
+          aria-label="Tutup"
+        >×</button>
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Edit Inovasi</h2>
+        <p class="text-center text-gray-500 mb-6">Perbarui data inovasi.</p>
+
+        <form @submit.prevent="handleSaveEdit" class="space-y-6">
+          <div class="space-y-4">
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Tahun <span class="text-red-500">*</span></label>
+              <input v-model="editInovasi.tahun" type="text" required placeholder="Contoh: 2026"
+                class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Judul <span class="text-red-500">*</span></label>
+              <input v-model="editInovasi.judul_inovasi" type="text" required placeholder="Judul inovasi"
+                class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">KLD <span class="text-red-500">*</span></label>
+              <input v-model="editInovasi.kld" type="text" required placeholder="Kementerian/Lembaga/Daerah"
+                class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Inovator</label>
+              <input v-model="editInovasi.inovator" type="text" placeholder="Nama inovator (opsional)"
+                class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Provinsi</label>
+              <select v-model="editInovasi.wilayah.nama_provinsi" class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition" @change="(editInovasi.wilayah.nama_kabkot = '', fetchKabkotsByProvName(editInovasi.wilayah.nama_provinsi, true))">
+                <option value="">Pilih Provinsi (opsional)</option>
+                <option v-for="p in wilayahList" :key="p" :value="p">{{ p }}</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Kabupaten/Kota</label>
+              <select v-model="editInovasi.wilayah.nama_kabkot" class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition" :disabled="!editInovasi.wilayah.nama_provinsi">
+                <option value="">Pilih Kabupaten/Kota</option>
+                <option v-for="k in kabkotsForEdit" :key="k" :value="k">{{ k }}</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-start">
+              <label class="md:w-56 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4 pt-2">Deskripsi <span class="text-red-500">*</span></label>
+              <textarea v-model="editInovasi.deskripsi" rows="4" required placeholder="Jelaskan inovasi secara singkat dan jelas"
+                class="flex-1 rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition resize-none"></textarea>
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 mt-2">
+            <button type="button" @click="handleCloseEdit"
+              class="flex items-center gap-2 bg-gray-400 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-gray-500 transition">
+              <span>✖️</span> Batal
+            </button>
+            <button type="submit"
+              class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-blue-700 transition-all disabled:opacity-60">
+              <span>💾</span> Simpan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 
 const inolands = ref([])
 const showModalAdd = ref(false)
+const showModalEdit = ref(false)
+const editInovasi = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = 10
 
 const filterWilayah = ref('')
 const wilayahList = ref([])
+const provList = ref([]) // full province objects from API
+const kabkotsForFormRef = ref([])
+const kabkotsForEditRef = ref([])
 
 const formInovasi = ref({
   tahun: '',
@@ -188,7 +295,8 @@ const formInovasi = ref({
   urusan: '',
   inovator: '',
   sdgs: '', // akan berisi id SDGS
-  deskripsi: ''
+  deskripsi: '',
+  wilayah: { nama_provinsi: '', nama_kabkot: '' }
 })
 
 const sdgsList = ref([])
@@ -196,7 +304,9 @@ const sdgsList = ref([])
 const fetchInolands = async () => {
   try {
     const res = await $fetch('/api/inolands')
-    inolands.value = Array.isArray(res.data) ? res.data : []
+    // support responses that return an array directly or wrapped under `data` (or nested)
+    const payload = Array.isArray(res) ? res : (res?.data ?? res?.data?.data ?? [])
+    inolands.value = Array.isArray(payload) ? payload : []
     const wilayahSet = new Set()
     inolands.value.forEach(item => {
       if (item.wilayah && item.wilayah.nama_provinsi) {
@@ -220,10 +330,63 @@ const fetchSdgs = async () => {
   }
 }
 
+const fetchProvinces = async () => {
+  try {
+    const res = await $fetch('/api/master_provinsi')
+    const data = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : [])
+    provList.value = data
+    // keep wilayahList as array of province names for backward compatibility in template
+    wilayahList.value = data.map(p => p.nama_provinsi)
+  } catch (err) {
+    console.error('Gagal mengambil provinsi:', err)
+    provList.value = []
+    wilayahList.value = []
+  }
+}
+
+const fetchKabkotsByProvName = async (provName, forEdit = false) => {
+  try {
+    if (!provName) {
+      if (forEdit) kabkotsForEditRef.value = []
+      else kabkotsForFormRef.value = []
+      return
+    }
+    const prov = provList.value.find(p => p.nama_provinsi === provName)
+    if (!prov) return
+    const id = prov.id_provinsi || prov.id
+    const res = await $fetch(`/api/kabupaten/${id}`)
+    const data = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : [])
+    const names = data.map(k => k.nama_kabkot)
+    if (forEdit) kabkotsForEditRef.value = names
+    else kabkotsForFormRef.value = names
+  } catch (err) {
+    console.error('Gagal mengambil kabupaten:', err)
+    if (forEdit) kabkotsForEditRef.value = []
+    else kabkotsForFormRef.value = []
+  }
+}
+
 onMounted(() => {
   fetchInolands()
   fetchSdgs()
+  fetchProvinces()
 })
+
+// helper: get unique kabkot list for a province from existing data
+function getKabkotsForProvince(prov) {
+  if (!prov) return []
+  const set = new Set()
+  inolands.value.forEach(item => {
+    if (item.wilayah && item.wilayah.nama_provinsi === prov && item.wilayah.nama_kabkot) {
+      set.add(item.wilayah.nama_kabkot)
+    }
+  })
+  return Array.from(set)
+}
+
+// use fetched kabkots lists (populated when province changes)
+const kabkotsForForm = computed(() => kabkotsForFormRef.value)
+const kabkotsForEdit = computed(() => kabkotsForEditRef.value)
 
 // helper untuk tampilkan label SDGS dari id
 const sdgsMap = computed(() => {
@@ -238,7 +401,26 @@ function getSdgsLabel(sdgsId) {
 }
 
 const handleEditClick = (id) => {
-  console.log('Edit item with id:', id)
+  const item = inolands.value.find(i => i.id === id)
+  if (!item) return
+  editInovasi.value = { ...item, wilayah: item.wilayah || { nama_provinsi: '', nama_kabkot: '' } }
+  showModalEdit.value = true
+}
+
+const handleSaveEdit = () => {
+  if (!editInovasi.value) return
+  inolands.value = inolands.value.map(i =>
+    i.id === editInovasi.value.id
+      ? { ...i, ...editInovasi.value, wilayah: editInovasi.value.wilayah || { nama_provinsi: '', nama_kabkot: '' } }
+      : i
+  )
+  showModalEdit.value = false
+  editInovasi.value = null
+}
+
+const handleCloseEdit = () => {
+  showModalEdit.value = false
+  editInovasi.value = null
 }
 
 const deleteProduct = async (id) => {
@@ -272,11 +454,25 @@ function onClose() {
   showModalAdd.value = false
 }
 
-// Filter inovasi berdasarkan wilayah
+// Filter inovasi berdasarkan wilayah (robust: handles string or object wilayah, trims and ignores case)
 const filteredInolands = computed(() => {
-  if (!filterWilayah.value) return inolands.value
-  return inolands.value.filter(item => item.wilayah && item.wilayah.nama_provinsi === filterWilayah.value)
+  const f = (filterWilayah.value || '').toString().trim().toLowerCase()
+  if (!f) return inolands.value
+  return inolands.value.filter(item => {
+    if (!item) return false
+    // possible forms: item.wilayah = { nama_provinsi: 'X', nama_kabkot: 'Y' } OR item.wilayah = 'X'
+    let prov = ''
+    if (item.wilayah) {
+      if (typeof item.wilayah === 'string') prov = item.wilayah
+      else if (item.wilayah.nama_provinsi) prov = item.wilayah.nama_provinsi
+    }
+    prov = prov.toString().trim().toLowerCase()
+    return prov === f
+  })
 })
+
+// reset page when filter changes to avoid empty page
+watch(filterWilayah, () => { currentPage.value = 1 })
 
 const indexOfLastItem = computed(() => currentPage.value * itemsPerPage)
 const indexOfFirstItem = computed(() => indexOfLastItem.value - itemsPerPage)

@@ -195,7 +195,7 @@ const handleDelete = async (id) => {
 
 <style scoped>
 .font-poppins { font-family: 'Poppins', sans-serif; }
-.form-label { min-width: 140px; font-size: 1rem; font-weight: 600; color: #2563eb; padding-right: 8px; text-align: right; }
+.form-label { min-width: 120px; font-size: 1rem; font-weight: 600; color: #2563eb; padding-right: 8px; text-align: right; }
 .form-input { flex: 1; border: 2px solid #38bdf8; border-radius: 10px; padding: 8px 10px; font-size: 1rem; background: linear-gradient(90deg, #f8fafc 80%, #e0f2fe 100%); }
 @media (max-width: 600px) { .form-label { text-align: left; min-width: 0; margin-bottom: 2px; padding-right: 0; } }
 </style>

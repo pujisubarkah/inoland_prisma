@@ -684,15 +684,28 @@ async function submitRegister() {
     const data = await res.json().catch(() => ({}))
 
     if (res.status === 201 || data.statusCode === 201) {
-      toast.success(data.message || t('Registrasi berhasil'))
-      // close modal and switch back to login
+      const successMsg = (data && data.message) ? data.message : t('registrasiBerhasilMenungguVerifikasi')
+      // show success toast and close modal
+      toast.success(successMsg)
       showRegister.value = false
       isLoginModalOpen.value = false
       return
     }
 
+    // Specific handling for conflict (email/username already used)
+    const messageText = data && data.message ? String(data.message) : ''
+    if (
+      res.status === 409 ||
+      data.statusCode === 409 ||
+      (/sudah digunakan/i.test(messageText))
+    ) {
+      const conflictMsg = messageText || t('emailSudahDigunakan')
+      toast.error(conflictMsg)
+      return
+    }
+
     // Show server error message if present
-    const errMsg = data.message || data.error || t('Registrasi gagal')
+    const errMsg = data.message || data.error || t('registrasiGagal')
     toast.error(errMsg)
 
   } catch (err) {

@@ -4,6 +4,7 @@ import { toast } from 'vue-sonner'
 
 const users = ref([])
 const roles = ref([])
+const instansiList = ref([])
 const isLoading = ref(true)
 const currentPage = ref(1)
 const itemsPerPage = 5
@@ -25,12 +26,15 @@ const fetchData = async () => {
   try {
     const usersRes = await $fetch('/api/users')
     const rolesRes = await $fetch('/api/roles')
+    const instansiRes = await $fetch('/api/instansi')
     users.value = usersRes.data ?? []
     roles.value = rolesRes.data ?? []
+    instansiList.value = instansiRes.data ?? []
   } catch (error) {
     console.error('Error fetching data:', error)
     users.value = []
     roles.value = []
+    instansiList.value = []
   } finally {
     isLoading.value = false
   }
@@ -45,10 +49,22 @@ const indexOfFirstItem = computed(() => indexOfLastItem.value - itemsPerPage)
 const currentItems = computed(() => users.value.slice(indexOfFirstItem.value, indexOfLastItem.value))
 const totalPages = computed(() => Math.ceil(users.value.length / itemsPerPage))
 
-const handleEditClick = (user) => {
-  editUser.value = user
-  selectedRoleId.value = user.role_id || null
-  selectedVerified.value = user.is_verified
+const handleEditClick = async (user) => {
+  // make a shallow copy to avoid mutating the list item directly
+  editUser.value = { ...user }
+  // ensure correct types for select bindings
+  selectedRoleId.value = user.role_id !== undefined && user.role_id !== null ? Number(user.role_id) : null
+  selectedVerified.value = !!user.is_verified
+
+  // if roles not loaded yet, fetch them so dropdown has options
+  if (!roles.value || roles.value.length === 0) {
+    try {
+      const rolesRes = await $fetch('/api/roles')
+      roles.value = rolesRes.data ?? []
+    } catch (err) {
+      console.error('Error fetching roles in handleEditClick:', err)
+    }
+  }
 }
 
 const handleCloseEdit = () => {
@@ -63,8 +79,8 @@ const handleRoleChange = async () => {
     await $fetch(`/api/users/${editUser.value.id}`, {
       method: 'PUT',
       body: {
-        role_id: selectedRoleId.value,
-        is_verified: selectedVerified.value
+        role_id: Number(selectedRoleId.value),
+        is_verified: Boolean(selectedVerified.value)
       }
     })
     users.value = users.value.map((user) =>
@@ -169,8 +185,8 @@ const handleCloseAdd = () => {
             </td>
             <td class="p-4">
               <div class="flex items-center gap-2 whitespace-nowrap">
-                <button @click="() => handleEditClick(user)" class="text-blue-600 hover:text-blue-700 bg-white border border-blue-200 rounded-lg px-3 py-1 shadow hover:scale-110 transition">✏️ Edit</button>
-                <button @click="() => handleDeleteUser(user.id)" class="text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-lg px-3 py-1 shadow hover:scale-110 transition">🗑️ Hapus</button>
+                <button @click="handleEditClick(user)" class="text-blue-600 hover:text-blue-700 bg-white border border-blue-200 rounded-lg px-3 py-1 shadow hover:scale-110 transition">✏️ Edit</button>
+                <button @click="handleDeleteUser(user.id)" class="text-red-600 hover:text-red-700 bg-white border border-red-200 rounded-lg px-3 py-1 shadow hover:scale-110 transition">🗑️ Hapus</button>
               </div>
             </td>
           </tr>
@@ -186,40 +202,43 @@ const handleCloseAdd = () => {
     </div>
 
     <!-- Add User Modal -->
-    <div v-if="isAddModalOpen" class="fixed inset-0 flex items-center justify-center z-50">
-      <div class="absolute inset-0 bg-black/60" @click="handleCloseAdd"></div>
-      <div class="relative bg-white rounded-lg w-full max-w-2xl p-6 shadow-xl">
+    <div v-if="isAddModalOpen" class="fixed inset-0 flex items-center justify-center" style="z-index:99999999;">
+      <div class="absolute inset-0 bg-black/60" @click="handleCloseAdd" style="z-index:99999998;"></div>
+      <div class="bg-white rounded-lg w-11/12 md:w-1/2 p-6" style="z-index:99999999; position: relative;">
         <h2 class="text-xl font-semibold mb-4">Tambah Pengguna</h2>
         <form @submit.prevent="handleAddUser" class="space-y-3">
           <div class="space-y-3">
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Nama Lengkap</label>
-              <input v-model="addForm.nama_lengkap" placeholder="Nama Lengkap" class="form-input p-2 flex-1" />
+            <div class="flex items-center gap-4">
+              <label class="form-label">Nama Lengkap</label>
+              <input v-model="addForm.nama_lengkap" placeholder="Nama Lengkap" class="form-input" />
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Username</label>
-              <input v-model="addForm.username" placeholder="Username" class="form-input p-2 flex-1" />
+            <div class="flex items-center gap-4">
+              <label class="form-label">Username</label>
+              <input v-model="addForm.username" placeholder="Username" class="form-input" />
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Instansi</label>
-              <input v-model="addForm.instansi" placeholder="Instansi" class="form-input p-2 flex-1" />
+            <div class="flex items-center gap-4">
+              <label class="form-label">Instansi</label>
+              <select v-model="addForm.instansi" class="form-input">
+                <option value="" disabled>Pilih Instansi</option>
+                <option v-for="inst in instansiList" :key="inst.id" :value="inst.agency_name">{{ inst.agency_name }}</option>
+              </select>
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Email</label>
-              <input v-model="addForm.email" placeholder="Email" type="email" class="form-input p-2 flex-1" />
+            <div class="flex items-center gap-4">
+              <label class="form-label">Email</label>
+              <input v-model="addForm.email" placeholder="Email" type="email" class="form-input" />
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Password</label>
-              <input v-model="addForm.password" placeholder="Password" type="password" class="form-input p-2 flex-1" />
+            <div class="flex items-center gap-4">
+              <label class="form-label">Password</label>
+              <input v-model="addForm.password" placeholder="Password" type="password" class="form-input" />
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Konfirmasi</label>
-              <input v-model="addForm.confirm" placeholder="Konfirmasi Password" type="password" class="form-input p-2 flex-1" />
+            <div class="flex items-center gap-4">
+              <label class="form-label">Konfirmasi</label>
+              <input v-model="addForm.confirm" placeholder="Konfirmasi Password" type="password" class="form-input" />
             </div>
           </div>
 
@@ -232,33 +251,33 @@ const handleCloseAdd = () => {
     </div>
 
     <!-- Edit User Modal -->
-    <div v-if="editUser" class="fixed inset-0 flex items-center justify-center z-50">
-      <div class="absolute inset-0 bg-black/60" @click="handleCloseEdit"></div>
-      <div class="relative bg-white rounded-lg w-full max-w-xl p-6 shadow-xl">
+    <div v-if="editUser" class="fixed inset-0 flex items-center justify-center" style="z-index:99999999;">
+      <div class="absolute inset-0 bg-black/60" @click="handleCloseEdit" style="z-index:99999998;"></div>
+      <div class="bg-white rounded-lg w-11/12 md:w-1/2 p-6" style="z-index:99999999; position: relative;">
         <h2 class="text-xl font-semibold mb-4">Edit Pengguna</h2>
 
         <div class="space-y-3">
           <div class="space-y-3">
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Nama</label>
-              <input :value="editUser.nama_lengkap" disabled class="form-input p-2 bg-gray-100 flex-1" />
+            <div class="flex items-center gap-4">
+              <label class="form-label">Nama</label>
+              <input :value="editUser.nama_lengkap" disabled class="form-input bg-gray-100" />
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Email</label>
-              <input :value="editUser.email" disabled class="form-input p-2 bg-gray-100 flex-1" />
+            <div class="flex items-center gap-4">
+              <label class="form-label">Email</label>
+              <input :value="editUser.email" disabled class="form-input bg-gray-100" />
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Role</label>
-              <select v-model="selectedRoleId" class="form-input p-2 flex-1">
+            <div class="flex items-center gap-4">
+              <label class="form-label">Role</label>
+              <select v-model="selectedRoleId" class="form-input">
                 <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.role_name }}</option>
               </select>
             </div>
 
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <label class="text-sm font-medium text-gray-700 md:w-32">Verifikasi</label>
-              <select v-model="selectedVerified" class="form-input p-2 flex-1">
+            <div class="flex items-center gap-4">
+              <label class="form-label">Verifikasi</label>
+              <select v-model="selectedVerified" class="form-input">
                 <option :value="true">Terverifikasi</option>
                 <option :value="false">Belum</option>
               </select>
@@ -279,7 +298,7 @@ const handleCloseAdd = () => {
 <style scoped>
 .font-poppins { font-family: 'Poppins', sans-serif; }
 .form-label { min-width: 120px; font-size: 1rem; font-weight: 600; color: #2563eb; padding-right: 8px; text-align: right; }
-.form-input { flex: 1; border: 2px solid #38bdf8; border-radius: 10px; padding: 10px 14px; font-size: 1rem; background: linear-gradient(90deg, #f8fafc 80%, #e0f2fe 100%); transition: border 0.2s, box-shadow 0.2s; box-shadow: 0 2px 8px rgba(37,99,235,0.08); }
+.form-input { flex: 1; border: 2px solid #38bdf8; border-radius: 10px; padding: 8px 10px; font-size: 1rem; background: linear-gradient(90deg, #f8fafc 80%, #e0f2fe 100%); }
 .form-input:focus { border-color: #2563eb; box-shadow: 0 0 0 2px #bae6fd; outline: none; }
-@media (max-width: 600px) { .mb-4.flex.items-center.gap-4 { flex-direction: column; align-items: stretch; gap: 2px; } .form-label { text-align: left; min-width: 0; margin-bottom: 2px; padding-right: 0; } }
+@media (max-width: 600px) { .form-label { text-align: left; min-width: 0; margin-bottom: 2px; padding-right: 0; } }
 </style>

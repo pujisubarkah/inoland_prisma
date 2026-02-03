@@ -35,6 +35,8 @@
   "loginDenganGoogleGagal": "Login with Google failed, please try again.",
   "registrasiGagal": "Registration failed, please try again.",
   "pendaftaranBerhasil": "Registration successful! Admin will verify your account",
+  "registrasiBerhasilMenungguVerifikasi": "your account has been registered and is pending admin verification",
+  "emailSudahDigunakan": "Email is already in use",
   "berhasilLogout": "Successfully logged out!",
   "logoutGagal": "Logout failed!",
   "berhasilLogin": "Login successful!",

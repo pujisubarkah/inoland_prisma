@@ -13,22 +13,48 @@
     </div>
 
     <!-- Modal -->
-    <div v-if="openModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
-        <h3 class="text-xl font-semibold mb-4">Tambah Cerita Sukses</h3>
-        <form @submit.prevent="submitForm">
-          <div class="grid grid-cols-1 gap-4">
-            <input v-model="form.title" placeholder="Judul" required class="border px-3 py-2 rounded" />
-            <textarea v-model="form.story" placeholder="Isi cerita" required class="border px-3 py-2 rounded h-32"></textarea>
-            <input v-model="form.name" placeholder="Nama Penulis" class="border px-3 py-2 rounded" />
-            <input v-model="form.organization" placeholder="Instansi/Organisasi" class="border px-3 py-2 rounded" />
-            <input v-model="form.contact" placeholder="Kontak" class="border px-3 py-2 rounded" />
-            <input type="file" @change="handleFile" class="border px-3 py-2 rounded" />
+    <div v-if="openModal" class="fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0,0,0,0.35); backdrop-filter: blur(2px);">
+      <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-3xl mx-auto relative overflow-y-auto">
+        <button @click="closeModal" class="absolute top-4 right-4 text-gray-500 text-2xl font-bold hover:text-red-400 transition" aria-label="Tutup">×</button>
+        <h3 class="text-2xl font-semibold mb-2">Tambah Cerita Sukses</h3>
+        <p class="text-sm text-gray-500 mb-4">Isi data cerita sukses di bawah ini.</p>
+
+        <form @submit.prevent="submitForm" class="space-y-4">
+          <div class="space-y-3">
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-48 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Judul</label>
+              <input v-model="form.title" placeholder="Judul" required class="flex-1 shadcn-input rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800 focus:outline-none" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-start">
+              <label class="md:w-48 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4 pt-2">Isi Cerita</label>
+              <textarea v-model="form.story" placeholder="Isi cerita" required class="flex-1 shadcn-textarea rounded-lg px-4 py-2 border border-gray-300 bg-white text-gray-800" style="min-height:200px;"></textarea>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-48 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Nama Penulis</label>
+              <input v-model="form.name" placeholder="Nama Penulis" class="flex-1 shadcn-input rounded-lg px-4 py-2 border border-gray-300" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-48 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Instansi/Organisasi</label>
+              <input v-model="form.organization" placeholder="Instansi/Organisasi" class="flex-1 shadcn-input rounded-lg px-4 py-2 border border-gray-300" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-48 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Kontak</label>
+              <input v-model="form.contact" placeholder="Kontak" class="flex-1 shadcn-input rounded-lg px-4 py-2 border border-gray-300" />
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center">
+              <label class="md:w-48 w-full text-sm font-semibold text-gray-700 mb-1 md:mb-0 md:text-right pr-4">Foto</label>
+              <input type="file" @change="handleFile" class="flex-1" />
+            </div>
           </div>
 
-          <div class="mt-4 flex justify-end gap-2">
-            <button type="button" @click="closeModal" class="px-4 py-2 rounded border">Batal</button>
-            <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white">Simpan</button>
+          <div class="flex justify-end gap-3 mt-2">
+            <button type="button" @click="closeModal" class="bg-gray-300 text-gray-800 px-5 py-2 rounded-lg font-medium shadow hover:bg-gray-400 transition">Batal</button>
+            <button type="submit" class="bg-gradient-to-r from-blue-700 via-blue-400 to-cyan-400 text-white px-5 py-2 rounded-lg font-semibold shadow hover:scale-105 transition">Simpan</button>
           </div>
         </form>
       </div>
@@ -164,5 +190,16 @@ function formatDate(d){ if(!d) return '-' ; const dt = new Date(d); return dt.to
 </script>
 
 <style scoped>
-/* minimal */
+.shadcn-input,
+.shadcn-textarea {
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.shadcn-input:focus,
+.shadcn-textarea:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 4px #0ea5e933;
+}
+.shadcn-textarea { resize: vertical; min-height: 120px; max-height: 600px; }
 </style>

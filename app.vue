@@ -2,7 +2,7 @@
 <template>
   <NuxtLayout>
     <NuxtPage />
-    <Toaster position="top-center" richColors />
+      <Toaster position="top-center" richColors offset="80px" />
   </NuxtLayout>
 </template>
 
