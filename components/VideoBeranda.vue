@@ -92,10 +92,9 @@
           </ul>
 
           <div class="mt-3">
-            <NuxtLink to="/agenda"
-              class="text-xs font-semibold text-blue-700 hover:underline">
+            <span class="text-xs font-semibold text-blue-400 cursor-not-allowed opacity-60">
               Lihat Agenda Lengkap →
-            </NuxtLink>
+            </span>
           </div>
         </div>
 
