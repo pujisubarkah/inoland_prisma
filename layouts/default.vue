@@ -1,17 +1,12 @@
+
 <template>
   <div class="font-poppins min-h-screen flex flex-col">
-    <!-- Navbar Component -->
-    <Navbar />    <!-- Main Content with top padding to account for fixed navbar -->
-    <main class="flex-1 pt-[52px] sm:pt-[56px]">
-      <slot />
-    </main>
-
-    <!-- Footer Component -->
-    <Footer />
+    <Maintenance />
   </div>
 </template>
 
 <script setup>
+import Maintenance from '~/components/Maintenance.vue'
 // Components akan auto-import di Nuxt 3
 </script>
 

@@ -68,5 +68,9 @@
   "loadingMap": "Loading Map...",
   "homeTitle": "INOLAND - Innovation Laboratory",
   "loadingCarousel": "Loading Carousel...",
-  "homeMetaDesc": "Every idea is valuable, and INOLAND is the space for it to grow. Join the Innovation Laboratory — a collaborative ecosystem for institutions seeking real change."
+  "homeMetaDesc": "Every idea is valuable, and INOLAND is the space for it to grow. Join the Innovation Laboratory — a collaborative ecosystem for institutions seeking real change.",
+  "maintenance": {
+    "title": "Under Maintenance",
+    "message": "Sorry, the site is currently under maintenance. Please check back later."
+  }
 }

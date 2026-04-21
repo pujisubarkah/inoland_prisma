@@ -68,5 +68,9 @@
   "loadingMap": "Memuat Peta...",
   "homeTitle": "INOLAND - Laboratorium Inovasi",
   "loadingCarousel": "Memuat Carousel...",
-  "homeMetaDesc": "Setiap ide berharga, dan INOLAND adalah ruangnya untuk tumbuh. Bergabunglah dalam Laboratorium Inovasi — ekosistem kolaboratif untuk instansi yang ingin menghadirkan perubahan nyata."
+  "homeMetaDesc": "Setiap ide berharga, dan INOLAND adalah ruangnya untuk tumbuh. Bergabunglah dalam Laboratorium Inovasi — ekosistem kolaboratif untuk instansi yang ingin menghadirkan perubahan nyata.",
+  "maintenance": {
+    "title": "Sedang Dalam Maintenance",
+    "message": "Mohon maaf, saat ini situs sedang dalam pemeliharaan. Silakan kembali lagi nanti."
+  }
 }
