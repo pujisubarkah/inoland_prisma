@@ -1,13 +1,21 @@
 
 <template>
   <div class="font-poppins min-h-screen flex flex-col">
-    <Maintenance />
+    <!-- <Maintenance /> -->
+    <!-- Maintenance mode disabled -->
+    <Navbar />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
   </div>
 </template>
 
 <script setup>
-import Maintenance from '~/components/Maintenance.vue'
-// Components akan auto-import di Nuxt 3
+import Navbar from '~/components/Navbar.vue'
+import Footer from '~/components/Footer.vue'
+// import Maintenance from '~/components/Maintenance.vue'
+// Maintenance mode disabled
 </script>
 
 <style scoped>
